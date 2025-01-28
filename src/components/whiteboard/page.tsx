@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencilAlt, faEraser, faTextHeight, faTrashAlt } from "@fortawesome/free-solid-svg-icons"; // FontAwesome icons
+import { Pencil, Eraser, Type, Trash } from "lucide-react"; // Import Lucide icons
 
 const Whiteboard = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -105,32 +104,32 @@ const Whiteboard = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center  h-screen">
+    <div className="flex flex-col items-center justify-center h-screen">
       <div className="flex gap-5 mb-6 items-center p-6 justify-center">
-        {/* Using FontAwesome icons */}
+        {/* Using Lucide icons */}
         <button
           onClick={() => setTool("pen")}
           className="p-2 bg-black rounded-full hover:bg-gray-600"
         >
-          <FontAwesomeIcon icon={faPencilAlt} className="h-5 w-5 text-white" />
+          <Pencil className="h-5 w-5 text-white" />
         </button>
         <button
           onClick={() => setTool("eraser")}
           className="p-2 bg-black rounded-full hover:bg-gray-600"
         >
-          <FontAwesomeIcon icon={faEraser} className="h-5 w-5 text-white" />
+          <Eraser className="h-5 w-5 text-white" />
         </button>
         <button
           onClick={() => setTool("text")}
           className="p-2 bg-black rounded-full hover:bg-gray-600"
         >
-          <FontAwesomeIcon icon={faTextHeight} className="h-5 w- text-white" />
+          <Type className="h-5 w-5 text-white" />
         </button>
         <button
           onClick={clearCanvas}
           className="p-2 bg-black rounded-full hover:bg-gray-600"
         >
-          <FontAwesomeIcon icon={faTrashAlt} className="h-5 w-5 text-white" />
+          <Trash className="h-5 w-5 text-white" />
         </button>
       </div>
       <div className="relative flex gap-4 items-center justify-center p-6 w-full">
