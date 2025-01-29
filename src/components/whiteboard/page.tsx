@@ -1,15 +1,22 @@
 "use client";
 
+import { Pencil, Eraser, Type, Trash } from "lucide-react";
 import React, { useRef, useState, useEffect } from "react";
-import { Pencil, Eraser, Type, Trash } from "lucide-react"; // Import Lucide icons
+
+// Import Lucide icons
 
 const Whiteboard = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [drawing, setDrawing] = useState(false);
   const [tool, setTool] = useState<"pen" | "eraser" | "text">("pen");
-  const [texts, setTexts] = useState<{ x: number; y: number; text: string; isEditing: boolean }[]>([]);
+  const [texts, setTexts] = useState<
+    { x: number; y: number; text: string; isEditing: boolean }[]
+  >([]);
   const [currentText, setCurrentText] = useState("");
-  const [typingPosition, setTypingPosition] = useState<{ x: number; y: number } | null>(null);
+  const [typingPosition, setTypingPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
   const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
@@ -18,7 +25,12 @@ const Whiteboard = () => {
         if (e.key === "Enter") {
           setTexts((prev) => [
             ...prev,
-            { x: typingPosition.x, y: typingPosition.y, text: currentText, isEditing: false },
+            {
+              x: typingPosition.x,
+              y: typingPosition.y,
+              text: currentText,
+              isEditing: false,
+            },
           ]);
           setTypingPosition(null);
           setCurrentText("");
@@ -105,8 +117,7 @@ const Whiteboard = () => {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
-      <div className="flex gap-5 mb-6 items-center p-6 justify-center">
-        {/* Using Lucide icons */}
+      <div className="flex gap-5 mb-3 items-center p-6 justify-center">
         <button
           onClick={() => setTool("pen")}
           className="p-2 bg-black rounded-full hover:bg-gray-600"
@@ -135,9 +146,9 @@ const Whiteboard = () => {
       <div className="relative flex gap-4 items-center justify-center p-6 w-full">
         <canvas
           ref={canvasRef}
-          width={800}
+          width={1100}
           height={600}
-          className="border rounded-lg bg-black"
+          className="border rounded-2xl bg-white"
           onMouseDown={startDrawing}
           onMouseMove={draw}
           onMouseUp={stopDrawing}
@@ -147,7 +158,9 @@ const Whiteboard = () => {
         {texts.map((item, index) => (
           <span
             key={index}
-            className={`absolute text-white cursor-pointer ${item.isEditing ? "border-b-2" : ""}`}
+            className={`absolute text-white cursor-pointer ${
+              item.isEditing ? "border-b-2" : ""
+            }`}
             style={{
               left: item.x,
               top: item.y,
