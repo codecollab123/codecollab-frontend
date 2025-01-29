@@ -2,7 +2,7 @@
 
 import { Pencil, Eraser, Type, Trash } from "lucide-react";
 import React, { useRef, useState, useEffect } from "react";
-
+import { Button } from "../ui/button";
 // Import Lucide icons
 
 const Whiteboard = () => {
@@ -59,7 +59,7 @@ const Whiteboard = () => {
       ctx.lineWidth = 10;
     } else {
       ctx.globalCompositeOperation = "source-over";
-      ctx.strokeStyle = "#fff";
+      ctx.strokeStyle = "#000";
       ctx.lineWidth = 2;
     }
 
@@ -117,31 +117,31 @@ const Whiteboard = () => {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
-      <div className="flex gap-5 mb-3 items-center p-6 justify-center">
-        <button
+      <div className="flex gap-4 mb-3 items-center p-4 justify-center">
+        <Button
           onClick={() => setTool("pen")}
-          className="p-2 bg-black rounded-full hover:bg-gray-600"
+          className="p-2 rounded-full hover:bg-gray-600"
         >
-          <Pencil className="h-5 w-5 text-white" />
-        </button>
-        <button
+          <Pencil className="h-5 w-5 text-black" />
+        </Button>
+        <Button
           onClick={() => setTool("eraser")}
-          className="p-2 bg-black rounded-full hover:bg-gray-600"
+          className="p-2 rounded-full hover:bg-gray-600"
         >
-          <Eraser className="h-5 w-5 text-white" />
-        </button>
-        <button
+          <Eraser className="h-5 w-5 text-black" />
+        </Button>
+        <Button
           onClick={() => setTool("text")}
-          className="p-2 bg-black rounded-full hover:bg-gray-600"
+          className="p-2 rounded-full hover:bg-gray-600"
         >
-          <Type className="h-5 w-5 text-white" />
-        </button>
-        <button
+          <Type className="h-5 w-5 text-black" />
+        </Button>
+        <Button
           onClick={clearCanvas}
-          className="p-2 bg-black rounded-full hover:bg-gray-600"
+          className="p-2 rounded-full hover:bg-gray-600"
         >
-          <Trash className="h-5 w-5 text-white" />
-        </button>
+          <Trash className="h-5 w-5 text-black" />
+        </Button>
       </div>
       <div className="relative flex gap-4 items-center justify-center p-6 w-full">
         <canvas
@@ -158,7 +158,7 @@ const Whiteboard = () => {
         {texts.map((item, index) => (
           <span
             key={index}
-            className={`absolute text-white cursor-pointer ${
+            className={`absolute text-black cursor-pointer ${
               item.isEditing ? "border-b-2" : ""
             }`}
             style={{
@@ -173,7 +173,7 @@ const Whiteboard = () => {
         ))}
         {isTyping && typingPosition && (
           <span
-            className="absolute text-white"
+            className="absolute text-black"
             style={{
               left: typingPosition.x,
               top: typingPosition.y,
