@@ -38,7 +38,7 @@ export function CreateRoom({ className, ...props }: React.ComponentPropsWithoutR
         </CardHeader>
         <CardContent className="grid gap-4">
           {/* Create Room Button */}
-          <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={handleCreateRoom}>
+          <Button className="w-full" onClick={handleCreateRoom}>
             Create Room
           </Button>
 
