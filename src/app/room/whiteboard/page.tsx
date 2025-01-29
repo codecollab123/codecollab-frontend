@@ -15,6 +15,16 @@ export default function CreateRoomPage() {
         menuItemsBottom={menuItemsBottom}
         active=""
       />
+      <Header
+        menuItemsTop={menuItemsTop}
+        menuItemsBottom={menuItemsBottom}
+        activeMenu="Projects"
+        breadcrumbItems={[
+          { label: "dashboard", link: "/dashboard" },
+          { label: "Coding Room", link: "/dashboard/codingroom" },
+          { label: "WhiteBoard", link: "/dashboard/codingroom/whiteboard" },
+        ]}
+       />
       <Whiteboard/>
  </div>
   )
