@@ -5,10 +5,18 @@ import SidebarMenu from "@/components/menu/sidebarmenu";
 import Chat from "@/components/shared/chat";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Link as Linking} from "lucide-react";
-import { menuItemsBottom, menuItemsTop } from "@/config/menuItems/dashboardMenuItem";
+import { Link as Linking } from "lucide-react";
+import {
+  menuItemsBottom,
+  menuItemsTop,
+} from "@/config/menuItems/dashboardMenuItem";
 import Timer from "@/components/shared/timer";
 import { UserPlus } from "lucide-react";
 import { NotebookPen } from "lucide-react";
@@ -38,19 +46,6 @@ export default function CodingRoom() {
             { label: "Coding Room", link: "/dashboard/codingroom" },
           ]}
         />
-        <div className="flex justify-end space-x-4 p-4 mr-6">
-          <Button>Invite</Button>
-          <Link href={"room/whiteboard"}>
-            <Button>WhiteBoard</Button>
-          </Link>
-          {/* Button to Toggle Chat */}
-          <Button onClick={() => setIsChatOpen(!isChatOpen)}>
-            Chat
-          </Button>
-        </div>
-
-        {/* Conditionally render Chat component */}
-        {isChatOpen && <Chat />}
 
         <div className="flex justify-end space-x-5 p-4 mr-6">
           <div>
@@ -66,7 +61,9 @@ export default function CodingRoom() {
               WhiteBoard
             </Button>
           </Link>
+          <Chat />
         </div>
+
         <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
           <DialogContent>
             <DialogHeader>
