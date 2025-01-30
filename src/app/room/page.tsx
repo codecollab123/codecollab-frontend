@@ -4,7 +4,9 @@ import Header from "@/components/header/header";
 import SidebarMenu from "@/components/menu/sidebarmenu";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { Link as Linking} from "lucide-react";
 import {
   menuItemsBottom,
   menuItemsTop,
@@ -12,11 +14,13 @@ import {
 import Timer from "@/components/shared/timer";
 import { UserPlus } from "lucide-react";
 import { NotebookPen } from "lucide-react";
-import { AlarmClock } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
 
 export default function CodingRoom() {
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
   return (
     <div className="flex min-h-screen w-full bg-muted/40">
       <SidebarMenu
@@ -38,7 +42,7 @@ export default function CodingRoom() {
         <div>
             <Timer />
           </div>
-          <Button>
+          <Button onClick={() => setInviteOpen(true)}>
             <UserPlus />
             Invite
           </Button>
@@ -49,6 +53,30 @@ export default function CodingRoom() {
             </Button>
           </Link>
         </div>
+        <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Invite Someone</DialogTitle>
+            </DialogHeader>
+            <Input
+              type="email"
+              placeholder="Enter email or name..."
+              value={inviteEmail}
+              onChange={(e) => setInviteEmail(e.target.value)}
+            />
+        <div className="flex flex-1 gap-2"> <Linking/> Private Link</div>
+            <Button
+              className="w-full"
+              onClick={() => {
+                alert(`Invitation sent to: ${inviteEmail}`);
+                setInviteOpen(false);
+                setInviteEmail("");
+              }}
+            >
+              Send Invite
+            </Button>
+          </DialogContent>
+        </Dialog>
 
         {/* Main Coding Section */}
         <main className="flex flex-1 flex-col items-center p-4 sm:px-6 sm:py-0">
