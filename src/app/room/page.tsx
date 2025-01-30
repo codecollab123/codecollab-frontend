@@ -2,6 +2,7 @@
 
 import Header from "@/components/header/header";
 import SidebarMenu from "@/components/menu/sidebarmenu";
+import Chat from "@/components/shared/chat";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -34,6 +35,7 @@ export default function CodingRoom() {
         <Link  href={"room/whiteboard"}>
         <Button>WhiteBoard</Button>
         </Link>
+        <Chat/>
         </div>
 
         {/* Main Coding Section */}
@@ -47,7 +49,6 @@ export default function CodingRoom() {
                 placeholder="Write your code here..."
               />
             </Card>
-
             {/* Input & Output Section */}
             <div className="flex flex-col w-[350px] space-y-6">
               {/* Input Section */}
