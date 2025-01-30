@@ -5,14 +5,22 @@ import SidebarMenu from "@/components/menu/sidebarmenu";
 import Chat from "@/components/shared/chat";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  menuItemsBottom,
-  menuItemsTop,
-} from "@/config/menuItems/dashboardMenuItem";
+import { Link as Linking} from "lucide-react";
+import { menuItemsBottom, menuItemsTop } from "@/config/menuItems/dashboardMenuItem";
+import Timer from "@/components/shared/timer";
+import { UserPlus } from "lucide-react";
+import { NotebookPen } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
 
 export default function CodingRoom() {
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [isChatOpen, setIsChatOpen] = useState(false); // State to toggle chat visibility
+
   return (
     <div className="flex min-h-screen w-full bg-muted/40">
       <SidebarMenu
@@ -30,13 +38,61 @@ export default function CodingRoom() {
             { label: "Coding Room", link: "/dashboard/codingroom" },
           ]}
         />
-        <div className="flex justify-end space-x-4 p-4 mr-6 ">
+        <div className="flex justify-end space-x-4 p-4 mr-6">
           <Button>Invite</Button>
-        <Link  href={"room/whiteboard"}>
-        <Button>WhiteBoard</Button>
-        </Link>
-        <Chat/>
+          <Link href={"room/whiteboard"}>
+            <Button>WhiteBoard</Button>
+          </Link>
+          {/* Button to Toggle Chat */}
+          <Button onClick={() => setIsChatOpen(!isChatOpen)}>
+            Chat
+          </Button>
         </div>
+
+        {/* Conditionally render Chat component */}
+        {isChatOpen && <Chat />}
+
+        <div className="flex justify-end space-x-5 p-4 mr-6">
+          <div>
+            <Timer />
+          </div>
+          <Button onClick={() => setInviteOpen(true)}>
+            <UserPlus />
+            Invite
+          </Button>
+          <Link href={"room/whiteboard"}>
+            <Button>
+              <NotebookPen />
+              WhiteBoard
+            </Button>
+          </Link>
+        </div>
+        <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Invite Someone</DialogTitle>
+            </DialogHeader>
+            <Input
+              type="email"
+              placeholder="Enter email or name..."
+              value={inviteEmail}
+              onChange={(e) => setInviteEmail(e.target.value)}
+            />
+            <div className="flex flex-1 gap-2">
+              <Linking /> Private Link
+            </div>
+            <Button
+              className="w-full"
+              onClick={() => {
+                alert(`Invitation sent to: ${inviteEmail}`);
+                setInviteOpen(false);
+                setInviteEmail("");
+              }}
+            >
+              Send Invite
+            </Button>
+          </DialogContent>
+        </Dialog>
 
         {/* Main Coding Section */}
         <main className="flex flex-1 flex-col items-center p-4 sm:px-6 sm:py-0">
