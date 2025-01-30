@@ -2,15 +2,13 @@
 
 import Header from "@/components/header/header";
 import SidebarMenu from "@/components/menu/sidebarmenu";
+import Chat from "@/components/shared/chat";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Link as Linking} from "lucide-react";
-import {
-  menuItemsBottom,
-  menuItemsTop,
-} from "@/config/menuItems/dashboardMenuItem";
+import { menuItemsBottom, menuItemsTop } from "@/config/menuItems/dashboardMenuItem";
 import Timer from "@/components/shared/timer";
 import { UserPlus } from "lucide-react";
 import { NotebookPen } from "lucide-react";
@@ -21,6 +19,8 @@ import { Input } from "@/components/ui/input";
 export default function CodingRoom() {
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
+  const [isChatOpen, setIsChatOpen] = useState(false); // State to toggle chat visibility
+
   return (
     <div className="flex min-h-screen w-full bg-muted/40">
       <SidebarMenu
@@ -38,8 +38,22 @@ export default function CodingRoom() {
             { label: "Coding Room", link: "/dashboard/codingroom" },
           ]}
         />
-        <div className="flex justify-end space-x-5 p-4 mr-6 ">
-        <div>
+        <div className="flex justify-end space-x-4 p-4 mr-6">
+          <Button>Invite</Button>
+          <Link href={"room/whiteboard"}>
+            <Button>WhiteBoard</Button>
+          </Link>
+          {/* Button to Toggle Chat */}
+          <Button onClick={() => setIsChatOpen(!isChatOpen)}>
+            Chat
+          </Button>
+        </div>
+
+        {/* Conditionally render Chat component */}
+        {isChatOpen && <Chat />}
+
+        <div className="flex justify-end space-x-5 p-4 mr-6">
+          <div>
             <Timer />
           </div>
           <Button onClick={() => setInviteOpen(true)}>
@@ -64,7 +78,9 @@ export default function CodingRoom() {
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
             />
-        <div className="flex flex-1 gap-2"> <Linking/> Private Link</div>
+            <div className="flex flex-1 gap-2">
+              <Linking /> Private Link
+            </div>
             <Button
               className="w-full"
               onClick={() => {
@@ -89,7 +105,6 @@ export default function CodingRoom() {
                 placeholder="Write your code here..."
               />
             </Card>
-
             {/* Input & Output Section */}
             <div className="flex flex-col w-[350px] space-y-6">
               {/* Input Section */}

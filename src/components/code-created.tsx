@@ -45,8 +45,8 @@ export function CreateCode({ className, ...props }: React.ComponentPropsWithoutR
         <CardContent className="grid gap-6">
           {/* Display Room Code if Available */}
           {roomCode && roomCode !== "No Code Found" ? (
-            <div className="flex items-center gap-2 border p-3 rounded-lg bg-gray-100">
-              <Input className="text-center font-semibold text-lg" value={roomCode} readOnly />
+            <div className="flex items-center gap-2 border p-3 rounded-lg">
+              <Input className="text-center font-semibold text-lg text-background bg-foreground" value={roomCode} readOnly />
               <Button variant="outline" size="icon" onClick={copyToClipboard}>
                 {copied ? <Check className="h-5 w-5 text-green-500" /> : <Copy className="h-5 w-5" />}
               </Button>
@@ -56,9 +56,9 @@ export function CreateCode({ className, ...props }: React.ComponentPropsWithoutR
           )}
 
           {/* Join Room Input */}
-          <div className="grid gap-2">
+          <div className="grid gap-2 ">
             <Label htmlFor="join-room">Enter Room Code</Label>
-            <Input id="join-room" type="text" placeholder="Enter code" />
+            <Input id="join-room" type="text" placeholder="Enter code" className="ext-center font-semibold text-lg text-background bg-foreground"/>
             <Button className="w-full bg-green-600 hover:bg-green-700 text-white">Join Room</Button>
           </div>
         </CardContent>
