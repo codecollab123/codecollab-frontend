@@ -38,19 +38,8 @@ export default function CodingRoom() {
             { label: "Coding Room", link: "/dashboard/codingroom" },
           ]}
         />
-        <div className="flex justify-end space-x-4 p-4 mr-6">
-          <Button>Invite</Button>
-          <Link href={"room/whiteboard"}>
-            <Button>WhiteBoard</Button>
-          </Link>
-          {/* Button to Toggle Chat */}
-          <Button onClick={() => setIsChatOpen(!isChatOpen)}>
-            Chat
-          </Button>
-        </div>
-
         {/* Conditionally render Chat component */}
-        {isChatOpen && <Chat />}
+       
 
         <div className="flex justify-end space-x-5 p-4 mr-6">
           <div>
@@ -66,7 +55,10 @@ export default function CodingRoom() {
               WhiteBoard
             </Button>
           </Link>
+          <Chat />
         </div>
+
+       
         <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
           <DialogContent>
             <DialogHeader>
