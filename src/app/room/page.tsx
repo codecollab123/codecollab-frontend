@@ -9,7 +9,12 @@ import {
   menuItemsBottom,
   menuItemsTop,
 } from "@/config/menuItems/dashboardMenuItem";
+import Timer from "@/components/shared/timer";
+import { UserPlus } from "lucide-react";
+import { NotebookPen } from "lucide-react";
+import { AlarmClock } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function CodingRoom() {
   return (
@@ -29,11 +34,20 @@ export default function CodingRoom() {
             { label: "Coding Room", link: "/dashboard/codingroom" },
           ]}
         />
-        <div className="flex justify-end space-x-4 p-4 mr-6 ">
-          <Button>Invite</Button>
-        <Link  href={"room/whiteboard"}>
-        <Button>WhiteBoard</Button>
-        </Link>
+        <div className="flex justify-end space-x-5 p-4 mr-6 ">
+        <div>
+            <Timer />
+          </div>
+          <Button>
+            <UserPlus />
+            Invite
+          </Button>
+          <Link href={"room/whiteboard"}>
+            <Button>
+              <NotebookPen />
+              WhiteBoard
+            </Button>
+          </Link>
         </div>
 
         {/* Main Coding Section */}
