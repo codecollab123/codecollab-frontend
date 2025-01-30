@@ -117,7 +117,7 @@ const ChatComponent: React.FC = () => {
   {isOpen && (
     <CardContent className="space-y-3 overflow-y-auto h-[75%]">
       {messages.map((message) => (
-        <div key={message.id} className="p-2 bg-white bg-green-100 rounded-lg shadow-sm">
+        <div key={message.id} className="p-2  bg-green-100 rounded-lg shadow-sm">
           {message.replyTo && (
             <div className="text-gray-500 text-sm italic mb-2">
               Replying to:{" "}
