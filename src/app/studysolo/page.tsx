@@ -60,6 +60,7 @@ export default function SoloStudy() {
     setIsMusicOptionsVisible(false); 
   };
   
+  
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (isRunning) {
