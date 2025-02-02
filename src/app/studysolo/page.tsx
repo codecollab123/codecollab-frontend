@@ -10,11 +10,23 @@ import {
   menuItemsBottom,
   menuItemsTop,
 } from "@/config/menuItems/dashboardMenuItem";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Maximize2 } from "lucide-react";
 import { CircleX } from "lucide-react";
 import { Music } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@radix-ui/react-tooltip";
+import { TooltipContent } from "@/components/ui/tooltip";
 
 export default function SoloStudy() {
   const [time, setTime] = useState(50 * 60);
@@ -28,10 +40,11 @@ export default function SoloStudy() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedBackground, setSelectedBackground] =
     useState("/studyroom5.mp4");
-    const fullscreenRef = useRef<HTMLDivElement>(null);
-    const [isBackgroundOptionsVisible, setIsBackgroundOptionsVisible] = useState(false);
-    const [youtubeLink, setYoutubeLink] = useState("");
-const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const fullscreenRef = useRef<HTMLDivElement>(null);
+  const [isBackgroundOptionsVisible, setIsBackgroundOptionsVisible] =
+    useState(false);
+  const [youtubeLink, setYoutubeLink] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const backgroundOptions = [
     { name: "Firewood", url: "/studyroom1.mp4" },
@@ -62,11 +75,10 @@ const [isDialogOpen, setIsDialogOpen] = useState(false);
   const handleMusicSelection = (url: string) => {
     setSelectedMusic(url);
     audio.src = url;
-    audio.play(); 
-    setIsMusicOptionsVisible(false); 
+    audio.play();
+    setIsMusicOptionsVisible(false);
   };
-  
-  
+
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (isRunning) {
@@ -131,100 +143,132 @@ const [isDialogOpen, setIsDialogOpen] = useState(false);
           </div>
 
           <div className="absolute top-4 right-4 flex gap-4 z-20">
-            <Button
-              variant="ghost"
-              onClick={toggleMusicOptions}
-              className="p-2 rounded-full bg-black/60 text-white"
-            >
-              {isPlaying ? <Music /> : <Music />}
-            </Button> {isMusicOptionsVisible && (
-          <div className="absolute right-0 p-2 mt-9 mr-5 w-full rounded-2xl bg-black shadow-md">
-            <ul>
-              {musicOptions.map((music, index) => (
-                <li
-                  key={index}
-                  className="cursor-pointer p-2 rounded-lg hover:bg-gray-800"
-                  onClick={() => handleMusicSelection(music.url)}
-                >
-                  {music.name}
-                </li>
-              ))}
-            </ul>
-          </div>
-          
-        )}
-            <Button
-              variant="ghost"
-              onClick={toggleBackgroundOptions}
-              className="p-2 rounded-full bg-black/60 text-white"
-            >
-              {isPlaying ? <ImagePlay /> : <ImagePlay />}
-            </Button>
-
-          {isBackgroundOptionsVisible && (
-            <div className="absolute right-0 p-2 mt-9 w-48 rounded-lg bg-black shadow-md">
-              <ul>
-                {backgroundOptions.map((bg, index) => (
-                  <li
-                    key={index}
-                    className="cursor-pointer rounded-lg p-2 hover:bg-gray-800"
-                    onClick={() => handleBackgroundSelection(bg.url)} 
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button
+                    variant="ghost"
+                    onClick={toggleMusicOptions}
+                    className="p-2 rounded-full bg-black/60 text-white"
                   >
-                    {bg.name}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-            <Button
+                    {isPlaying ? <Music /> : <Music />}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Music</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            {isMusicOptionsVisible && (
+              <div className="absolute right-0 p-2 mt-9 mr-5 w-full rounded-2xl bg-black shadow-md">
+                <ul>
+                  {musicOptions.map((music, index) => (
+                    <li
+                      key={index}
+                      className="cursor-pointer p-2 rounded-lg hover:bg-gray-800"
+                      onClick={() => handleMusicSelection(music.url)}
+                    >
+                      {music.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button
+                    variant="ghost"
+                    onClick={toggleBackgroundOptions}
+                    className="p-2 rounded-full bg-black/60 text-white"
+                  >
+                    {isPlaying ? <ImagePlay /> : <ImagePlay />}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>background</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            {isBackgroundOptionsVisible && (
+              <div className="absolute right-0 p-2 mt-9 w-48 rounded-lg bg-black shadow-md">
+                <ul>
+                  {backgroundOptions.map((bg, index) => (
+                    <li
+                      key={index}
+                      className="cursor-pointer rounded-lg p-2 hover:bg-gray-800"
+                      onClick={() => handleBackgroundSelection(bg.url)}
+                    >
+                      {bg.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+           <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+              <Button
               variant="ghost"
-              onClick={() => {
-                if (!document.fullscreenElement) {
-                  fullscreenRef.current?.requestFullscreen();
-                  setIsFullscreen(true);
-                } else {
-                  document.exitFullscreen();
-                  setIsFullscreen(false);
-                }
-              }}
+              onClick={() => setIsDialogOpen(true)}
               className="p-2 rounded-full bg-black/60 text-white"
             >
-              {isFullscreen ? <Maximize2 /> : <Maximize2 />}
+              <Search />
             </Button>
-            <Button
-  variant="ghost"
-  onClick={() => setIsDialogOpen(true)}
-  className="p-2 rounded-full bg-black/60 text-white"
->
-  <Search />
-</Button>
-{isDialogOpen && (
-  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-    <DialogContent>
-      <DialogHeader>
-        <DialogTitle>Paste YouTube Link</DialogTitle>
-      </DialogHeader>
-      <Input
-        type="text"
-        placeholder="Enter YouTube URL..."
-        value={youtubeLink}
-        onChange={(e) => setYoutubeLink(e.target.value)}
-        className="w-full p-2 border rounded-md"
-      />
-      {youtubeLink && (
-        <iframe
-          className="w-full h-60 mt-4"
-          src={`https://www.youtube.com/embed/${new URL(youtubeLink).searchParams.get("v")}`}
-          frameBorder="0"
-          allowFullScreen
-        ></iframe>
-      )}
-      <Button onClick={() => setIsDialogOpen(false)}>Close</Button>
-    </DialogContent>
-  </Dialog>
-)}
+              </TooltipTrigger>
+              <TooltipContent>Search video</TooltipContent>
+            </Tooltip>
+           </TooltipProvider>
 
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      if (!document.fullscreenElement) {
+                        fullscreenRef.current?.requestFullscreen();
+                        setIsFullscreen(true);
+                      } else {
+                        document.exitFullscreen();
+                        setIsFullscreen(false);
+                      }
+                    }}
+                    className="p-2 rounded-full bg-black/60 text-white"
+                  >
+                    {isFullscreen ? <Maximize2 /> : <Maximize2 />}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Enlarge</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
 
+            {isDialogOpen && (
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Paste YouTube Link</DialogTitle>
+                  </DialogHeader>
+                  <Input
+                    type="text"
+                    placeholder="Enter YouTube URL..."
+                    value={youtubeLink}
+                    onChange={(e) => setYoutubeLink(e.target.value)}
+                    className="w-full p-2 border rounded-md"
+                  />
+                  {youtubeLink && (
+                    <iframe
+                      className="w-full h-60 mt-4"
+                      src={`https://www.youtube.com/embed/${new URL(
+                        youtubeLink
+                      ).searchParams.get("v")}`}
+                      frameBorder="0"
+                      allowFullScreen
+                    ></iframe>
+                  )}
+                  <Button onClick={() => setIsDialogOpen(false)}>Close</Button>
+                </DialogContent>
+              </Dialog>
+            )}
           </div>
 
           <div
