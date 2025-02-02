@@ -1,3 +1,5 @@
+
+
 import React, { useState, useRef } from "react";
 import { Button } from "../ui/button";
 import {
@@ -86,18 +88,9 @@ const ChatComponent: React.FC = () => {
 
   return (
     <Card
-  className={`fixed top-13 right-0 h-[88%] p-4 bg-gray-100 rounded-lg shadow-lg transition-all ${isOpen ? "w-80 " : "w-0"}`}
+  className={`fixed top-32 mr-7 right-0 h-[75%] p-4 bg-gray-100 rounded-lg shadow-lg transition-all ${isOpen ? "w-80 " : "w-0"}`}
   style={{ zIndex: 9999, transition: "width 0.3s ease, opacity 0.3s ease" }}
 >
-  {/* Sidebar Toggle Button */}
-  <Button
-    className="absolute top-0  right-0 text-lg bg-opacity-50 rounded-full p-2 hover:bg-opacity-75 transition-all opacity-100"
-    onClick={() => setIsOpen(!isOpen)}
-  >
-    {isOpen ? <PanelRight className="h-4 w-4" /> : <PanelRight className="h-4 w-4" />}
-  </Button>
-
-  {/* Static Upper Navbar with Avatar */}
   {isOpen && (
     <CardHeader className="flex flex-row items-center border-b-2 p-3">
       <div className="flex items-center space-x-4">
@@ -141,7 +134,7 @@ const ChatComponent: React.FC = () => {
     <CardFooter className="flex flex-col space-y-2 p-2">
       {/* Reply Preview */}
       {replyToMessageId && (
-        <div className="flex items-center justify-between p-2 rounded-[10%] shadow-sm opacity-90 transition-opacity duration-300 p-2 mb-2 bg-green-100 rounded-md text-sm text-green-800">
+        <div className="flex items-center justify-between rounded-[10%] shadow-sm opacity-90 transition-opacity duration-300 p-2 mb-2 bg-green-100 text-sm text-green-800">
           <div className="text-sm italic text-gray-400 rounded-[10%] overflow-hidden whitespace-nowrap text-ellipsis max-w-full">
             <span className="font-semibold">Replying to: </span>
             {messages.find((msg) => msg.id === replyToMessageId)?.content || "Message not found"}
