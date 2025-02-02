@@ -3,49 +3,13 @@
 import { Pencil, Eraser, Type, Trash } from "lucide-react";
 import React, { useRef, useState, useEffect } from "react";
 import { Button } from "../ui/button";
-// Import Lucide icons
 
 const Whiteboard = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [drawing, setDrawing] = useState(false);
   const [tool, setTool] = useState<"pen" | "eraser" | "text">("pen");
-  const [texts, setTexts] = useState<
-    { x: number; y: number; text: string; isEditing: boolean }[]
-  >([]);
-  const [currentText, setCurrentText] = useState("");
-  const [typingPosition, setTypingPosition] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
-  const [isTyping, setIsTyping] = useState(false);
-
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (tool === "text" && typingPosition) {
-        if (e.key === "Enter") {
-          setTexts((prev) => [
-            ...prev,
-            {
-              x: typingPosition.x,
-              y: typingPosition.y,
-              text: currentText,
-              isEditing: false,
-            },
-          ]);
-          setTypingPosition(null);
-          setCurrentText("");
-          setIsTyping(false);
-        } else if (e.key === "Backspace") {
-          setCurrentText((prev) => prev.slice(0, -1));
-        } else if (e.key.length === 1) {
-          setCurrentText((prev) => prev + e.key);
-        }
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyPress);
-    return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [tool, typingPosition, currentText]);
+  const [penColor, setPenColor] = useState("#000000"); // Default Black
+  const [showColorPicker, setShowColorPicker] = useState(false);
 
   const startDrawing = (e: React.MouseEvent) => {
     if (tool !== "pen" && tool !== "eraser") return;
@@ -59,7 +23,7 @@ const Whiteboard = () => {
       ctx.lineWidth = 10;
     } else {
       ctx.globalCompositeOperation = "source-over";
-      ctx.strokeStyle = "#000";
+      ctx.strokeStyle = penColor; 
       ctx.lineWidth = 2;
     }
 
@@ -82,60 +46,64 @@ const Whiteboard = () => {
     setDrawing(false);
   };
 
-  const handleCanvasClick = (e: React.MouseEvent) => {
-    if (tool === "text") {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-
-      const canvasBounds = canvas.getBoundingClientRect();
-      const x = e.clientX - canvasBounds.left;
-      const y = e.clientY - canvasBounds.top;
-
-      setTypingPosition({ x, y });
-      setIsTyping(true);
-      setCurrentText("");
-    }
-  };
-
   const clearCanvas = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    setTexts([]);
-  };
-
-  const handleTextClick = (index: number) => {
-    const updatedTexts = [...texts];
-    updatedTexts[index].isEditing = true;
-    setTexts(updatedTexts);
-    setCurrentText(updatedTexts[index].text);
-    setTypingPosition({ x: updatedTexts[index].x, y: updatedTexts[index].y });
-    setIsTyping(true);
   };
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
-      <div className="flex gap-4 mb-3 items-center p-4 justify-center">
-        <Button
-          onClick={() => setTool("pen")}
-          className="p-2 rounded-full hover:bg-gray-600"
-        >
-          <Pencil className="h-5 w-5 text-black" />
-        </Button>
+      {/* Toolbar */}
+      <div className="flex gap-4 mb-3 items-center p-4 justify-center relative">
+        {/* Pen Tool */}
+        <div className="relative">
+          <Button
+            onClick={() => setShowColorPicker(!showColorPicker)}
+            className="p-2 rounded-full hover:bg-gray-600"
+          >
+            <Pencil className="h-5 w-5 text-black" />
+          </Button>
+
+          {/* Color Picker (Toggled on Click) */}
+          {showColorPicker && (
+            <div className="absolute top-12 left-1/2 transform -translate-x-1/2 bg-white shadow-lg p-2 rounded-lg flex gap-2">
+              {["#000000", "#FF0000", "#00FF00", "#0000FF", "#FFA500"].map(
+                (color) => (
+                  <button
+                    key={color}
+                    className="w-6 h-6 rounded-full border"
+                    style={{ backgroundColor: color }}
+                    onClick={() => {
+                      setPenColor(color);
+                      setShowColorPicker(false);
+                    }}
+                  />
+                )
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Eraser Tool */}
         <Button
           onClick={() => setTool("eraser")}
           className="p-2 rounded-full hover:bg-gray-600"
         >
           <Eraser className="h-5 w-5 text-black" />
         </Button>
+
+        {/* Text Tool */}
         <Button
           onClick={() => setTool("text")}
           className="p-2 rounded-full hover:bg-gray-600"
         >
           <Type className="h-5 w-5 text-black" />
         </Button>
+
+        {/* Clear Canvas */}
         <Button
           onClick={clearCanvas}
           className="p-2 rounded-full hover:bg-gray-600"
@@ -143,47 +111,18 @@ const Whiteboard = () => {
           <Trash className="h-5 w-5 text-black" />
         </Button>
       </div>
-      <div className="relative flex gap-4 items-center justify-center p-6 w-full">
-        <canvas
-          ref={canvasRef}
-          width={1100}
-          height={600}
-          className="border rounded-2xl bg-white"
-          onMouseDown={startDrawing}
-          onMouseMove={draw}
-          onMouseUp={stopDrawing}
-          onMouseLeave={stopDrawing}
-          onClick={handleCanvasClick}
-        />
-        {texts.map((item, index) => (
-          <span
-            key={index}
-            className={`absolute text-black cursor-pointer ${
-              item.isEditing ? "border-b-2" : ""
-            }`}
-            style={{
-              left: item.x,
-              top: item.y,
-              transform: "translate(-50%, -50%)",
-            }}
-            onClick={() => handleTextClick(index)}
-          >
-            {item.text}
-          </span>
-        ))}
-        {isTyping && typingPosition && (
-          <span
-            className="absolute text-black"
-            style={{
-              left: typingPosition.x,
-              top: typingPosition.y,
-              transform: "translate(-50%, -50%)",
-            }}
-          >
-            {currentText || "|"}
-          </span>
-        )}
-      </div>
+
+      {/* Canvas */}
+      <canvas
+        ref={canvasRef}
+        width={1100}
+        height={600}
+        className="border rounded-2xl bg-white"
+        onMouseDown={startDrawing}
+        onMouseMove={draw}
+        onMouseUp={stopDrawing}
+        onMouseLeave={stopDrawing}
+      />
     </div>
   );
 };
