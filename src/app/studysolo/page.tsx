@@ -26,7 +26,7 @@ export default function SoloStudy() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedBackground, setSelectedBackground] =
-    useState("/studyroom2.mp4");
+    useState("/studyroom5.mp4");
     const fullscreenRef = useRef<HTMLDivElement>(null);
     const [isBackgroundOptionsVisible, setIsBackgroundOptionsVisible] = useState(false);
   const backgroundOptions = [
@@ -34,6 +34,8 @@ export default function SoloStudy() {
     { name: "Focus", url: "/studyroom2.mp4" },
     { name: "Nature", url: "/studyroom3.mp4" },
     { name: "Spiral", url: "/studyroom4.mp4" },
+    { name: "Study", url: "/studyroom5.mp4" },
+    { name: "Coffee", url: "/studyroom6.mp4" },
   ];
   const musicOptions = [
     { name: "Rainfall", url: "/rainfall.mp3" },
@@ -161,7 +163,7 @@ export default function SoloStudy() {
                   <li
                     key={index}
                     className="cursor-pointer rounded-lg p-2 hover:bg-gray-800"
-                    onClick={() => handleBackgroundSelection(bg.url)} // Handle background change
+                    onClick={() => handleBackgroundSelection(bg.url)} 
                   >
                     {bg.name}
                   </li>
