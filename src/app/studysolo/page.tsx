@@ -5,11 +5,12 @@ import SidebarMenu from "@/components/menu/sidebarmenu";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { ImagePlay } from "lucide-react";
+import { ImagePlay, Search } from "lucide-react";
 import {
   menuItemsBottom,
   menuItemsTop,
 } from "@/config/menuItems/dashboardMenuItem";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Maximize2 } from "lucide-react";
 import { CircleX } from "lucide-react";
 import { Music } from "lucide-react";
@@ -29,6 +30,9 @@ export default function SoloStudy() {
     useState("/studyroom5.mp4");
     const fullscreenRef = useRef<HTMLDivElement>(null);
     const [isBackgroundOptionsVisible, setIsBackgroundOptionsVisible] = useState(false);
+    const [youtubeLink, setYoutubeLink] = useState("");
+const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const backgroundOptions = [
     { name: "Firewood", url: "/studyroom1.mp4" },
     { name: "Focus", url: "/studyroom2.mp4" },
@@ -147,6 +151,7 @@ export default function SoloStudy() {
               ))}
             </ul>
           </div>
+          
         )}
             <Button
               variant="ghost"
@@ -186,6 +191,40 @@ export default function SoloStudy() {
             >
               {isFullscreen ? <Maximize2 /> : <Maximize2 />}
             </Button>
+            <Button
+  variant="ghost"
+  onClick={() => setIsDialogOpen(true)}
+  className="p-2 rounded-full bg-black/60 text-white"
+>
+  <Search />
+</Button>
+{isDialogOpen && (
+  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Paste YouTube Link</DialogTitle>
+      </DialogHeader>
+      <Input
+        type="text"
+        placeholder="Enter YouTube URL..."
+        value={youtubeLink}
+        onChange={(e) => setYoutubeLink(e.target.value)}
+        className="w-full p-2 border rounded-md"
+      />
+      {youtubeLink && (
+        <iframe
+          className="w-full h-60 mt-4"
+          src={`https://www.youtube.com/embed/${new URL(youtubeLink).searchParams.get("v")}`}
+          frameBorder="0"
+          allowFullScreen
+        ></iframe>
+      )}
+      <Button onClick={() => setIsDialogOpen(false)}>Close</Button>
+    </DialogContent>
+  </Dialog>
+)}
+
+
           </div>
 
           <div

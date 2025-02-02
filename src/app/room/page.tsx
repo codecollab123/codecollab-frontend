@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Search } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Link as Linking } from "lucide-react";
 import {
@@ -91,10 +92,9 @@ export default function CodingRoom() {
           </DialogContent>
         </Dialog>
 
-        {/* Main Coding Section */}
+       
         <main className="flex flex-1 flex-col items-center p-4 sm:px-6 sm:py-0">
           <div className="flex flex-1 w-full p-6 space-x-6">
-            {/* Compiler Section */}
             <Card className="flex-1 p-4 h-full ml-6">
               <h2 className="text-lg font-semibold mb-2">Compiler</h2>
               <Textarea
@@ -102,9 +102,7 @@ export default function CodingRoom() {
                 placeholder="Write your code here..."
               />
             </Card>
-            {/* Input & Output Section */}
             <div className="flex flex-col w-[350px] space-y-6">
-              {/* Input Section */}
               <Card className="p-4 h-[50%]">
                 <h2 className="text-lg font-semibold mb-2">Input</h2>
                 <Textarea
@@ -113,7 +111,6 @@ export default function CodingRoom() {
                 />
               </Card>
 
-              {/* Output Section */}
               <Card className="p-4 h-[50%]">
                 <h2 className="text-lg font-semibold mb-2">Output</h2>
                 <Textarea
@@ -123,7 +120,6 @@ export default function CodingRoom() {
                 />
               </Card>
 
-              {/* Run Button */}
               <Button className="w-full">Run Code</Button>
             </div>
           </div>
