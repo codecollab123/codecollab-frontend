@@ -3,7 +3,7 @@ import React from 'react';
 import CollapsibleSidebarMenu from '../menu/collapsibleSidebar';
 import { MenuItem } from '../menu/sidebarmenu';
 import Breadcrumb from '../shared/breadcrumbList';
-
+import DropdownProfile from '../shared/DropdownProfile';
 
 interface HeaderProps {
   menuItemsTop: MenuItem[];
@@ -36,9 +36,8 @@ const Header: React.FC<HeaderProps> = ({
       {/* Breadcrumb Navigation */}
       <Breadcrumb items={breadcrumbItems} />
 
-
       {/* Profile Dropdown */}
-      {/* <DropdownProfile /> */}
+     <div className='ml-auto'> <DropdownProfile /></div>
     </header>
   );
 };
