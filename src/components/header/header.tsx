@@ -36,7 +36,6 @@ const Header: React.FC<HeaderProps> = ({
       {/* Breadcrumb Navigation */}
       <Breadcrumb items={breadcrumbItems} />
 
-
       {/* Profile Dropdown */}
      <div className='ml-auto'> <DropdownProfile /></div>
     </header>
