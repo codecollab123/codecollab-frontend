@@ -1,4 +1,5 @@
 "use client";
+
 import Header from "@/components/header/header";
 import SidebarMenu from "@/components/menu/sidebarmenu";
 import React, { useState } from "react";
@@ -24,6 +25,11 @@ import {
 } from "@/config/menuItems/dashboardMenuItem";
 import { Note } from "@/utils/type/note";
 import { EllipsisVertical } from "lucide-react";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
+import { Card } from "../ui/card";
+import { CreateNoteDialog } from "../shared/CreateNoteDialog"; // Correct import for dialog
+
 type NotesComponentProps = {
   notes: Note[];
   onCreateNote: (note: Note) => void;
@@ -36,17 +42,22 @@ const NotesComponent: React.FC<NotesComponentProps> = ({
   onUpdateNote,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedSortOption, setSelectedSortOption] = useState<string>("title");
+  const [selectedSortOption, setSelectedSortOption] = useState<string>("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false); // Dialog state
 
   // Sorting logic
-  const sortedNotes = [...notes].sort((a, b) => {
-    if (selectedSortOption === "title") {
-      return a.title.localeCompare(b.title);
-    } else if (selectedSortOption === "date") {
-      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-    }
-    return 0;
-  });
+  const sortedNotes = selectedSortOption
+    ? [...notes].sort((a, b) => {
+        if (selectedSortOption === "title") {
+          return a.title.localeCompare(b.title);
+        } else if (selectedSortOption === "date") {
+          return (
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
+        }
+        return 0;
+      })
+    : notes;
 
   const handleEditNote = (noteId: string) => {
     const updatedNote = notes.find((note) => note._id === noteId);
@@ -66,9 +77,9 @@ const NotesComponent: React.FC<NotesComponentProps> = ({
   const handleCreateNote = () => {
     const newNote: Note = {
       _id: `note-${Date.now()}`,
-      title: "Untitled Note",
-      content: "Write something here...",
-      bgColor: "#FFFFFF",
+      title: "",
+      content: "",
+      bgColor: "",
       banner: "",
       type: "PERSONAL",
       noteType: "NOTE",
@@ -96,6 +107,7 @@ const NotesComponent: React.FC<NotesComponentProps> = ({
       onUpdateNote(newNote);
     }
   };
+
   return (
     <div className="flex h-screen">
       <div className="w-30 p-4">
@@ -118,23 +130,22 @@ const NotesComponent: React.FC<NotesComponentProps> = ({
               { label: "Notes", link: "/dashboard/notes" },
             ]}
           />
-          </div>
-          <div className="flex justify-between items-center mb-5">
-         <div >
+        </div>
+        <div className="flex justify-between items-center mb-5">
+          <div>
             <h1 className="text-3xl font-bold">Notes</h1>
             <p className="text-gray-400 mt-2 hidden md:block">
               Organize your thoughts and ideas. Add, view, and manage your
               personal notes with ease.
             </p>
-            </div>
-       
-            <Button onClick={handleCreateNote}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create Note
-            </Button>
-    
           </div>
-      
+
+          <Button onClick={() => setIsDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Note
+          </Button>
+        </div>
+
         {/* Sort Options */}
         <div className="flex gap-4 mb-6">
           <Button
@@ -158,6 +169,7 @@ const NotesComponent: React.FC<NotesComponentProps> = ({
             Sort by Date
           </Button>
         </div>
+
         {/* Notes List */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {isLoading ? (
@@ -166,15 +178,51 @@ const NotesComponent: React.FC<NotesComponentProps> = ({
             </div>
           ) : sortedNotes.length > 0 ? (
             sortedNotes.map((note) => (
-              <div
+              <Card
                 key={note._id}
-                className="p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                style={{ backgroundColor: note.bgColor || "#FFFFFF" }}
+                className="relative p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow min-h-[150px] max-h-[400px] overflow-hidden bg-cover bg-center"
+                style={{
+                  backgroundColor: note.bgColor || "#FFFFFF",
+                  backgroundImage: note.banner ? `url(${note.banner})` : "none",
+                  backgroundSize: "cover", // Ensures the image fully covers the card
+                  backgroundPosition: "center", // Centers the image
+                  backgroundRepeat: "no-repeat", // Prevents repeating
+                }}
               >
-                <h2 className="font-semibold text-lg  text-gray-800">
-                  {note.title}
-                </h2>
-                <p className="text-sm text-gray-600 mt-2">{note.content}</p>
+                <Input
+                  type="text"
+                  className="font-semibold text-lg text-gray-800 bg-transparent border-none outline-none w-full"
+                  value={note.title}
+                  onChange={(e) =>
+                    onUpdateNote({
+                      ...note,
+                      title: e.target.value,
+                      updatedAt: new Date(),
+                    })
+                  }
+                  placeholder="Untitled Note"
+                />
+
+                <div
+                  className={`text-sm text-gray-600 mt-2 bg-transparent border-none outline-none w-full resize-none overflow-hidden ${
+                    note.content.length > 100
+                      ? "max-h-[300px] overflow-auto scrollbar-none"
+                      : ""
+                  }`}
+                >
+                  <Textarea
+                    className="w-full bg-transparent border-none outline-none resize-none"
+                    value={note.content}
+                    onChange={(e) =>
+                      onUpdateNote({
+                        ...note,
+                        content: e.target.value,
+                        updatedAt: new Date(),
+                      })
+                    }
+                    placeholder="Write something here..."
+                  />
+                </div>
 
                 {/* HoverCard for Banner Changer */}
                 <HoverCard>
@@ -224,21 +272,23 @@ const NotesComponent: React.FC<NotesComponentProps> = ({
                       />
                     </button>
                   </HoverCardTrigger>
-                  <HoverCardContent className="shadow-md p-1 rounded-md w-10 flex flex-col gap-2">
+                  <HoverCardContent className="shadow-md p-8 rounded-md w-10 flex flex-col gap-2 items-center">
                     {/* Options Menu for Edit and Delete inside HoverCardContent */}
                     <button
-                      className="p-2 text-black mt-4"
+                      className="p-2 text-white mt-4"
                       onClick={() => handleEditNote(note._id)}
                     >
+                      Edit
                       <FilePenLine
                         size={18}
                         className="cursor-pointer transition-all duration-200 text-white"
                       />
                     </button>
                     <button
-                      className="p-2 text-black"
+                      className="p-2 text-white"
                       onClick={() => handleDeleteNote(note._id)}
                     >
+                      Delete
                       <Trash2
                         size={18}
                         className="cursor-pointer transition-all duration-200 text-white "
@@ -246,7 +296,7 @@ const NotesComponent: React.FC<NotesComponentProps> = ({
                     </button>
                   </HoverCardContent>
                 </HoverCard>
-              </div>
+              </Card>
             ))
           ) : (
             <div className="flex justify-center items-center h-[40vh] w-full">
@@ -255,6 +305,14 @@ const NotesComponent: React.FC<NotesComponentProps> = ({
           )}
         </div>
       </div>
+
+      {/* Create Note Dialog */}
+      {isDialogOpen && (
+        <CreateNoteDialog
+          onNoteCreate={onCreateNote}
+          onClose={() => setIsDialogOpen(false)} // Close dialog
+        />
+      )}
     </div>
   );
 };
