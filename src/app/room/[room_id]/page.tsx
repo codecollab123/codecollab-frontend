@@ -37,8 +37,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { TooltipContent } from "@/components/ui/tooltip";
 import { Editor } from "@monaco-editor/react"; // Import Monaco Editor
+import { useParams } from "next/navigation";
 
 export default function CodingRoom() {
+  const { room_id } = useParams<{ room_id: string }>();
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -156,7 +158,7 @@ export default function CodingRoom() {
               <Editor
                 height="580px"
                 defaultLanguage={selectedLanguage}
-                defaultValue="// Start coding..."
+                defaultValue="//start from here"
                 theme="vs-dark"
                 onChange={handleEditorChange}
               />
@@ -181,7 +183,7 @@ export default function CodingRoom() {
 
               <Button
                 className="w-full"
-                onClick={() => console.log("Running code:", code)}
+                onClick={() => console.log("Running code:", code, room_id)}
               >
                 Run Code
               </Button>
