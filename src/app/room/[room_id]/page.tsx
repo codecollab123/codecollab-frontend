@@ -36,14 +36,23 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { TooltipContent } from "@/components/ui/tooltip";
+import { Editor } from "@monaco-editor/react"; // Import Monaco Editor
+import { useParams } from "next/navigation";
 
 export default function CodingRoom() {
+  const { room_id } = useParams<{ room_id: string }>();
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState("C++");
+  const [selectedLanguage, setSelectedLanguage] = useState("javascript");
+  const [code, setCode] = useState(""); // State for editor content
 
-  const languages = ["C", "C++", "Java", "Python", "JavaScript", "Go", "Rust"];
+  const languages = ["c", "cpp", "java", "python", "javascript", "go", "rust"];
+
+  const handleEditorChange = (value: any) => {
+    setCode(value || "");
+  };
+
   return (
     <div className="flex min-h-screen w-full bg-muted/40">
       <SidebarMenu
@@ -146,9 +155,12 @@ export default function CodingRoom() {
           <div className="flex flex-1 w-full p-6 space-x-6">
             <Card className="flex-1 p-4 h-full ml-6">
               <h2 className="text-lg font-semibold mb-2">Compiler</h2>
-              <Textarea
-                className="w-full h-full"
-                placeholder="Write your code here..."
+              <Editor
+                height="580px"
+                defaultLanguage={selectedLanguage}
+                defaultValue="//start from here"
+                theme="vs-dark"
+                onChange={handleEditorChange}
               />
             </Card>
             <div className="flex flex-col w-[350px] space-y-6">
@@ -169,7 +181,12 @@ export default function CodingRoom() {
                 />
               </Card>
 
-              <Button className="w-full">Run Code</Button>
+              <Button
+                className="w-full"
+                onClick={() => console.log("Running code:", code, room_id)}
+              >
+                Run Code
+              </Button>
             </div>
           </div>
         </main>
