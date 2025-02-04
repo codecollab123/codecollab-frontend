@@ -5,7 +5,12 @@ import SidebarMenu from "@/components/menu/sidebarmenu";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { ImagePlay, Search } from "lucide-react";
+import {
+  ImagePlay,
+  MessageSquare,
+  MessageSquareQuote,
+  Search,
+} from "lucide-react";
 import {
   menuItemsBottom,
   menuItemsTop,
@@ -44,15 +49,19 @@ export default function SoloStudy() {
   const [isBackgroundOptionsVisible, setIsBackgroundOptionsVisible] =
     useState(false);
   const [youtubeLink, setYoutubeLink] = useState("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  const [quote, setQuote] = useState("");
+  const [savedQuotes, setSavedQuotes] = useState<string[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isQuoteDialogOpen, setIsQuoteDialogOpen] = useState(false);
   const backgroundOptions = [
-    { name: "Firewood", url: "/studyroom1.mp4" },
-    { name: "Focus", url: "/studyroom2.mp4" },
-    { name: "Nature", url: "/studyroom3.mp4" },
-    { name: "Spiral", url: "/studyroom4.mp4" },
-    { name: "Study", url: "/studyroom5.mp4" },
-    { name: "Coffee", url: "/studyroom6.mp4" },
+    { name: "Ember Glow", url: "/studyroom1.mp4" },
+    { name: "Serene Focus", url: "/studyroom2.mp4" },
+    { name: "Whispering Woods", url: "/studyroom3.mp4" },
+    { name: "Golden Spiral", url: "/studyroom4.mp4" },
+    { name: "Scholarly Haven", url: "/studyroom5.mp4" },
+    { name: "Caffeine Comfort", url: "/studyroom6.mp4" },
+    { name: "Rainy Reverie", url: "/studyroom7.mp4" },
   ];
   const musicOptions = [
     { name: "Rainfall", url: "/rainfall.mp3" },
@@ -62,6 +71,13 @@ export default function SoloStudy() {
   ];
   const toggleBackgroundOptions = () => {
     setIsBackgroundOptionsVisible(!isBackgroundOptionsVisible);
+  };
+  const handleAddQuote = () => {
+    if (quote.trim()) {
+      setSavedQuotes((prevQuotes) => [...prevQuotes, quote]);
+      setQuote("");
+      setIsQuoteDialogOpen(false);
+    }
   };
 
   // Function to handle background selection
@@ -204,20 +220,69 @@ export default function SoloStudy() {
                 </ul>
               </div>
             )}
-           <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-              <Button
-              variant="ghost"
-              onClick={() => setIsDialogOpen(true)}
-              className="p-2 rounded-full bg-black/60 text-white"
-            >
-              <Search />
-            </Button>
-              </TooltipTrigger>
-              <TooltipContent>Search video</TooltipContent>
-            </Tooltip>
-           </TooltipProvider>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button
+                    variant="ghost"
+                    onClick={() => setIsDialogOpen(true)}
+                    className="p-2 rounded-full bg-black/60 text-white"
+                  >
+                    <Search />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Search video</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+           
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setIsQuoteDialogOpen(true);
+                    }}
+                    className="p-2 rounded-full bg-black/60 text-white"
+                  >
+                    <MessageSquareQuote />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Motivational Quotes</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            {/* Dialog for entering a quote */}
+            {isQuoteDialogOpen && (
+              <Dialog
+                open={isQuoteDialogOpen}
+                onOpenChange={setIsQuoteDialogOpen}
+              >
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Enter Motivational Quote</DialogTitle>
+                  </DialogHeader>
+                  <Input
+                    type="text"
+                    placeholder="You are exceptional..."
+                    value={quote}
+                    onChange={(e) => setQuote(e.target.value)}
+                    className="w-full p-2 border rounded-md"
+                  />
+                  <div className="flex justify-end gap-2 mt-2">
+                    <Button
+                      onClick={() => {
+                        setIsQuoteDialogOpen(false);
+                      }}
+                    >
+                      Add
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
+      
 
             <TooltipProvider>
               <Tooltip>
@@ -270,7 +335,7 @@ export default function SoloStudy() {
               </Dialog>
             )}
           </div>
-
+     
           <div
             className="absolute z-10 bg-black/50 p-6 rounded-lg text-white"
             style={{ left: "80px", top: "calc(20px + 170px)" }}
@@ -299,8 +364,24 @@ export default function SoloStudy() {
                 </li>
               ))}
             </ul>
+           
           </div>
+          {quote.trim() && (
+  <div
+    className="absolute z-10 text-white italic text-2xl font-bold text-center w-full px-4"
+    style={{
+      top: "40%", 
+      left: "80%", 
+      transform: "translate(-50%, -50%)",
+      textShadow: "2px 2px 4px rgba(0, 0, 0, 0.8)", 
+    }}
+  >
+    "{quote}"
+  </div>
+)}
+
         </div>
+   
       </div>
     </div>
   );
