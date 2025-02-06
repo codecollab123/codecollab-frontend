@@ -22,7 +22,7 @@ import { MessageCircle } from "lucide-react";
 import { UserPlus } from "lucide-react";
 import { NotebookPen } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Tooltip,
@@ -38,6 +38,8 @@ import {
 import { TooltipContent } from "@/components/ui/tooltip";
 import { Editor } from "@monaco-editor/react"; // Import Monaco Editor
 import { useParams } from "next/navigation";
+import { initSocket } from "@/service/socket";
+import { Socket } from "socket.io-client";
 
 export default function CodingRoom() {
   const { room_id } = useParams<{ room_id: string }>();
@@ -46,8 +48,27 @@ export default function CodingRoom() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("javascript");
   const [code, setCode] = useState(""); // State for editor content
-
   const languages = ["c", "cpp", "java", "python", "javascript", "go", "rust"];
+  const socketRef = useRef<Socket | null>(null);
+
+  useEffect(() => {
+    const init = async() => {
+      socketRef.current = await initSocket();
+
+      socketRef.current.on('connect_error', (err) => handleErrors(err));
+      socketRef.current.on('connect_failed', (err) => handleErrors(err));
+
+      function handleErrors(e: any) {
+        console.log(`socket error: ${e}`);
+      }
+
+      socketRef.current.emit('join', {
+        room_id,
+        userName: 'tushar',
+      });
+    }
+    init();
+  }, []);
 
   const handleEditorChange = (value: any) => {
     setCode(value || "");
