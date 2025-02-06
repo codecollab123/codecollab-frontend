@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { Provider } from "react-redux";
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { ThemeProvider } from '@/components/theme-provider';
+import { AuthProvider } from './AuthContext';
+import StoreProvider from "./storeProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -26,9 +29,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <StoreProvider>
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <ThemeProvider
+      <AuthProvider>
+      <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
@@ -36,7 +41,9 @@ export default function RootLayout({
         >
           <TooltipProvider>{children}</TooltipProvider>
         </ThemeProvider>
+      </AuthProvider>
       </body>
     </html>
+    </StoreProvider>
   );
 }
