@@ -2,7 +2,7 @@
 
 import Header from "@/components/header/header";
 import SidebarMenu from "@/components/menu/sidebarmenu";
-import Chat from "@/components/shared/chat";
+// import Chat from "@/components/shared/chat";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -122,7 +122,7 @@ export default function CodingRoom() {
             </Tooltip>
           </TooltipProvider>
         </div>
-        {isChatOpen && <Chat />}
+        {/* {isChatOpen && <Chat />} */}
         <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
           <DialogContent>
             <DialogHeader>
