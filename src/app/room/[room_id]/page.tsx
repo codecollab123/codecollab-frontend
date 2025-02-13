@@ -2,7 +2,7 @@
 
 import Header from "@/components/header/header";
 import SidebarMenu from "@/components/menu/sidebarmenu";
-// import Chat from "@/components/shared/chat";
+import Chat from "@/components/shared/chat";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -51,6 +51,7 @@ export default function CodingRoom() {
   const languages = ["c", "cpp", "java", "python", "javascript", "go", "rust"];
   const socketRef = useRef<Socket | null>(null);
 
+
   useEffect(() => {
     const init = async() => {
       socketRef.current = await initSocket();
@@ -61,14 +62,15 @@ export default function CodingRoom() {
       function handleErrors(e: any) {
         console.log(`socket error: ${e}`);
       }
+      if (!room_id) return;
 
       socketRef.current.emit('join', {
         room_id,
-        userName: 'tushar',
+        userName: 'Host',
       });
     }
     init();
-  }, []);
+  }, [room_id]);
 
   const handleEditorChange = (value: any) => {
     setCode(value || "");
@@ -122,7 +124,7 @@ export default function CodingRoom() {
             </Tooltip>
           </TooltipProvider>
         </div>
-        {/* {isChatOpen && <Chat />} */}
+        {isChatOpen && <Chat />}
         <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
           <DialogContent>
             <DialogHeader>
