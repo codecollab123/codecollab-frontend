@@ -1,6 +1,5 @@
 'use client';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { User } from 'firebase/auth';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 
@@ -9,8 +8,18 @@ import { initializeAxiosWithToken } from '@/lib/axiosinstance';
 import { auth } from '@/config/firebaseConfig';
 
 interface AuthContextProps {
-  user: User | null;
+  user: SerializableUser | null;
   loading: boolean;
+}
+
+interface SerializableUser {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+  emailVerified: boolean;
+  phoneNumber: string | null;
+  type: unknown;
 }
 
 const AuthContext = createContext<AuthContextProps>({
@@ -20,7 +29,7 @@ const AuthContext = createContext<AuthContextProps>({
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
-  const [user, setUserState] = useState<User | null>(null);
+  const [user, setUserState] = useState<SerializableUser | null>(null);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
@@ -29,23 +38,44 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const storedToken = localStorage.getItem('token');
 
     if (storedUser && storedToken) {
-      const parsedUser = JSON.parse(storedUser);
-      setUserState(parsedUser);
-      initializeAxiosWithToken(storedToken);
-      dispatch(setUser(parsedUser));
+      try {
+        const parsedUser: SerializableUser = JSON.parse(storedUser);
+        setUserState(parsedUser);
+        initializeAxiosWithToken(storedToken);
+        dispatch(setUser(parsedUser));
+      } catch (error) {
+        console.error('Error parsing stored user:', error);
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+      }
       setLoading(false);
     }
 
     const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
       if (firebaseUser) {
-        const accessToken = await firebaseUser.getIdToken();
-        const claims = await firebaseUser.getIdTokenResult();
-        const userData = { ...firebaseUser, type: claims.claims.type };
-        localStorage.setItem('user', JSON.stringify(userData));
-        localStorage.setItem('token', accessToken);
-        setUserState(userData);
-        initializeAxiosWithToken(accessToken);
-        dispatch(setUser(userData));
+        try {
+          const accessToken = await firebaseUser.getIdToken();
+          const claims = await firebaseUser.getIdTokenResult();
+
+          // ✅ Now userData has the correct type
+          const userData: SerializableUser = {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            displayName: firebaseUser.displayName,
+            photoURL: firebaseUser.photoURL,
+            emailVerified: firebaseUser.emailVerified,
+            phoneNumber: firebaseUser.phoneNumber,
+            type: claims.claims.type,
+          };
+
+          localStorage.setItem('user', JSON.stringify(userData));
+          localStorage.setItem('token', accessToken);
+          setUserState(userData);
+          initializeAxiosWithToken(accessToken);
+          dispatch(setUser(userData));
+        } catch (error) {
+          console.error('Error processing Firebase user:', error);
+        }
       } else {
         localStorage.removeItem('user');
         localStorage.removeItem('token');
