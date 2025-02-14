@@ -50,7 +50,7 @@ export default function CodingRoom() {
   const [code, setCode] = useState(""); // State for editor content
   const languages = ["c", "cpp", "java", "python", "javascript", "go", "rust"];
   const socketRef = useRef<Socket | null>(null);
-
+  const [users, setUsers] = useState<{ socketId: string; userName: string }[]>([]);
 
   useEffect(() => {
     const init = async() => {
@@ -68,9 +68,20 @@ export default function CodingRoom() {
         room_id,
         userName: 'Host',
       });
+      socketRef.current.on("user_joined", ({ users }) => {
+        setUsers(users);
+      });
+      socketRef.current.on("room_full", ({ message }) => {
+        alert(message);
+      });
     }
     init();
+    return () => {
+      socketRef.current?.disconnect();
+    };
   }, [room_id]);
+
+  // }, [room_id]);
 
   const handleEditorChange = (value: any) => {
     setCode(value || "");
@@ -174,7 +185,12 @@ export default function CodingRoom() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-
+          <div>
+            <h2>Users in Room: {users.length}/5</h2>
+            {users.map((user) => (
+              <p key={user.socketId}>{user.userName || "Unknown User"}</p>
+            ))}
+          </div>
           <div className="flex flex-1 w-full p-6 space-x-6">
             <Card className="flex-1 p-4 h-full ml-6">
               <h2 className="text-lg font-semibold mb-2">Compiler</h2>
