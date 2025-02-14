@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
   ImagePlay,
-  MessageSquare,
   MessageSquareQuote,
   Search,
 } from "lucide-react";
@@ -17,7 +16,6 @@ import {
 } from "@/config/menuItems/dashboardMenuItem";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
