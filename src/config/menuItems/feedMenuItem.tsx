@@ -15,7 +15,7 @@ export const menuItemsTop: MenuItem[] = [
   {
     href: "#",
     icon: <Boxes className="h-4 w-4 transition-all group-hover:scale-110" />,
-    label: "Coding Collab",
+    label: "Dehix",
   },
   {
     href: "/dashboard",
@@ -23,30 +23,34 @@ export const menuItemsTop: MenuItem[] = [
     label: "Dashboard",
   },
   {
-    href: "/room",
-    icon: <Laptop className="h-5 w-5" />,
-    label: "Coding Room",
+    href: "dashboard/feed",
+    icon: <Boxes className="h-4 w-4 transition-all group-hover:scale-110" />,
+    label: "Coding Collab",
   },
   {
-    href: "/chat",
-    icon: <MessageSquare className="h-5 w-5" />,
-    label: "Chats",
+    href: "/dashboard/profiles",
+    icon: <Home className="h-5 w-5" />,
+    label: "Dashboard",
+  }, {
+    href: "/dashboard/activity",
+    icon: <Home className="h-5 w-5" />,
+    label: "Dashboard",
   },
-  {
-    href: "/notes",
-    icon: <StickyNote className="h-5 w-5" />,
-    label: "Notes",
-  },
-  {
-    href: "/studysolo",
-    icon: <BookOpen className="h-5 w-5" />,
-    label: "Study Solo",
-  },
+  //   {
+  //     href: "/dashboard/",
+  //     icon: <Laptop className="h-5 w-5" />,
+  //     label: "Coding Room",
+  //   },
+  //   {
+  //     href: "/studysolo",
+  //     icon: <BookOpen className="h-5 w-5" />,
+  //     label: "Study Solo",
+  //   },
 ];
 
 export const menuItemsBottom: MenuItem[] = [
   {
-    href: "/settings/personalInfo", //
+    href: "/settings/personalInfo",
     icon: <Settings className="h-5 w-5" />,
     label: "Settings",
   },

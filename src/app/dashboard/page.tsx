@@ -1,11 +1,27 @@
 "use client";
-
-import Header from "@/components/header/header";
 import SidebarMenu from "@/components/menu/sidebarmenu";
-import React from 'react'
+import Header from "@/components/header/header";
+import {
+  menuItemsBottom,
+  menuItemsTop,
+} from "@/config/menuItems/dashboardMenuItem";
 
-export default function Dashbaord() {
-return(
-    <div className="flex min-h-screen w-full bg-muted/40"></div>
-)
+export default function Dashboard() {
+  return (
+    <div>
+      <SidebarMenu
+        menuItemsTop={menuItemsTop}
+        menuItemsBottom={menuItemsBottom}
+        active=""
+      />
+      <Header
+        menuItemsTop={menuItemsTop}
+        menuItemsBottom={menuItemsBottom}
+        activeMenu="Projects"
+        breadcrumbItems={[
+          { label: "dashboard", link: "/dashboard" },
+        ]}
+      />
+    </div>
+  );
 }

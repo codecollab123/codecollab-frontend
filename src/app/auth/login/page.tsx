@@ -43,7 +43,7 @@ export default function LoginPage() {
           })
         );
 
-        router.replace(`/dashboard/${claims.type}`);
+        router.replace(`/dashboard`);
         toast({
           title: 'Login Successful',
           description: 'You have successfully logged in.',
@@ -74,7 +74,7 @@ export default function LoginPage() {
       const { user, claims } = await getUserData(userCredential);
 
       dispatch(setUser({ ...user, type: claims.type }));
-      router.replace(`/dashboard/${claims.type}`);
+      router.replace(`/dashboard`);
       toast({
         title: 'Login Successful',
         description: 'You have successfully logged in with Google.',

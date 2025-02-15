@@ -36,34 +36,36 @@ export function CreateRoom({ className, ...props }: React.ComponentPropsWithoutR
   const [userName, setUserName] = useState("");
   const [showRoomID, setShowRoomID] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [users, setUsers] = useState<{ socketId: string; userName: string }[]>([]); // Store users in room
 
   useEffect(() => {
     socket.on("connect", () => console.log("Connected to WebSocket server", socket.id));
-    socket.on("user_joined", ({ clients }) => console.log("User Joined:", clients));
+
+    // Listen for user list updates
+    socket.on("user_joined", ({ clients }) => {
+      console.log("Users in room:", clients);
+      setUsers(clients); // Update users state
+    });
 
     return () => {
       socket.off("user_joined");
     };
   }, []);
 
-  // Create a Room ID but do not enter automatically
   const handleCreateRoom = () => {
     const newRoomID = uuidv4();
     setRoomID(newRoomID);
     setShowRoomID(true);
     localStorage.setItem("roomID", newRoomID);
 
-    // Host joins the room but does not redirect
     socket.emit("join", { room_id: newRoomID, userName: "host" });
   };
 
-  // Explicitly enter room on button click
   const handleEnterRoom = () => {
     if (!roomID) return alert("No Room ID available.");
     router.push(`/room/${roomID}`);
   };
 
-  // Join a Room using a user-entered ID
   const handleJoinRoom = () => {
     if (!roomID || !userName) return alert("Please enter a Room ID and Username.");
 
@@ -71,7 +73,6 @@ export function CreateRoom({ className, ...props }: React.ComponentPropsWithoutR
     router.push(`/room/${roomID}`);
   };
 
-  // Copy Room ID to clipboard
   const copyToClipboard = () => {
     navigator.clipboard.writeText(roomID);
     setCopied(true);
@@ -102,6 +103,11 @@ export function CreateRoom({ className, ...props }: React.ComponentPropsWithoutR
               <Button className="w-full mt-4" onClick={handleEnterRoom}>
                 Enter Room
               </Button>
+
+              {/* Show user count */}
+              <p className="mt-2 text-sm text-gray-600">
+                {users.length} {users.length === 1 ? "user" : "users"} in the room
+              </p>
             </div>
           )}
 
