@@ -13,7 +13,8 @@ import {
   menuItemsBottom,
   menuItemsTop,
 } from "@/config/menuItems/dashboardMenuItem";
-
+import ProfilePictureUpload from "@/components/fileUpload/profilePicture";
+import { Textarea } from "@/components/ui/textarea";
 export default function PersonalInfo() {
   const user = useSelector((state: RootState) => state.user);
   const [formData, setFormData] = useState({
@@ -22,6 +23,7 @@ export default function PersonalInfo() {
     email: user?.email || "",
     phone: user?.phone || "",
     profilePic: user?.profilePic || "",
+    techstacks:user?.techstacks || "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,11 +135,28 @@ export default function PersonalInfo() {
                     value={formData.phone}
                     placeholder="Enter your phone number"
                     readOnly
-                    className="w-full opacity-50 cursor-not-allowed"
+                    className="w-full "
                   />
                   <span className="text-sm text-gray-400">
                     Non-editable field
                   </span>
+                </div>
+                <div>
+                  <Label>Tech Stacks</Label>
+                  <Input
+                    type="text"
+                    name="techStacks"
+                    placeholder="Enter your skills"
+                    readOnly
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <Label>Bio</Label>
+                  <Textarea
+                    className="w-full "
+                      placeholder="Enter your bio"
+                  />
                 </div>
               </div>
 
