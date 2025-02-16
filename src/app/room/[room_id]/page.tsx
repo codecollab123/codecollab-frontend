@@ -53,35 +53,36 @@ export default function CodingRoom() {
   const [users, setUsers] = useState<{ socketId: string; userName: string }[]>([]);
 
   useEffect(() => {
-    const init = async() => {
+    const init = async () => {
+      if (socketRef.current) return; // Prevent multiple connections
+  
       socketRef.current = await initSocket();
-
-      socketRef.current.on('connect_error', (err) => handleErrors(err));
-      socketRef.current.on('connect_failed', (err) => handleErrors(err));
-
-      function handleErrors(e: any) {
-        console.log(`socket error: ${e}`);
-      }
+  
+      socketRef.current.on("connect_error", (err) => console.error("Socket error:", err));
+      socketRef.current.on("connect_failed", (err) => console.error("Socket connection failed:", err));
+  
       if (!room_id) return;
-
-      socketRef.current.emit('join', {
-        room_id,
-        userName: 'Host',
+  
+      socketRef.current.emit("join", { room_id, userName: "host" });
+  
+      socketRef.current.on("user_joined", ({ users }) => setUsers(users));
+  
+      socketRef.current.on("forced_disconnect", () => {
+        socketRef.current?.disconnect();
+        socketRef.current = null; // Ensure cleanup
       });
-      socketRef.current.on("user_joined", ({ users }) => {
-        setUsers(users);
-      });
-      socketRef.current.on("room_full", ({ message }) => {
-        alert(message);
-      });
-    }
+    };
+  
     init();
+  
     return () => {
-      socketRef.current?.disconnect();
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
     };
   }, [room_id]);
-
-  // }, [room_id]);
+  
 
   const handleEditorChange = (value: any) => {
     setCode(value || "");
