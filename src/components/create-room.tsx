@@ -42,9 +42,9 @@ export function CreateRoom({ className, ...props }: React.ComponentPropsWithoutR
     socket.on("connect", () => console.log("Connected to WebSocket server", socket.id));
 
     // Listen for user list updates
-    socket.on("user_joined", ({ clients }) => {
-      console.log("Users in room:", clients);
-      setUsers(clients); // Update users state
+    socket.on("user_joined", ({ users }) => {
+      console.log("Users in room:", users);
+      setUsers(users); // Update users state
     });
 
     return () => {
@@ -58,7 +58,7 @@ export function CreateRoom({ className, ...props }: React.ComponentPropsWithoutR
     setShowRoomID(true);
     localStorage.setItem("roomID", newRoomID);
 
-    socket.emit("join", { room_id: newRoomID, userName: "host" });
+    // socket.emit("join", { room_id: newRoomID, userName: "host" });
   };
 
   const handleEnterRoom = () => {
