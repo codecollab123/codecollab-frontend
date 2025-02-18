@@ -18,6 +18,8 @@ import { axiosInstance } from "@/lib/axiosinstance";
 import { getUserData, loginGoogleUser, loginUser } from '@/lib/utils';
 import { toast } from "@/hooks/use-toast";
 import { setUser } from "@/lib/userSlice";
+import OtpLogin from "@/components/shared/otpDialog";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -155,6 +157,13 @@ export default function LoginPage() {
             </div>
           </CardContent>
         </Card>
+        
+        <div className="mt-4 text-center text-sm">
+          Don&apos;t have account?{' '}
+        <Button  variant="outline" className="size-sm ml-2"asChild>
+          <Link href="/auth/signup">Sign up</Link>
+        </Button>
+        </div>
         <div className="text-center text-xs text-muted-foreground">
           By clicking continue, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
         </div>

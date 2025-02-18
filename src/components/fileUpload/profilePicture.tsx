@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { axiosInstance } from '@/lib/axiosinstance';
 import { setUser } from '@/lib/userSlice';
 import { RootState } from '@/lib/store';
-import { Type } from '@/utils/enum';
+// import { Type } from '@/utils/enum';
 import { toast } from '@/hooks/use-toast';
 const allowedImageFormats = [
   'image/png',
@@ -21,11 +21,9 @@ const maxImageSize = 1 * 1024 * 1024; // 1MB
 const ProfilePictureUpload = ({
   user_id,
   profile,
-  entityType,
 }: {
   user_id: string;
-  profile: string;
-  entityType: Type.BUSINESS | Type.FREELANCER; // Specify possible values for entityType
+  profile: string;// Specify possible values for entityType
 }) => {
   const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
@@ -89,23 +87,23 @@ const ProfilePictureUpload = ({
 
       dispatch(setUser({ ...user, photoURL: Location }));
       // Adjust the endpoint and payload field based on entityType
-      const updateEndpoint =
-        entityType === Type.FREELANCER
-          ? `/freelancer/${user.uid}`
-          : `/business/${user_id}`;
+      // const updateEndpoint =
+      //   entityType === Type.FREELANCER
+      //     ? `/freelancer/${user.uid}`
+      //     : `/business/${user_id}`;
 
-      const putResponse = await axiosInstance.put(updateEndpoint, {
-        profilePic: Location,
-      });
+      // const putResponse = await axiosInstance.put(updateEndpoint, {
+      //   profilePic: Location,
+      // });
 
-      if (putResponse.status === 200) {
-        toast({
-          title: 'Success',
-          description: 'Profile picture uploaded successfully!',
-        });
-      } else {
-        throw new Error('Failed to update profile picture');
-      }
+      // if (putResponse.status === 200) {
+      //   toast({
+      //     title: 'Success',
+      //     description: 'Profile picture uploaded successfully!',
+      //   });
+      // } else {
+      //   throw new Error('Failed to update profile picture');
+      // }
     } catch (error) {
       console.error('Error during upload:', error);
       toast({
