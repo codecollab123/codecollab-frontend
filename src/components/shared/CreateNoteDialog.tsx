@@ -4,17 +4,21 @@ import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import Image from 'next/image';
 
-import { ColorPicker } from "../shared/ColorPicker";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ColorPicker } from './ColorPicker';
+
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Note } from "@/utils/type/note";
+import { Note, NoteType } from '@/utils/type/note';
 
-// Define the Props interface for the CreateNoteDialog
 type Props = {
-  onNoteCreate: (note: Note) => void;
-  onClose: () => void;
+  onNoteCreate?: (note: Note) => void;
 };
 
 const banners = [
@@ -27,40 +31,39 @@ const banners = [
   '/banner7.svg',
 ];
 
-export function CreateNoteDialog({ onNoteCreate, onClose }: Props) {
+export function CreateNoteDialog({ onNoteCreate }: Props) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedColor, setSelectedColor] = useState('#ffffff');
   const [selectedBanner, setSelectedBanner] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
   const [isHTML, setIsHTML] = useState(false);
 
   const handleSubmit = () => {
     if (!title.trim() && !content.trim()) return;
 
     const newNote: Note = {
-      _id: `note-${Date.now()}`,
-      title,
-      content,
-      bgColor: selectedColor,
-      banner: selectedBanner || '',
-      type: "PERSONAL",
-      noteType: "NOTE",
+      title: title.trim(),
+      content: content.trim(),
+      bgColor: selectedBanner ? undefined : selectedColor,
+      banner: selectedBanner || undefined,
       createdAt: new Date(),
-      updatedAt: new Date(),
-      userId: "static-user-id",
-      entityType: "STATIC",
+      noteType: NoteType.NOTE,
+      isHTML,
     };
 
-    onNoteCreate(newNote);  // Call onNoteCreate to pass the new note to the parent component
-    setTitle('');            // Reset the input fields
+    if (onNoteCreate) {
+      onNoteCreate(newNote);
+    }
+    setTitle('');
     setContent('');
     setSelectedColor('#ffffff');
     setSelectedBanner(null);
-    onClose();               // Close the dialog after creating the note
+    setOpen(false);
   };
 
   return (
-    <Dialog open onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="gap-2">
           <Plus className="h-4 w-4" />
