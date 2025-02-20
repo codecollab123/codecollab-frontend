@@ -12,7 +12,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronDown, Link as Linking } from "lucide-react";
+import {
+  ChevronDown,
+  Link as Linking,
+  // MonitorPlay,
+  // MonitorStop,
+} from "lucide-react";
 import {
   menuItemsBottom,
   menuItemsTop,
@@ -30,16 +35,17 @@ import {
   TooltipTrigger,
 } from "@radix-ui/react-tooltip";
 import {
-  DropdownMenu,
+  DropdownMenu,   
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuItem,
+  DropdownMenuItem,       
 } from "@/components/ui/dropdown-menu";
 import { TooltipContent } from "@/components/ui/tooltip";
-import { Editor } from "@monaco-editor/react"; // Import Monaco Editor
+import { Editor } from "@monaco-editor/react"; // Import Monaco Edito r       
 import { useParams } from "next/navigation";
 import { initSocket } from "@/service/socket";
 import { Socket } from "socket.io-client";
+import { axiosInstance } from "@/lib/axiosinstance";
 
 export default function CodingRoom() {
   const { room_id } = useParams<{ room_id: string }>();
@@ -47,30 +53,58 @@ export default function CodingRoom() {
   const [inviteEmail, setInviteEmail] = useState("");
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("javascript");
-  const [code, setCode] = useState(""); // State for editor content
+  const [code, setCode] = useState("");
   const languages = ["c", "cpp", "java", "python", "javascript", "go", "rust"];
   const socketRef = useRef<Socket | null>(null);
-  const [users, setUsers] = useState<{ socketId: string; userName: string }[]>([]);
-
+  const [users, setUsers] = useState<{ socketId: string; userName: string }[]>(
+    []
+  );
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [isSharing, setIsSharing] = useState(false);
+  // const mediaStreamRef = useRef<MediaStream | null>(null);
   useEffect(() => {
     const init = async () => {
       if (socketRef.current) return; // Prevent multiple connections
-  
+
       socketRef.current = await initSocket();
-  
-      socketRef.current.on("connect_error", (err) => console.error("Socket error:", err));
-      socketRef.current.on("connect_failed", (err) => console.error("Socket connection failed:", err));
-  
+
+      socketRef.current.on("connect_error", (err) =>
+        console.error("Socket error:", err)
+      );
+      socketRef.current.on("connect_failed", (err) =>
+        console.error("Socket connection failed:", err)
+      );
+
       if (!room_id) return;
-  
+
       socketRef.current.emit("join", { room_id, userName: "host" });
-  
+
       socketRef.current.on("user_joined", ({ users }) => setUsers(users));
   
      
     };
   }, [room_id]);
-  
+
+  const sendInvite = async () => {
+    const inviteLink = `${window.location.origin}/join-room/${room_id}`; // Create the invite link using room_id
+
+    try {
+      const response = await axiosInstance.post("/api/invite", {
+        email: inviteEmail,
+        room_id,
+        inviteLink, // Include the link to the room
+      });
+
+      if (response.status === 200) {
+        alert(`Invitation sent to: ${inviteEmail}`);
+        setInviteOpen(false);
+        setInviteEmail(""); // Reset email field after sending
+      }
+    } catch (error) {
+      console.error("Error sending invite:", error);
+      alert("Failed to send invite. Please try again.");
+    }
+  };
 
   const handleEditorChange = (value: any) => {
     setCode(value || "");
@@ -108,13 +142,12 @@ export default function CodingRoom() {
               WhiteBoard
             </Button>
           </Link>
-
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <MessageCircle
                   className="mt-1 cursor-pointer"
-                  color={isChatOpen ? "#ff4500" : "#00a550"} // Change color when open
+                  color={isChatOpen ? "#ff4500" : "#00a550"} 
                   onClick={() => setIsChatOpen(!isChatOpen)}
                 ></MessageCircle>
               </TooltipTrigger>
@@ -138,6 +171,7 @@ export default function CodingRoom() {
             />
             <div className="flex flex-1 gap-2">
               <Linking /> Private Link
+
             </div>
             <Button
               className="w-full"
