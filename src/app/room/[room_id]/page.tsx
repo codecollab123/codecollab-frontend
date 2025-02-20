@@ -67,19 +67,7 @@ export default function CodingRoom() {
   
       socketRef.current.on("user_joined", ({ users }) => setUsers(users));
   
-      socketRef.current.on("forced_disconnect", () => {
-        socketRef.current?.disconnect();
-        socketRef.current = null; // Ensure cleanup
-      });
-    };
-  
-    init();
-  
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
+     
     };
   }, [room_id]);
   
