@@ -23,7 +23,7 @@ export const menuItemsTop: MenuItem[] = [
     label: "Dashboard",
   },
   {
-    href: "/room",
+    href: "/createroom",
     icon: <Laptop className="h-5 w-5" />,
     label: "Coding Room",
   },
