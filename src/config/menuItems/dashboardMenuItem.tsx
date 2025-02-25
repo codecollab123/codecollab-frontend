@@ -56,7 +56,7 @@ export const notesMenu: MenuItem[] = [
   {
     href: "#",
     icon: <Boxes className="h-4 w-4 transition-all group-hover:scale-110" />,
-    label: "Dehix",
+    label: "Coding Collab",
   },
   {
     href: "/dashboard",
