@@ -35,17 +35,19 @@ import {
   TooltipTrigger,
 } from "@radix-ui/react-tooltip";
 import {
-  DropdownMenu,   
+  DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuItem,       
+  DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { TooltipContent } from "@/components/ui/tooltip";
-import { Editor } from "@monaco-editor/react"; // Import Monaco Edito r       
+import { Editor } from "@monaco-editor/react"; // Import Monaco Edito r
+import { editor } from "monaco-editor";
 import { useParams } from "next/navigation";
 import { initSocket } from "@/service/socket";
 import { Socket } from "socket.io-client";
 import { axiosInstance } from "@/lib/axiosinstance";
+import { toast } from "@/components/ui/use-toast";
 
 export default function CodingRoom() {
   const { room_id } = useParams<{ room_id: string }>();
@@ -53,12 +55,17 @@ export default function CodingRoom() {
   const [inviteEmail, setInviteEmail] = useState("");
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("javascript");
-  const [code, setCode] = useState("");
+  const [queuedCodeChanges, setQueuedCodeChanges] = useState<
+    string | undefined
+  >(undefined); // Queue for code changes
   const languages = ["c", "cpp", "java", "python", "javascript", "go", "rust"];
   const socketRef = useRef<Socket | null>(null);
   const [users, setUsers] = useState<{ socketId: string; userName: string }[]>(
     []
   );
+  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+  const isLocalChange = useRef(false); // Flag to track local changes
+  const codeRef = useRef<string | undefined>(undefined);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isSharing, setIsSharing] = useState(false);
   // const mediaStreamRef = useRef<MediaStream | null>(null);
@@ -75,13 +82,51 @@ export default function CodingRoom() {
         console.error("Socket connection failed:", err)
       );
 
-      if (!room_id) return;
-
       socketRef.current.emit("join", { room_id, userName: "host" });
 
-      socketRef.current.on("user_joined", ({ users }) => setUsers(users));
-  
-     
+      socketRef.current.on("user_joined", ({ clients, userName, socketId }) => {
+        setUsers(clients);
+        if (userName == "host") {
+          toast({
+            variant: "default",
+            title: "User Joined",
+            description: "Something went wrong. Please try again.",
+          });
+        }
+
+        if (socketRef.current) {
+          socketRef.current.emit("code_sync", {
+            code: codeRef.current,
+            socketId,
+          });
+        }
+      });
+
+      socketRef.current.on("code_change", ({ newCode }) => {
+        if (!isLocalChange.current) {
+          if (editorRef.current) {
+            editorRef.current.setValue(newCode);
+          } else if (newCode !== undefined) {
+            setQueuedCodeChanges(newCode);
+          }
+        }
+      });
+
+      socketRef.current.on("disconnected", ({ socketId, userName }) => {
+        toast({
+          variant: "destructive",
+          title: "User Disconnected",
+          description: `user: ${userName} left the room`,
+        });
+        setUsers((prev) => {
+          return prev.filter((client) => client.socketId !== socketId);
+        });
+      });
+    };
+    init();
+    return () => {
+      socketRef.current?.disconnect();
+      socketRef.current = null;
     };
   }, [room_id]);
 
@@ -106,8 +151,33 @@ export default function CodingRoom() {
     }
   };
 
-  const handleEditorChange = (value: any) => {
-    setCode(value || "");
+  const handleEditorChange = (code: string | undefined) => {
+    if (code !== undefined) {
+      if (socketRef.current && isLocalChange.current) {
+        socketRef.current.emit("code_change", {
+          roomId: room_id,
+          newCode: code,
+        });
+        codeRef.current = code;
+      }
+    }
+  };
+
+  const handleEditorMount = (editor: editor.IStandaloneCodeEditor) => {
+    editorRef.current = editor; // Store the editor instance in the ref
+
+    // Apply any queued code changes
+    if (queuedCodeChanges !== undefined) {
+      editorRef.current.setValue(queuedCodeChanges);
+      setQueuedCodeChanges(undefined); // Clear the queue
+    }
+
+    editor.onDidChangeModelContent(() => {
+      isLocalChange.current = true; // Set flag to true when local change occurs
+      setTimeout(() => {
+        isLocalChange.current = false; // Reset flag after a short delay
+      }, 100);
+    });
   };
 
   return (
@@ -147,7 +217,7 @@ export default function CodingRoom() {
               <TooltipTrigger asChild>
                 <MessageCircle
                   className="mt-1 cursor-pointer"
-                  color={isChatOpen ? "#ff4500" : "#00a550"} 
+                  color={isChatOpen ? "#ff4500" : "#00a550"}
                   onClick={() => setIsChatOpen(!isChatOpen)}
                 ></MessageCircle>
               </TooltipTrigger>
@@ -171,7 +241,6 @@ export default function CodingRoom() {
             />
             <div className="flex flex-1 gap-2">
               <Linking /> Private Link
-
             </div>
             <Button
               className="w-full"
@@ -219,10 +288,12 @@ export default function CodingRoom() {
               <h2 className="text-lg font-semibold mb-2">Compiler</h2>
               <Editor
                 height="580px"
+                width="100%"
                 defaultLanguage={selectedLanguage}
                 defaultValue="//start from here"
                 theme="vs-dark"
                 onChange={handleEditorChange}
+                onMount={handleEditorMount}
               />
             </Card>
             <div className="flex flex-col w-[350px] space-y-6">
@@ -245,7 +316,7 @@ export default function CodingRoom() {
 
               <Button
                 className="w-full"
-                onClick={() => console.log("Running code:", code, room_id)}
+                onClick={() => console.log("Running code:", room_id)}
               >
                 Run Code
               </Button>
