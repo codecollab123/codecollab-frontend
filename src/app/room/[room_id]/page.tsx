@@ -136,7 +136,7 @@ export default function CodingRoom() {
             <UserPlus />
             Invite
           </Button>
-          <Link href={"room/whiteboard"}>
+          <Link href={"whiteboard"}>
             <Button>
               <NotebookPen />
               WhiteBoard
