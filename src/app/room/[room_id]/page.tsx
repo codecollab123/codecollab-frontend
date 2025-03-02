@@ -48,8 +48,11 @@ import { initSocket } from "@/service/socket";
 import { Socket } from "socket.io-client";
 import { axiosInstance } from "@/lib/axiosinstance";
 import { toast } from "@/components/ui/use-toast";
+import { useSelector } from "react-redux";
 
 export default function CodingRoom() {
+  const user = useSelector((state: any) => state.user);
+  const userId = user.uid;
   const { room_id } = useParams<{ room_id: string }>();
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -75,21 +78,21 @@ export default function CodingRoom() {
 
       socketRef.current = await initSocket();
 
-      socketRef.current.on("connect_error", (err) =>
-        console.error("Socket error:", err)
-      );
-      socketRef.current.on("connect_failed", (err) =>
-        console.error("Socket connection failed:", err)
-      );
+      // Emit 'join' event with logged-in user details
+      socketRef.current.emit("join", { 
+        room_id, 
+        userName: user?.username || "Guest", // Default to "Guest" if no user is logged in
+        userId: user?.uid || "unknown" // Default ID if unavailable
+      });
 
-      socketRef.current.emit("join", { room_id, userName: "host" });
-
+      // Listen for new user joining
       socketRef.current.on("user_joined", ({ clients, userName, socketId }) => {
         setUsers(clients);
-        if (userName == "host") {
+
+        if (!userName || userName === "Guest") {
           toast({
             variant: "default",
-            title: "User Joined",
+            title: "User Join Error",
             description: "Something went wrong. Please try again.",
           });
         }
@@ -102,6 +105,7 @@ export default function CodingRoom() {
         }
       });
 
+      // Listen for code changes from other users
       socketRef.current.on("code_change", ({ newCode }) => {
         if (!isLocalChange.current) {
           if (editorRef.current) {
@@ -112,24 +116,33 @@ export default function CodingRoom() {
         }
       });
 
+      // Handle user disconnection
       socketRef.current.on("disconnected", ({ socketId, userName }) => {
         toast({
           variant: "destructive",
           title: "User Disconnected",
-          description: `user: ${userName} left the room`,
+          description: `User ${userName} left the room`,
         });
-        setUsers((prev) => {
-          return prev.filter((client) => client.socketId !== socketId);
-        });
+
+        setUsers((prev) => prev.filter((client) => client.socketId !== socketId));
       });
+
+      // Handle socket errors
+      socketRef.current.on("connect_error", (err) =>
+        console.error("Socket error:", err)
+      );
+      socketRef.current.on("connect_failed", (err) =>
+        console.error("Socket connection failed:", err)
+      );
     };
+
     init();
+
     return () => {
       socketRef.current?.disconnect();
       socketRef.current = null;
     };
-  }, [room_id]);
-
+  }, [room_id, user]); // Dependency array updated to track user changes
   const sendInvite = async () => {
     const inviteLink = `${window.location.origin}/join-room/${room_id}`; // Create the invite link using room_id
 
@@ -212,22 +225,28 @@ export default function CodingRoom() {
               WhiteBoard
             </Button>
           </Link>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <MessageCircle
-                  className="mt-1 cursor-pointer"
-                  color={isChatOpen ? "#ff4500" : "#00a550"}
-                  onClick={() => setIsChatOpen(!isChatOpen)}
-                ></MessageCircle>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Chat</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-        {isChatOpen && <Chat />}
+          {/* {!isChatOpen && (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <MessageCircle
+                className="cursor-pointer p-2 rounded-full shadow-lg hover:scale-110 transition-transform"
+                size={40}
+                color="#00a550"
+                onClick={() => setIsChatOpen(true)}
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Chat</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )} */}
+
+     
+
+   <Chat/>
+    </div>
         <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
           <DialogContent>
             <DialogHeader>
@@ -278,10 +297,15 @@ export default function CodingRoom() {
             </DropdownMenu>
           </div>
           <div>
-            <h2>Users in Room: {users.length}/5</h2>
-            {users.map((user) => (
-              <p key={user.socketId}>{user.userName || "Unknown User"}</p>
-            ))}
+          <h2>Users in Room: {users.length}/5</h2>
+<ul>
+  {users.map(({ socketId, userName}) => (
+    <li key={socketId} className="flex items-center gap-2 p-2 border-b">
+      <span className="font-bold">{userName || "Guest"}</span> 
+    </li>
+  ))}
+</ul>
+
           </div>
           <div className="flex flex-1 w-full p-6 space-x-6">
             <Card className="flex-1 p-4 h-full ml-6">
