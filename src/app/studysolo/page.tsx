@@ -4,12 +4,7 @@ import Header from "@/components/header/header";
 import SidebarMenu from "@/components/menu/sidebarmenu";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import {
-  ImagePlay,
-  MessageSquareQuote,
-  Search,
-} from "lucide-react";
+import { ImagePlay, MessageSquareQuote, Search } from "lucide-react";
 import {
   menuItemsBottom,
   menuItemsTop,
@@ -30,9 +25,29 @@ import {
   TooltipTrigger,
 } from "@radix-ui/react-tooltip";
 import { TooltipContent } from "@/components/ui/tooltip";
+import { axiosInstance } from '@/lib/axiosinstance';
 
-export default function SoloStudy() {
+interface studysoloProps {
+  _id: string;
+  userId: string;
+  background: string;
+  music: string;
+  quote: string;
+  todolist: string;
+  video: string;
+}
+
+export default function SoloStudy({ user_id }: { user_id: string }) {
   const [time, setTime] = useState(50 * 60);
+  const [user, setUser] = useState<studysoloProps>({
+    _id: "",
+    userId: "",
+    background: "",
+    music: "",
+    quote: "",
+    todolist: "",
+    video: ""
+  });
   const [isRunning, setIsRunning] = useState(false);
   const [tasks, setTasks] = useState<string[]>([]);
   const [newTask, setNewTask] = useState("");
@@ -77,6 +92,77 @@ export default function SoloStudy() {
       setIsQuoteDialogOpen(false);
     }
   };
+  useEffect(() => {
+    const fetchStudyData = async () => {
+      try {
+        if (!user_id) return; // Agr user_id nahi h to API call mat kro
+  
+        const res = await axiosInstance.get(`/studysolo/${user_id}`);
+        console.log("Fetching Study Solo for user_id:", user_id);
+
+        const data: studysoloProps = res.data;
+  
+        setUser(data);
+        setSelectedBackground(data.background);
+        setSelectedMusic(data.music);
+        setQuote(data.quote);
+        setTasks(data.todolist ? data.todolist.split(",") : []);
+      } catch (error) {
+        console.error("Error fetching study data:", error);
+      }
+    };
+  
+    fetchStudyData();
+  }, [user_id]); // ✅ Dependency ke andar `user_id` hi h jo prop se aa rha h
+  
+  const updateStudyData = async () => {
+    try {
+      if (!user_id || !user) return;// 🔹 ID check, bina ID ke API call mat kro
+  
+      const updatedData = {
+        background: selectedBackground,
+        music: selectedMusic,
+        quote: quote,
+        todolist: tasks.join(","), // 🔹 Array ko string me convert kar diya
+        video: youtubeLink
+      };
+  
+      await axiosInstance.put(`/studysolo/${user_id}`, updatedData);
+      alert("Study Solo settings updated!");
+    } catch (error) {
+      console.error("Error updating study data:", error);
+    }
+  };
+  // const resetStudyData = async () => {
+  //   try {
+  //     if (!user_id) return; // 🔹 ID check, bina ID ke API call mat kro
+  
+  //     const defaultData = {
+  //       _id: user._id,
+  //       userId: user.userId,
+  //       background: "/studyroom5.mp4",
+  //       music: "/relaxmusic.mp3",
+  //       quote: "",
+  //       todolist: "",
+  //       video: ""
+  //     };
+  
+  //     await axiosInstance.put(`/studysolo/${user_id}`, defaultData);
+  //     setUser(defaultData);
+  //     setSelectedBackground(defaultData.background);
+  //     setSelectedMusic(defaultData.music);
+  //     setQuote(defaultData.quote);
+  //     setTasks([]);
+  //     setYoutubeLink("");
+  
+  //     alert("Study Solo settings reset to default!");
+  //   } catch (error) {
+  //     console.error("Error resetting study data:", error);
+  //   }
+  // };
+  
+  
+ 
 
   // Function to handle background selection
   const handleBackgroundSelection = (url: string) => {
@@ -110,6 +196,24 @@ export default function SoloStudy() {
       .toString()
       .padStart(2, "0")}`;
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosInstance.get(`/studysolo/${user_id}`);
+        const data: studysoloProps = response.data;
+        setUser(data);
+        setSelectedBackground(data.background);
+        setSelectedMusic(data.music);
+        setQuote(data.quote);
+        setTasks(data.todolist.split(','));
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [user_id]);
 
   return (
     <div ref={fullscreenRef} className="flex min-h-screen w-full bg-muted/40">
@@ -233,7 +337,6 @@ export default function SoloStudy() {
               </Tooltip>
             </TooltipProvider>
 
-           
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
@@ -280,7 +383,6 @@ export default function SoloStudy() {
                 </DialogContent>
               </Dialog>
             )}
-      
 
             <TooltipProvider>
               <Tooltip>
@@ -333,7 +435,7 @@ export default function SoloStudy() {
               </Dialog>
             )}
           </div>
-     
+
           <div
             className="absolute z-10 bg-black/50 p-6 rounded-lg text-white"
             style={{ left: "80px", top: "calc(20px + 170px)" }}
@@ -362,24 +464,21 @@ export default function SoloStudy() {
                 </li>
               ))}
             </ul>
-           
           </div>
           {quote.trim() && (
-  <div
-    className="absolute z-10 text-white italic text-2xl font-bold text-center w-full px-4"
-    style={{
-      top: "40%", 
-      left: "80%", 
-      transform: "translate(-50%, -50%)",
-      textShadow: "2px 2px 4px rgba(0, 0, 0, 0.8)", 
-    }}
-  >
-    "{quote}"
-  </div>
-)}
-
+            <div
+              className="absolute z-10 text-white italic text-2xl font-bold text-center w-full px-4"
+              style={{
+                top: "40%",
+                left: "80%",
+                transform: "translate(-50%, -50%)",
+                textShadow: "2px 2px 4px rgba(0, 0, 0, 0.8)",
+              }}
+            >
+              "{quote}"
+            </div>
+          )}
         </div>
-   
       </div>
     </div>
   );

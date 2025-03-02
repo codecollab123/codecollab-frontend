@@ -9,6 +9,7 @@ import {
   Archive,
   StickyNote,
   Trash2,
+  Newspaper 
 } from "lucide-react";
 
 export const menuItemsTop: MenuItem[] = [
@@ -21,6 +22,11 @@ export const menuItemsTop: MenuItem[] = [
     href: "/dashboard",
     icon: <Home className="h-5 w-5" />,
     label: "Dashboard",
+  },
+  {
+    href: "/feeds",
+    icon: <Newspaper  className="h-4 w-4 transition-all group-hover:scale-110" />,
+    label: "Feeds",
   },
   {
     href: "/createroom",
@@ -79,3 +85,21 @@ export const notesMenu: MenuItem[] = [
     label: "Trash",
   },
 ];
+
+export const dashboardMenu: MenuItem[] = [
+  {
+    href: "#",
+    icon: <Boxes className="h-4 w-4 transition-all group-hover:scale-110" />,
+    label: "Feed",
+  },
+  {
+    href: "#",
+    icon: <Boxes className="h-4 w-4 transition-all group-hover:scale-110" />,
+    label: "Acitvity",
+  },
+  // {
+  //   href: "#",
+  //   icon: <Boxes className="h-4 w-4 transition-all group-hover:scale-110" />,
+  //   label: "A",
+  // },
+]
