@@ -1,30 +1,16 @@
+import React, { useState, useEffect, useRef } from "react";
+import { io } from "socket.io-client";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Send, X, Reply, MessageSquare } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { useParams } from "next/navigation";
+import { useSelector } from "react-redux";
+import { motion } from "framer-motion";
 
-import React, { useState, useRef } from "react";
-import { Button } from "../ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from '@/components/ui/card';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-  Send,
-  Reply,
-  X,
-  Bold,
-  Italic,
-  Underline,
-  PanelRight,
-} from 'lucide-react';
-import { Textarea } from "../ui/textarea";
-
-type User = {
-  userName: string;
-  email: string;
-  profilePic: string;
-};
+const socket = io("http://localhost:5000");
 
 type Message = {
   id: string;
@@ -35,158 +21,132 @@ type Message = {
 };
 
 const ChatComponent: React.FC = () => {
-  const [primaryUser, setPrimaryUser] = useState<User>({
-    userName: 'Isha',
-    email: 'isha@gmai.com',
-    profilePic: 'https://randomuser.me/api/portraits/men/1.jpg',
-  });
+  const user = useSelector((state: any) => state.user);
+  const userName = user?.userName || "User";
+  const userId = user?.uid || "Guest";
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [replyToMessageId, setReplyToMessageId] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState(true); // Sidebar visibility
-  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
-  const user = { uid: "user123" }; // Mock user ID
+  const { room_id } = useParams<{ room_id: string }>();
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
-  // Handle Sending Message
+  useEffect(() => {
+    if (!room_id) return;
+    socket.connect();
+    setMessages([]);
+    socket.emit("join", { room_id, userName });
+
+    socket.on("load_old_messages", (oldMessages: Message[]) => {
+      setMessages(oldMessages);
+    });
+
+    socket.on("receive_message", (message: Message) => {
+      setMessages((prev) => [...prev, message]);
+    });
+
+    return () => {
+      socket.off("receive_message");
+      socket.disconnect();
+    };
+  }, [room_id, userName]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   const sendMessage = () => {
-    if (input.trim().length === 0) return;
+    if (!input.trim()) return;
 
     const newMessage: Message = {
       id: Date.now().toString(),
-      senderId: user.uid,
+      senderId: userId,
       content: input,
       timestamp: new Date().toISOString(),
       replyTo: replyToMessageId || null,
     };
 
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
+    socket.emit("send_message", { room_id, message: newMessage });
     setInput("");
     setReplyToMessageId(null);
   };
 
-  // Handle Replying to a Message
-  const handleReply = (messageId: string) => {
-    setReplyToMessageId(messageId);
-  };
-
-  // Apply text formatting
-  const formatText = (symbol: string) => {
-    if (!textAreaRef.current) return;
-
-    const textarea = textAreaRef.current;
-    const { selectionStart, selectionEnd, value } = textarea;
-
-    if (selectionStart === selectionEnd) return;
-
-    const selectedText = value.slice(selectionStart, selectionEnd);
-    const newText = `${value.slice(0, selectionStart)}${symbol}${selectedText}${symbol}${value.slice(selectionEnd)}`;
-
-    setInput(newText);
-    textarea.setSelectionRange(selectionStart + symbol.length, selectionEnd + symbol.length);
-  };
-
   return (
-    <Card
-  className={`fixed top-32 mr-7 right-0 h-[75%] p-4 bg-gray-100 rounded-lg shadow-lg transition-all ${isOpen ? "w-80 " : "w-0"}`}
-  style={{ zIndex: 9999, transition: "width 0.3s ease, opacity 0.3s ease" }}
->
-  {isOpen && (
-    <CardHeader className="flex flex-row items-center border-b-2 p-3">
-      <div className="flex items-center space-x-4">
-        <Avatar>
-          <AvatarImage src={primaryUser.profilePic} alt="Profile Image" />
-          <AvatarFallback>{primaryUser.userName}</AvatarFallback>
-        </Avatar>
-        <div>
-          <p className="text-sm font-medium leading-none text-gray-800">{primaryUser.userName}</p>
-          <p className="text-sm text-gray-500">{primaryUser.email}</p>
-        </div>
-      </div>
-    </CardHeader>
-  )}
+    <div>
+      <Button
+        onClick={() => setIsChatOpen(!isChatOpen)}
+        className="fixed  right-4  text-background p-3  shadow-lg"
+      >
+        <MessageSquare className="h-6 w-6" />
+      </Button>
+      {isChatOpen && (
+        <motion.div
+          initial={{ x: "100%" }}
+          animate={{ x: 0 }}
+          exit={{ x: "100%" }}
+          transition={{ type: "spring", stiffness: 120 }}
+          className="fixed   right-0 h-full w-96  shadow-lg flex flex-col border-l"
+        >
+          <Card className="flex flex-col h-[90%]">
+            <CardHeader className="flex  bg-gray-100 p-1 border-b">
+              <div className="flex items-end space-x-3 left-0">
+                <Avatar>
+                  <AvatarImage src="https://randomuser.me/api/portraits/women/1.jpg" alt="Profile Image" />
+                  <AvatarFallback>{userName}</AvatarFallback>
+                </Avatar>
+                <p className="text-lg font-semibold text-gray-800">{userName}</p>
+              </div>
+              <Button className="flex items-start justify-end"variant="ghost" size="icon" onClick={() => setIsChatOpen(false)}>
+                <X className="h-5 w-5 text-gray-600" />
+              </Button>
+            </CardHeader>
 
-  {/* Messages List */}
-  {isOpen && (
-    <CardContent className="space-y-3 overflow-y-auto h-[75%]">
-      {messages.map((message) => (
-        <div key={message.id} className="p-2  bg-green-100 rounded-lg shadow-sm">
-          {message.replyTo && (
-            <div className="text-gray-500 text-sm italic mb-2">
-              Replying to:{" "}
-              {messages.find((msg) => msg.id === message.replyTo)?.content || "Message not found"}
-            </div>
-          )}
-          <p className="text-gray-700">{message.content}</p>
-          <button
-            className="text-blue-500 text-sm mt-2 hover:underline"
-            onClick={() => handleReply(message.id)}
-          >
-            <Reply className="h-4 w-4 text-green-800" />
-          </button>
-        </div>
-      ))}
-    </CardContent>
-  )}
+            <CardContent className="flex-1 overflow-y-auto p-4 space-y-3">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`p-2 rounded-lg max-w-[75%] ${message.senderId === userId ? " bg-green-100  ml-auto text-black" : "bg-gray-200 text-black"}`}
+                >
+                  {message.replyTo && (
+                    <div className="text-gray-500 text-sm italic mb-1">
+                      Replying to: {messages.find((msg) => msg.id === message.replyTo)?.content || "Message not found"}
+                    </div>
+                  )}
+                  <p>{message.content}</p>
+                 
+                  
+                    <Reply  onClick={() => setReplyToMessageId(message.id)} className="cursor-pointer h-4 w-4 text-green-800 right-3" />
+               
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </CardContent>
 
-  {/* Message Input Field and Formatting Buttons */}
-  {isOpen && (
-    <CardFooter className="flex flex-col space-y-2 p-2">
-      {/* Reply Preview */}
-      {replyToMessageId && (
-        <div className="flex items-center justify-between rounded-[10%] shadow-sm opacity-90 transition-opacity duration-300 p-2 mb-2 bg-green-100 text-sm text-green-800">
-          <div className="text-sm italic text-gray-400 rounded-[10%] overflow-hidden whitespace-nowrap text-ellipsis max-w-full">
-            <span className="font-semibold">Replying to: </span>
-            {messages.find((msg) => msg.id === replyToMessageId)?.content || "Message not found"}
-          </div>
-          <Button
-            className="ml-2 text-red-500 hover:text-red-700 rounded"
-            onClick={() => setReplyToMessageId(null)}
-          >
-            <X className="ml-2 h-4 w-4 text-background" />
-          </Button>
-        </div>
+            <CardFooter className="p-4 border-t bg-gray-100 flex flex-col space-y-2">
+              {replyToMessageId && (
+                <div className="flex items-center justify-between p-2 bg-green-100 text-gray-500 text-sm">
+                  <span className="font-semibold">Replying to:</span>{" "}
+                  {messages.find((msg) => msg.id === replyToMessageId)?.content || "Message not found"}
+               
+                    <X onClick={() => setReplyToMessageId(null)} className="h-4 w-4 text-red-500" />
+                 
+                </div>
+              )}
+              <Textarea
+                className="flex-1 resize-none border rounded-lg p-2 text-black"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                rows={1}
+                placeholder="Type a message..."
+              />
+              <Button onClick={sendMessage} className=" text-white p-2 rounded-lg">
+                <Send className="h-5 w-5" />
+              </Button>
+            </CardFooter>
+          </Card>
+        </motion.div>
       )}
-
-      {/* Textarea and Formatting Buttons */}
-      <Textarea
-        ref={textAreaRef}
-        className="w-full p-2 bg-white border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-green-800"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        rows={2}
-        placeholder="Type a message..."
-      />
-
-      <div className="flex space-x-2 mt-2 overflow-hidden">
-        <Button
-          className="text-foreground hover:text-foreground bg-primary-foreground border-none rounded-full"
-          onClick={() => formatText("**")}
-        >
-          <Bold className="h-3 w-3" />
-        </Button>
-        <Button
-          className="text-foreground hover:text-foreground bg-primary-foreground border-none rounded-full"
-          onClick={() => formatText("*")}
-        >
-          <Italic className="h-4 w-4" />
-        </Button>
-        <Button
-          className="text-foreground hover:text-foreground bg-primary-foreground border-none rounded-full"
-          onClick={() => formatText("__")}
-        >
-          <Underline className="h-4 w-4" />
-        </Button>
-        <Button
-          className="text-foreground hover:text-foreground bg-primary-foreground border-none rounded-full py-2"
-          onClick={sendMessage}
-        >
-          <Send className="h-4 w-4" />
-        </Button>
-      </div>
-    </CardFooter>
-  )}
-</Card>
-
+    </div>
   );
 };
 
