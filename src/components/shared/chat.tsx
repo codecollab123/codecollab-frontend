@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { io } from "socket.io-client";
+import { getSocket } from "@/service/socket"; 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
 
 
-const socket = io("http://localhost:5000");
+
 
 type Message = {
   id: string;
@@ -22,15 +22,18 @@ type Message = {
 
 const ChatComponent: React.FC = () => {
   const user = useSelector((state: any) => state.user);
-  const userName = user?.userName || "User";
-  const userId = user?.uid || "Guest";
+  const userName = user.userName;
+  const userId = user?.uid;
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [replyToMessageId, setReplyToMessageId] = useState<string | null>(null);
   const { room_id } = useParams<{ room_id: string }>();
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
-
+  const socket = getSocket();
+  const [users, setUsers] = useState<{ socketId: string; userName: string }[]>(
+    []
+  );
   useEffect(() => {
     if (!room_id) return;
     socket.connect();

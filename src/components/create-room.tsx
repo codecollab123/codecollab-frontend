@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { io, Socket } from "socket.io-client";
+import { getSocket } from "@/service/socket"; 
 import { v4 as uuidv4 } from "uuid";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -24,12 +24,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
-// Initialize WebSocket connection
-const socket: Socket = io("http://localhost:5000", {
-  transports: ["websocket"],
-  withCredentials: true,
-});
-
 export function CreateRoom({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
   const router = useRouter();
   const [roomID, setRoomID] = useState("");  
@@ -37,7 +31,8 @@ export function CreateRoom({ className, ...props }: React.ComponentPropsWithoutR
   const [showRoomID, setShowRoomID] = useState(false);
   const [copied, setCopied] = useState(false);
   const [users, setUsers] = useState<{ socketId: string; userName: string }[]>([]); // Store users in room
-
+  const socket = getSocket();
+  
   useEffect(() => {
     socket.on("connect", () => console.log("Connected to WebSocket server", socket.id));
 

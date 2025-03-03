@@ -15,8 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   ChevronDown,
   Link as Linking,
-  // MonitorPlay,
-  // MonitorStop,
+
 } from "lucide-react";
 import {
   menuItemsBottom,
@@ -30,11 +29,6 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
-  Tooltip,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@radix-ui/react-tooltip";
-import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
@@ -44,7 +38,7 @@ import { TooltipContent } from "@/components/ui/tooltip";
 import { Editor } from "@monaco-editor/react"; // Import Monaco Edito r
 import { editor } from "monaco-editor";
 import { useParams } from "next/navigation";
-import { initSocket } from "@/service/socket";
+import { getSocket } from "@/service/socket";
 import { Socket } from "socket.io-client";
 import { axiosInstance } from "@/lib/axiosinstance";
 import { toast } from "@/components/ui/use-toast";
@@ -56,7 +50,6 @@ export default function CodingRoom() {
   const { room_id } = useParams<{ room_id: string }>();
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
-  const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("javascript");
   const [queuedCodeChanges, setQueuedCodeChanges] = useState<
     string | undefined
@@ -76,7 +69,7 @@ export default function CodingRoom() {
     const init = async () => {
       if (socketRef.current) return; // Prevent multiple connections
 
-      socketRef.current = await initSocket();
+      socketRef.current = await getSocket();
 
       // Emit 'join' event with logged-in user details
       socketRef.current.emit("join", { 
@@ -225,26 +218,7 @@ export default function CodingRoom() {
               WhiteBoard
             </Button>
           </Link>
-          {/* {!isChatOpen && (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <MessageCircle
-                className="cursor-pointer p-2 rounded-full shadow-lg hover:scale-110 transition-transform"
-                size={40}
-                color="#00a550"
-                onClick={() => setIsChatOpen(true)}
-              />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Chat</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      )} */}
-
-     
-
+         
    <Chat/>
     </div>
         <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
