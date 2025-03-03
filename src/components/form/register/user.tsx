@@ -461,29 +461,11 @@ function UserRegisterForm({
             <div
               className={cn("grid gap-4", currentStep === 1 ? "" : "hidden")}
             >
-              <div className="flex gap-2 justify-between mt-4">
-                <Button
-                  type="button"
-                  onClick={handlePreviousStep}
-                  className="w-full sm:w-auto"
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Previous
-                </Button>
-                <Button
-                  type="button"
-                  onClick={handleNextStep}
-                  className="w-full sm:w-auto"
-                >
-                  Next
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </div>
             </div>
 
             {/* Final Step */}
             <div
-              className={cn("grid gap-4", currentStep === 2 ? "" : "hidden")}
+              className={cn("grid gap-4", currentStep === 1 ? "" : "hidden")}
             >
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
