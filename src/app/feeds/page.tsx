@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { axiosInstance } from "@/lib/axiosinstance"; 
 import SidebarMenu from "@/components/menu/sidebarmenu";
 import Header from "@/components/header/header";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,7 +15,7 @@ import {
 import CreatePost from "@/components/social/createPost";
 
 interface Post {
-  id: string;
+  userId: string;
   user: {
     name: string;
     profilePic: string;
@@ -25,24 +25,63 @@ interface Post {
   createdAt: string;
 }
 
-export default function FeedPage() {
+import { FC } from "react";
+import { toast } from "@/components/ui/use-toast";
+import Post from "@/components/post/page";
+
+export const FeedPage: FC<{ userId?: string }> = ({ userId }) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get("https://api.com/posts");
-        setPosts(response.data);
+        // if (!userId) return; // Agar userId nahi hai to API call na karein
+        // setLoading(true);
+        const response = await axiosInstance.get("/post/all", {
+          params: {
+            userId: userId, // Pass userId same as in BidsPage
+          },
+        });
+        setPosts(response?.data?.data || []);
+        console.log("User ID:", userId);
+
       } catch (error) {
-        console.error("Error fetching posts:", error);
+        console.error("Error fetching feed data", error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Something went wrong. Please try again.",
+        });
       } finally {
         setLoading(false);
       }
     };
 
     fetchPosts();
-  }, []);
+  }, [userId]);
+
+    // const fetchPosts = async () => {
+    //   try {
+    //     if (!userId) return; // Agar userId nahi hai to API call na karein
+    //     setLoading(true);
+    //     const response = await axiosInstance.get("/post/all", {
+    //       params: {
+    //         userId: userId, // Pass userId same as in BidsPage
+    //       },
+    //     });
+    //     setFeedData(response?.data?.data || []);
+    //   } catch (error) {
+    //     console.error("Error fetching feed data", error);
+    //     toast({
+    //       variant: "destructive",
+    //       title: "Error",
+    //       description: "Something went wrong. Please try again.",
+    //     });
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
 
   return (
     <div className="flex min-h-screen">
@@ -60,58 +99,13 @@ export default function FeedPage() {
           menuItemsTop={menuItemsTop}
           menuItemsBottom={menuItemsBottom}
           activeMenu="Feed"
-          breadcrumbItems={[ { label: "Feeds", link: "/feed" }]}
+          breadcrumbItems={[{ label: "Feeds", link: "/feed" }]}
         />
 
-        <div className="mt-6 px-4 max-w-3xl ml-11">
-          <h1 className="text-2xl font-bold">Latest Posts</h1>
-          <p className="text-gray-600 mt-1">
-          See what others are sharing.
-          </p>
-        </div>
-    <CreatePost/>
-        {/* Posts Feed */}
-        {loading ? (
-          <Skeleton className="h-40 w-full mb-4" />
-        ) : (
-          posts.map((post) => (
-            <Card key={post.id} className="mb-4">
-              <CardContent className="p-4">
-                {/* User Info */}
-                <div className="flex items-center mb-2">
-                  <Avatar>
-                    <img src={post.user.profilePic} alt={post.user.name} />
-                  </Avatar>
-                  <div className="ml-3">
-                    <h2 className="text-sm font-bold">{post.user.name}</h2>
-                    <p className="text-xs text-gray-500">
-                      {new Date(post.createdAt).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Post Content */}
-                <p className="text-gray-800">{post.content}</p>
-
-                {/* Post Image (if any) */}
-                {post.image && (
-                  <img
-                    src={post.image}
-                    alt="Post Image"
-                    className="mt-3 rounded-lg w-full"
-                  />
-                )}
-
-                {/* Like & Comment Buttons */}
-                <div className="flex gap-4 mt-3">
-                  <Button variant="ghost">❤️ Like</Button>
-                  <Button variant="ghost">💬 Comment</Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
+       
+    <Post/>
       </div>
     </div>
   );
 }
+export default FeedPage;
