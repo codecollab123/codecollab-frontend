@@ -49,6 +49,13 @@ import { Socket } from "socket.io-client";
 import { axiosInstance } from "@/lib/axiosinstance";
 import { toast } from "@/components/ui/use-toast";
 
+export interface CodeRunningState {
+  language: string;
+  output: string;
+  isRunning: boolean;
+  error: string | null;
+}
+
 export default function CodingRoom() {
   const { room_id } = useParams<{ room_id: string }>();
   const [inviteOpen, setInviteOpen] = useState(false);
@@ -68,6 +75,7 @@ export default function CodingRoom() {
   const codeRef = useRef<string | undefined>(undefined);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isSharing, setIsSharing] = useState(false);
+  const [codeRunning, setCodeRunning] = useState<CodeRunningState | null>(null);
   // const mediaStreamRef = useRef<MediaStream | null>(null);
   useEffect(() => {
     const init = async () => {
@@ -129,6 +137,50 @@ export default function CodingRoom() {
       socketRef.current = null;
     };
   }, [room_id]);
+
+  const result = async (code: string) => {
+    try {
+      const response = await axiosInstance.post(
+        "https://emkc.org/api/v2/piston/execute",
+        {
+          language: "javascript",
+          version: "18.15.0",
+          files: [{ content: code }],
+        }
+      );
+      if (response.data.message) {
+        // setCodeRunning({ error: response.data.message });
+        return;
+      }
+
+      // handle compilation errors
+      if (response.data.compile && response.data.compile.code !== 0) {
+        const error =
+          response.data.compile.stderr || response.data.compile.output;
+        // setCodeRunning({
+        //   error,
+        // });
+        return;
+      }
+
+      if (response.data.run && response.data.run.code !== 0) {
+        const error = response.data.run.stderr || response.data.run.output;
+        // setCodeRunning({
+        //   error,
+        // });
+        return;
+      }
+
+      // if we get here, execution was successful
+      const output = response.data.run.output;
+
+      setCodeRunning({
+        output: output.trim(),
+      });
+
+      console.log(response);
+    } catch (error) {}
+  };
 
   const sendInvite = async () => {
     const inviteLink = `${window.location.origin}/join-room/${room_id}`; // Create the invite link using room_id
@@ -311,12 +363,13 @@ export default function CodingRoom() {
                   className="w-full h-full"
                   readOnly
                   placeholder="Output will appear here..."
+                  value={codeRunning?.output}
                 />
               </Card>
 
               <Button
                 className="w-full"
-                onClick={() => console.log("Running code:", room_id)}
+                onClick={() => result(codeRef.current || "")}
               >
                 Run Code
               </Button>
