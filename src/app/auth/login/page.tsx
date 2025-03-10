@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,29 +10,32 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
-import { UserCredential } from 'firebase/auth';
-import { useDispatch } from 'react-redux';
+import { UserCredential } from "firebase/auth";
+import { useDispatch } from "react-redux";
 import { useState } from "react";
 
 import { axiosInstance } from "@/lib/axiosinstance";
-import { getUserData, loginGoogleUser, loginUser } from '@/lib/utils';
+import { getUserData, loginGoogleUser, loginUser } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { setUser } from "@/lib/userSlice";
 import OtpLogin from "@/components/shared/otpDialog";
 import Link from "next/link";
+import { profile } from "console";
 
 export default function LoginPage() {
   const router = useRouter();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
   const handleLogin = async (): Promise<void> => {
     setIsLoading(true);
     try {
-      const response = await axiosInstance.get(`/public/user_email?user=${email}`);
-      const phoneVerify = response.data.phoneVerify;
+      const response = await axiosInstance.get(
+        `/public/user_email?user=${email}`
+      );
+      const phoneVerify = response.data?.phoneVerify;
 
       if (phoneVerify) {
         const userCredential: UserCredential = await loginUser(email, password);
@@ -47,21 +50,21 @@ export default function LoginPage() {
 
         router.replace(`/dashboard`);
         toast({
-          title: 'Login Successful',
-          description: 'You have successfully logged in.',
+          title: "Login Successful",
+          description: "You have successfully logged in.",
         });
       } else {
         toast({
-          variant: 'destructive',
-          title: 'Phone Verification Required',
-          description: 'Please verify your phone number to proceed.',
+          variant: "destructive",
+          title: "Phone Verification Required",
+          description: "Please verify your phone number to proceed.",
         });
       }
     } catch (error: any) {
       toast({
-        variant: 'destructive',
-        title: 'Login Failed',
-        description: 'Invalid email or password. Please try again.',
+        variant: "destructive",
+        title: "Login Failed",
+        description: "Invalid email or password. Please try again.",
       });
       console.error(error.message);
     } finally {
@@ -69,23 +72,114 @@ export default function LoginPage() {
     }
   };
 
+  const generateUniqueUsername = async (
+    firstName: string,
+    lastName: string
+  ): Promise<string> => {
+    const baseUsername =
+      `${firstName.toLowerCase()}${lastName.toLowerCase()}`.replace(/\s+/g, ""); // Remove spaces
+    let username = baseUsername;
+    let isUnique = false;
+
+    while (!isUnique) {
+      try {
+        // Check if the username already exists in the database
+        await axiosInstance.get(
+          `/public/username?username=${username}`
+        );
+        
+        // If the username exists, append a random number and try again
+        const randomSuffix = Math.floor(Math.random() * 1000); // Random number between 0 and 999
+        username = `${baseUsername}${randomSuffix}`;
+      } catch (error) {
+        // If the username doesn't exist, exit the loop
+        isUnique = true;
+      }
+    }
+
+    return username;
+  };
+
   const handleGoogleLogin = async (): Promise<void> => {
     setIsLoading(true);
     try {
+      // First authenticate with Google to get user credentials
       const userCredential: UserCredential = await loginGoogleUser();
-      const { user, claims } = await getUserData(userCredential);
+      const { user: firebaseUser, claims } = await getUserData(userCredential);
 
-      dispatch(setUser({ ...user, type: claims.type }));
-      router.replace(`/dashboard`);
-      toast({
-        title: 'Login Successful',
-        description: 'You have successfully logged in with Google.',
-      });
+      // Split displayName into firstName and lastName
+      const displayName = firebaseUser.displayName || "";
+      const [firstName, ...lastNameParts] = displayName.split(" ");
+      const lastName = lastNameParts.join(" "); // Handle cases where lastName has multiple parts
+
+      // Check if user exists in our database
+      try {
+        // Try to fetch user by email to see if they exist
+        const user = await axiosInstance.get(
+          `/public/user_email?user=${firebaseUser.email}`
+        );
+
+        // User exists, proceed with login
+        dispatch(setUser({ ...firebaseUser, type: claims.type }));
+        router.replace(`/dashboard`);
+        toast({
+          title: "Login Successful",
+          description: "You have successfully logged in with Google.",
+        });
+      } catch (error) {
+        // User doesn't exist in our database, register them
+        try {
+          // Generate a unique username
+          const username = await generateUniqueUsername(firstName, lastName);
+          // Extract user details from Google auth
+          const newUser = {
+            email: firebaseUser.email,
+            firstName: firstName,
+            lastName: lastName,
+            userName: username,
+            profilePic: firebaseUser?.photoURL,
+            uid: firebaseUser.uid,
+            // Add any other required fields for registration
+          };
+
+          console.log(`user data: ${newUser}`);
+
+          // Register the user in your database
+          await axiosInstance.post("/register/googleLogin_user", newUser);
+
+          // Dispatch user data to Redux store
+          dispatch(
+            setUser({
+              ...firebaseUser,
+              type: claims.type || "user", // Default to 'user' if not specified
+              phoneVerify: false,
+            })
+          );
+
+          router.replace(`/dashboard`);
+
+          // Redirect to phone verification or profile completion page
+          // router.replace('/profile/complete');
+
+          toast({
+            title: "Account Created",
+            description:
+              "Your account has been created. Please complete your profile.",
+          });
+        } catch (registrationError: any) {
+          console.error("Registration error:", registrationError);
+          toast({
+            variant: "destructive",
+            title: "Registration Failed",
+            description: "Failed to create your account. Please try again.",
+          });
+        }
+      }
     } catch (error: any) {
       toast({
-        variant: 'destructive',
-        title: 'Google Login Failed',
-        description: 'Something went wrong. Please try again.',
+        variant: "destructive",
+        title: "Google Login Failed",
+        description: "Something went wrong. Please try again.",
       });
       console.error(error.message);
     } finally {
@@ -151,21 +245,22 @@ export default function LoginPage() {
                   onClick={handleLogin}
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Logging in...' : 'Login'}
+                  {isLoading ? "Logging in..." : "Login"}
                 </Button>
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         <div className="mt-4 text-center text-sm">
-          Don&apos;t have account?{' '}
-        <Button  variant="outline" className="size-sm ml-2"asChild>
-          <Link href="/auth/signup">Sign up</Link>
-        </Button>
+          Don&apos;t have account?{" "}
+          <Button variant="outline" className="size-sm ml-2" asChild>
+            <Link href="/auth/signup">Sign up</Link>
+          </Button>
         </div>
         <div className="text-center text-xs text-muted-foreground">
-          By clicking continue, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+          By clicking continue, you agree to our{" "}
+          <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
         </div>
       </div>
     </div>
