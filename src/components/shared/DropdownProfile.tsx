@@ -9,15 +9,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
 
 const DropdownProfile: React.FC = () => {
+  const user = useSelector((state: RootState) => state.user);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div className="flex items-center gap-2">
           <Avatar className="w-11 h-11">
-            <AvatarImage src="/path-to-profile-picture.jpg" alt="Profile" />
-            <AvatarFallback>RC</AvatarFallback>
+            {user?.photoURL ? (
+              <AvatarImage src={user.photoURL} alt="Profile" />
+            ) : (
+              <AvatarFallback>TR</AvatarFallback>
+            )}
           </Avatar>
         </div>
       </DropdownMenuTrigger>
