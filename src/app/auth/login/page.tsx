@@ -106,20 +106,18 @@ export default function LoginPage() {
       // First authenticate with Google to get user credentials
       const userCredential: UserCredential = await loginGoogleUser();
       const { user: firebaseUser, claims } = await getUserData(userCredential);
-
+  
       // Split displayName into firstName and lastName
-      const displayName = firebaseUser.displayName || "";
+      const displayName = firebaseUser.displayName || "User Default";
       const [firstName, ...lastNameParts] = displayName.split(" ");
-      const lastName = lastNameParts.join(" "); // Handle cases where lastName has multiple parts
-
+      const lastName = lastNameParts.join(" ") || "Unknown"; // Assign "Unknown" if lastName is empty
+  
       // Check if user exists in our database
       try {
-        // Try to fetch user by email to see if they exist
         const user = await axiosInstance.get(
           `/public/user_email?user=${firebaseUser.email}`
         );
-
-        // User exists, proceed with login
+  
         dispatch(setUser({ ...firebaseUser, type: claims.type }));
         router.replace(`/dashboard`);
         toast({
@@ -127,44 +125,32 @@ export default function LoginPage() {
           description: "You have successfully logged in with Google.",
         });
       } catch (error) {
-        // User doesn't exist in our database, register them
         try {
-          // Generate a unique username
           const username = await generateUniqueUsername(firstName, lastName);
-          // Extract user details from Google auth
           const newUser = {
             email: firebaseUser.email,
             firstName: firstName,
-            lastName: lastName,
+            lastName: lastName, // Will never be empty due to the fix
             userName: username,
             profilePic: firebaseUser?.photoURL,
             uid: firebaseUser.uid,
-            // Add any other required fields for registration
           };
-
-          console.log(`user data: ${newUser}`);
-
-          // Register the user in your database
+  
+          console.log(`User data:`, newUser);
           await axiosInstance.post("/register/googleLogin_user", newUser);
-
-          // Dispatch user data to Redux store
+  
           dispatch(
             setUser({
               ...firebaseUser,
-              type: claims.type || "user", // Default to 'user' if not specified
+              type: claims.type || "user",
               phoneVerify: false,
             })
           );
-
+  
           router.replace(`/dashboard`);
-
-          // Redirect to phone verification or profile completion page
-          // router.replace('/profile/complete');
-
           toast({
             title: "Account Created",
-            description:
-              "Your account has been created. Please complete your profile.",
+            description: "Your account has been created. Please complete your profile.",
           });
         } catch (registrationError: any) {
           console.error("Registration error:", registrationError);
@@ -186,7 +172,7 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
-
+  
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
