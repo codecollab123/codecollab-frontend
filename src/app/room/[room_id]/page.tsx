@@ -12,11 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  ChevronDown,
-  Link as Linking,
-
-} from "lucide-react";
+import { ChevronDown, Link as Linking } from "lucide-react";
 import {
   menuItemsBottom,
   menuItemsTop,
@@ -43,10 +39,10 @@ import { Socket } from "socket.io-client";
 import { axiosInstance } from "@/lib/axiosinstance";
 import { toast } from "@/components/ui/use-toast";
 import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
 
 export default function CodingRoom() {
-  const user = useSelector((state: any) => state.user);
-  const userId = user.uid;
+  const user = useSelector((state: RootState) => state.user);
   const { room_id } = useParams<{ room_id: string }>();
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -72,10 +68,10 @@ export default function CodingRoom() {
       socketRef.current = await getSocket();
 
       // Emit 'join' event with logged-in user details
-      socketRef.current.emit("join", { 
-        room_id, 
-        userName: user?.username || "Guest", // Default to "Guest" if no user is logged in
-        userId: user?.uid || "unknown" // Default ID if unavailable
+      socketRef.current.emit("join", {
+        room_id,
+        userName: user?.displayName || "Guest", // Default to "Guest" if no user is logged in
+        userId: user?.uid || "unknown", // Default ID if unavailable
       });
 
       // Listen for new user joining
@@ -117,7 +113,9 @@ export default function CodingRoom() {
           description: `User ${userName} left the room`,
         });
 
-        setUsers((prev) => prev.filter((client) => client.socketId !== socketId));
+        setUsers((prev) =>
+          prev.filter((client) => client.socketId !== socketId)
+        );
       });
 
       // Handle socket errors
@@ -135,7 +133,7 @@ export default function CodingRoom() {
       socketRef.current?.disconnect();
       socketRef.current = null;
     };
-  }, [room_id, user]); // Dependency array updated to track user changes
+  }, [room_id]); // Dependency array updated to track user changes
   const sendInvite = async () => {
     const inviteLink = `${window.location.origin}/join-room/${room_id}`; // Create the invite link using room_id
 
@@ -218,9 +216,9 @@ export default function CodingRoom() {
               WhiteBoard
             </Button>
           </Link>
-         
-   <Chat/>
-    </div>
+
+          <Chat />
+        </div>
         <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
           <DialogContent>
             <DialogHeader>
@@ -271,15 +269,17 @@ export default function CodingRoom() {
             </DropdownMenu>
           </div>
           <div>
-          <h2>Users in Room: {users.length}/5</h2>
-<ul>
-  {users.map(({ socketId, userName}) => (
-    <li key={socketId} className="flex items-center gap-2 p-2 border-b">
-      <span className="font-bold">{userName || "Guest"}</span> 
-    </li>
-  ))}
-</ul>
-
+            <h2>Users in Room: {users.length}/5</h2>
+            <ul>
+              {users.map(({ socketId, userName }) => (
+                <li
+                  key={socketId}
+                  className="flex items-center gap-2 p-2 border-b"
+                >
+                  <span className="font-bold">{userName || "Guest"}</span>
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="flex flex-1 w-full p-6 space-x-6">
             <Card className="flex-1 p-4 h-full ml-6">
