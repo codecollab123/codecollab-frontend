@@ -44,6 +44,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import Chatbot from "@/components/chatBot";
 
 export default function CodingRoom() {
   const user = useSelector((state: RootState) => state.user);
@@ -76,7 +77,7 @@ export default function CodingRoom() {
   const peerConnectionsRef = useRef<Map<string, RTCPeerConnection>>(new Map());
   const [activeSpeakers, setActiveSpeakers] = useState<string[]>([]);
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
-
+  const [showAI, setShowAI] = useState(false);
   // Setup voice activity detection
   const setupVoiceActivityDetection = (stream: MediaStream) => {
     if (!stream) return;
@@ -919,6 +920,16 @@ export default function CodingRoom() {
                     >
                       White Board
                     </button>
+                  </div>
+                  <div>
+                    <button
+                      className="w-full mt-3 text-white bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-pink-500 hover:via-purple-500 hover:to-blue-500 transition-all px-4 py-2 rounded-md"
+                      onClick={() => setShowAI(!showAI)}
+                    >
+                      AI CodeMate
+                    </button>
+
+                    {showAI && <Chatbot />}
                   </div>
                 </div>
               </div>
