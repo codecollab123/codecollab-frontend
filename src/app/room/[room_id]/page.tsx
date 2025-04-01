@@ -37,6 +37,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -45,6 +46,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import Chatbot from "@/components/chatBot";
+import Whiteboard from "@/components/whiteboard/page";
 
 export default function CodingRoom() {
   const user = useSelector((state: RootState) => state.user);
@@ -909,17 +911,23 @@ export default function CodingRoom() {
                     >
                       Send
                     </button>
-                    <button
-                      className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-sm"
-                      onClick={() =>
-                        window.open(
-                          `/dashboard/whiteboard/${room_id}`,
-                          "_blank"
-                        )
-                      }
-                    >
-                      White Board
-                    </button>
+                    <Dialog>
+      {/* Button to Open Dialog */}
+      <DialogTrigger asChild>
+        <button className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-sm">
+          White Board
+        </button>
+      </DialogTrigger>
+
+      {/* Whiteboard Modal/Dialog */}
+      <DialogContent className="max-w-6xl h-[90vh] flex flex-col">
+        {/* Required Title for Accessibility */}
+        <DialogTitle className="sr-only">Whiteboard</DialogTitle> 
+
+        {/* Whiteboard Component */}
+        <Whiteboard room_id={room_id} />
+      </DialogContent>
+    </Dialog>
                   </div>
                   <div>
                     <button
