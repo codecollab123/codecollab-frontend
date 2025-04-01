@@ -6,8 +6,10 @@ import {
   menuItemsBottom,
   menuItemsTop,
 } from "@/config/menuItems/dashboardMenuItem";
+import { useParams } from "next/navigation";
 
 export default function CreateRoomPage() {
+const { room_id } = useParams<{ room_id: string }>();
   return (
  <div>
   <SidebarMenu
@@ -25,7 +27,7 @@ export default function CreateRoomPage() {
           { label: "WhiteBoard", link: "/dashboard/codingroom/whiteboard" },
         ]}
        />
-      <Whiteboard/>
+      <Whiteboard room_id={room_id}/>
  </div>
   )
 }
