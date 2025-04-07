@@ -9,7 +9,8 @@ import {
   Archive,
   StickyNote,
   Trash2,
-  Newspaper 
+  Newspaper, 
+  Book
 } from "lucide-react";
 
 export const menuItemsTop: MenuItem[] = [
@@ -47,6 +48,12 @@ export const menuItemsTop: MenuItem[] = [
     href: "/studysolo",
     icon: <BookOpen className="h-5 w-5" />,
     label: "Study Solo",
+  },
+
+  {
+    href: "/community-chat",
+    icon: <Book className="h-5 w-5" />,
+    label: "Community",
   },
 ];
 
