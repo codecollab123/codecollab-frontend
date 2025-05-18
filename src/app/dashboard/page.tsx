@@ -38,3 +38,31 @@ export default function Dashboard() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// function x(){
+  // for (var i=1; i<=5; i++){
+  // setTimeOut(function(){
+  // console.log(i);
+  // }, 1000*i);
+// }
+// }
+// x();

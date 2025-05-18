@@ -54,7 +54,7 @@ export default function SoloStudy({ user_id }: { user_id: string }) {
   const [isMusicOptionsVisible, setIsMusicOptionsVisible] = useState(false); // State for showing/hiding the music options
   const [selectedMusic, setSelectedMusic] = useState("/relaxmusic.mp3"); // State to track the selected music
   const [audio] = useState(new Audio(selectedMusic));
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedBackground, setSelectedBackground] =
     useState("/studyroom5.mp4");
