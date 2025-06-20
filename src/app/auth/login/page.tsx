@@ -18,9 +18,9 @@ import { axiosInstance } from "@/lib/axiosinstance";
 import { getUserData, loginGoogleUser, loginUser } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { setUser } from "@/lib/userSlice";
-import OtpLogin from "@/components/shared/otpDialog";
+// import OtpLogin from "@/components/shared/otpDialog";
 import Link from "next/link";
-import { profile } from "console";
+// import { profile } from "console";
 
 export default function LoginPage() {
   const router = useRouter();

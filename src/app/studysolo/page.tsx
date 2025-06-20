@@ -85,13 +85,13 @@ export default function SoloStudy({ user_id }: { user_id: string }) {
   const toggleBackgroundOptions = () => {
     setIsBackgroundOptionsVisible(!isBackgroundOptionsVisible);
   };
-  const handleAddQuote = () => {
-    if (quote.trim()) {
-      setSavedQuotes((prevQuotes) => [...prevQuotes, quote]);
-      setQuote("");
-      setIsQuoteDialogOpen(false);
-    }
-  };
+  // const handleAddQuote = () => {
+  //   if (quote.trim()) {
+  //     setSavedQuotes((prevQuotes) => [...prevQuotes, quote]);
+  //     setQuote("");
+  //     setIsQuoteDialogOpen(false);
+  //   }
+  // };
   useEffect(() => {
     const fetchStudyData = async () => {
       try {

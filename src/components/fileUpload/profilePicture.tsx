@@ -19,7 +19,7 @@ const allowedImageFormats = [
 const maxImageSize = 1 * 1024 * 1024; // 1MB
 
 const ProfilePictureUpload = ({
-  user_id,
+  // user_id,
   profile,
 }: {
   user_id: string;
