@@ -31,9 +31,9 @@ const ChatComponent: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const socket = getSocket();
-  const [users, setUsers] = useState<{ socketId: string; userName: string }[]>(
-    []
-  );
+  // const [users, setUsers] = useState<{ socketId: string; userName: string }[]>(
+  //   []
+  // );
   useEffect(() => {
     if (!room_id) return;
     socket.connect();

@@ -2,13 +2,13 @@ import { MenuItem } from "@/components/menu/sidebarmenu";
 import {
   Boxes,
   Home,
-  Settings,
-  BookOpen,
-  Laptop,
-  MessageSquare,
-  Archive,
-  StickyNote,
-  Trash2,
+  // Settings,
+  // BookOpen,
+  // Laptop,
+  // MessageSquare,
+  // Archive,
+  // StickyNote,
+  // Trash2,
 } from "lucide-react";
 
 export const menuItemsTop: MenuItem[] = [
