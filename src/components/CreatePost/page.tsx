@@ -26,11 +26,11 @@ interface Post {
   difficulty?: "Easy" | "Medium" | "Hard";
 }
 
-interface PostCardProps {
+interface CreatePostProps {
   post: Post;
 }
 
-const PostCard = ({ post }: PostCardProps) => {
+const CreatePost = ({ post }: CreatePostProps) => {
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes);
   const [showComments, setShowComments] = useState(false);
@@ -180,4 +180,4 @@ const PostCard = ({ post }: PostCardProps) => {
   );
 };
 
-export default PostCard;
+export default CreatePost;

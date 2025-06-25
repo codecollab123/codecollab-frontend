@@ -1,4 +1,4 @@
-import { CreateRoom } from "@/components/create-room";
+import { CreateRoom } from "@/components/createRoom";
 
 
 export default function createroom() {
