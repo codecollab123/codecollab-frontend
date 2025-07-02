@@ -1,173 +1,287 @@
 "use client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Trophy,
+  Code,
+  HelpCircle,
+  Calendar,
+  MapPin,
+  Github,
+  Linkedin,
+} from "lucide-react";
 import { useSelector } from "react-redux";
-import { useState } from "react";
-
 import { RootState } from "@/lib/store";
 import SidebarMenu from "@/components/menu/sidebarmenu";
 import Header from "@/components/header/header";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   menuItemsBottom,
   menuItemsTop,
 } from "@/config/menuItems/dashboardMenuItem";
-import ProfilePictureUpload from "@/components/fileUpload/profilePicture";
-import { Textarea } from "@/components/ui/textarea";
-export default function PersonalInfo() {
+import Link from "next/link";
+
+const personalInfo: React.FC = () => {
   const user = useSelector((state: RootState) => state.user);
-  const [formData, setFormData] = useState({
-    firstName: user?.firstName || "",
-    lastName: user?.lastName || "",
-    email: user?.email || "",
-    phone: user?.phone || "",
-    profilePic: user?.profilePic || "",
-    techstacks:user?.techstacks || "",
-  });
+  const userStats = [
+    {
+      label: "Problems Solved",
+      value: 47,
+      icon: Code,
+      color: "text-green-600",
+    },
+    {
+      label: "Questions Asked",
+      value: 12,
+      icon: HelpCircle,
+      color: "text-blue-600",
+    },
+    {
+      label: "Challenges Won",
+      value: 3,
+      icon: Trophy,
+      color: "text-yellow-600",
+    },
+  ];
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setFormData((prev) => ({ ...prev, profilePic: imageUrl }));
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Updated Profile Data:", formData);
-  };
+  const recentActivity = [
+    {
+      type: "solution",
+      title: "Two Sum Problem",
+      timestamp: "2 hours ago",
+      likes: 15,
+    },
+    {
+      type: "question",
+      title: "Dynamic Programming Help",
+      timestamp: "1 day ago",
+      likes: 8,
+    },
+    {
+      type: "challenge",
+      title: "Binary Tree Challenge",
+      timestamp: "3 days ago",
+      likes: 32,
+    },
+  ];
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/40">
-      {/* Header at the top */}
-      <Header
-        menuItemsTop={menuItemsTop}
-        menuItemsBottom={menuItemsBottom}
-        activeMenu="Personal Info"
-        breadcrumbItems={[
-          { label: "Settings", link: "#" },
-          { label: "Personal Info", link: "#" },
-        ]}
-      />
-
-      <div className="flex flex-col sm:flex-row">
+    <div className="min-h-screen">
+      <div className="flex min-h-screen w-full">
         <SidebarMenu
           menuItemsTop={menuItemsTop}
           menuItemsBottom={menuItemsBottom}
-          active="Personal Info"
+          active=""
         />
-        <main className="flex-1 flex flex-col items-center justify-center text-white p-8">
-          <div className="w-full max-w-6xl p-8 shadow-lg rounded-lg">
-            {/* Profile Picture */}
-            <div className="flex justify-center mb-6">
-              <label htmlFor="profilePic" className="cursor-pointer relative">
-                <Avatar className="w-28 h-28 border-2 border-gray-500">
-                  <AvatarImage
-                    src={formData.profilePic}
-                    alt="Profile Picture"
-                  />
-                  <AvatarFallback>+</AvatarFallback>
-                </Avatar>
-                <input
-                  type="file"
-                  id="profilePic"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-              </label>
-            </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {/* Name */}
-                <div>
-                  <Label>First Name</Label>
-                  <Input
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    placeholder="Enter your first name"
-                    required
-                    className="w-full"
-                  />
-                </div>
-                <div>
-                  <Label>Last Name</Label>
-                  <Input
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    placeholder="Enter your last name"
-                    required
-                    className="w-full "
-                  />
+        <div className="flex-1 flex flex-col w-full">
+          {/* Header */}
+          <Header
+            menuItemsTop={menuItemsTop}
+            menuItemsBottom={menuItemsBottom}
+            activeMenu="Projects"
+            breadcrumbItems={[
+              { label: "personalInfo", link: "/settings/personalInfo" },
+            ]}
+          />
+
+          {/* Profile Content */}
+          <div className="pt-4 pb-10">
+            <div className="max-w-6xl mx-auto px-4">
+              {/* Profile Header */}
+              <Card className="mb-8">
+                <CardContent className="pt-6">
+                  <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
+                    <div className="relative">
+                      <Avatar className="w-32 h-32 border-4 border-green-400 neon-glow">
+                        {user?.photoURL ? (
+                          <AvatarImage src={user.photoURL} alt="Profile" />
+                        ) : (
+                          <AvatarFallback>TR</AvatarFallback>
+                        )}
+                        <AvatarFallback className="text-2xl">CM</AvatarFallback>
+                      </Avatar>
+                    </div>
+
+                    <div className="flex-1">
+                      
+
+                      <p className="text-gray-600 mb-4">
+                        Full-stack developer passionate about algorithms and
+                        data structures
+                      </p>
+
+                      <div className="flex flex-wrap items-center gap-4 mb-4">
+                        <div className="flex items-center space-x-2 text-gray-600">
+                          <MapPin className="w-4 h-4" />
+                          <span>San Francisco, CA</span>
+                        </div>
+                        <div className="flex items-center space-x-2 text-gray-600">
+                          <Calendar className="w-4 h-4" />
+                          <span>Joined March 2024</span>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <Badge className="bg-blue-100 text-blue-800">
+                          React
+                        </Badge>
+                        <Badge className="bg-green-100 text-green-800">
+                          Python
+                        </Badge>
+                        <Badge className="bg-purple-100 text-purple-800">
+                          Algorithms
+                        </Badge>
+                        <Badge className="bg-orange-100 text-orange-800">
+                          JavaScript
+                        </Badge>
+                      </div>
+
+                      <div className="flex space-x-4">
+                        <Button variant="outline" size="sm">
+                          <Github className="w-4 h-4 mr-2" />
+                          GitHub
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          <Linkedin className="w-4 h-4 mr-2" />
+                          LinkedIn
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="flex md:flex-col space-x-4 md:space-x-0 md:space-y-2">
+                      <Button asChild>
+                        <Link href="/settings/editprofile">Edit Profile</Link>
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Stats Cards */}
+                <div className="lg:col-span-1 space-y-6">
+                  {userStats.map((stat, index) => (
+                    <Card key={index}>
+                      <CardContent className="pt-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-gray-600">
+                              {stat.label}
+                            </p>
+                            <p className="text-2xl font-bold text-white">
+                              {stat.value}
+                            </p>
+                          </div>
+                          {/* <stat.icon className={`w-8 h-8 ${stat.color}`} /> */}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+
+                  {/* Achievements */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        <Trophy className="w-5 h-5 text-yellow-600" />
+                        <span>Achievements</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">First Solution</span>
+                          <Badge className="bg-green-100 text-green-800">
+                            ✓
+                          </Badge>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">10 Day Streak</span>
+                          <Badge className="bg-blue-100 text-blue-800">✓</Badge>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">50 Problems Solved</span>
+                          <Badge variant="outline">47/50</Badge>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
 
-                {/* Email & Phone */}
-                <div>
-                  <Label>Email</Label>
-                  <Input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    placeholder="Enter your email"
-                    readOnly
-                    className="w-full opacity-50 cursor-not-allowed"
-                  />
-                  <span className="text-sm text-gray-400">
-                    Non-editable field
-                  </span>
-                </div>
-                <div>
-                  <Label>Phone</Label>
-                  <Input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    placeholder="Enter your phone number"
-                    readOnly
-                    className="w-full "
-                  />
-                  <span className="text-sm text-gray-400">
-                    Non-editable field
-                  </span>
-                </div>
-                <div>
-                  <Label>Tech Stacks</Label>
-                  <Input
-                    type="text"
-                    name="techStacks"
-                    placeholder="Enter your skills"
-                    readOnly
-                    className="w-full"
-                  />
-                </div>
-                <div>
-                  <Label>Bio</Label>
-                  <Textarea
-                    className="w-full "
-                      placeholder="Enter your bio"
-                  />
+                {/* Main Tabs */}
+                <div className="lg:col-span-2 flex-1">
+                  <Tabs defaultValue="activity" className="w-full">
+                    <TabsList className="grid w-full grid-cols-3">
+                      <TabsTrigger value="activity">
+                        Recent Activity
+                      </TabsTrigger>
+                      <TabsTrigger value="posts">My Posts</TabsTrigger>
+                      <TabsTrigger value="solutions">Solutions</TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="activity" className="space-y-4">
+                      {recentActivity.map((activity, index) => (
+                        <Card key={index}>
+                          <CardContent className="pt-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3">
+                                {activity.type === "solution" && (
+                                  <Code className="w-5 h-5 text-green-600" />
+                                )}
+                                {activity.type === "question" && (
+                                  <HelpCircle className="w-5 h-5 text-blue-600" />
+                                )}
+                                {activity.type === "challenge" && (
+                                  <Trophy className="w-5 h-5 text-purple-600" />
+                                )}
+                                <div>
+                                  <h3 className="font-semibold text-gray-400">
+                                    {activity.title}
+                                  </h3>
+                                  <p className="text-sm text-gray-600">
+                                    {activity.timestamp}
+                                  </p>
+                                </div>
+                              </div>
+                              <Badge variant="secondary">
+                                {activity.likes} likes
+                              </Badge>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </TabsContent>
+
+                    <TabsContent value="posts">
+                      <Card>
+                        <CardContent className="pt-6">
+                          <p className="text-center text-gray-500">
+                            Your posts will appear here
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+
+                    <TabsContent value="solutions">
+                      <Card>
+                        <CardContent className="pt-6">
+                          <p className="text-center text-gray-500">
+                            Your solutions will appear here
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+                  </Tabs>
                 </div>
               </div>
-
-              {/* Submit Button */}
-              <Button type="submit" className="w-full py-3">
-                Save changes
-              </Button>
-            </form>
+            </div>
           </div>
-        </main>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default personalInfo;

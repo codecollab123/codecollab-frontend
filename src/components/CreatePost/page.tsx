@@ -24,6 +24,7 @@ interface Post {
   timestamp: string;
   codeSnippet?: string;
   difficulty?: "Easy" | "Medium" | "Hard";
+  contributionCount?: number; 
 }
 
 interface CreatePostProps {

@@ -12,7 +12,9 @@ import { Code, Trophy, HelpCircle, Plus, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { axiosInstance } from "@/lib/axiosinstance";
 import { RootState } from "@/lib/store";
-import Link from "next/link";
+import SidebarMenu from "@/components/menu/sidebarmenu";
+import { menuItemsBottom, menuItemsTop } from "@/config/menuItems/dashboardMenuItem";
+import Header from "@/components/header/header";
 
 const CreatePostPage = () => {
   const router = useRouter();
@@ -61,6 +63,7 @@ const CreatePostPage = () => {
       difficulty,
       codeSnippet,
       tags,
+      image: "https://example.com/image.png", 
       timestamp: new Date().toISOString(),
       author: userId, // 👈 string expected by backend
       likes: 0,
@@ -92,6 +95,18 @@ const CreatePostPage = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <SidebarMenu
+        menuItemsTop={menuItemsTop}
+        menuItemsBottom={menuItemsBottom}
+        active="Chats"
+      />
+       <div className="flex flex-col flex-1 min-h-screen w-full">
+      <Header
+          menuItemsTop={menuItemsTop}
+          menuItemsBottom={menuItemsBottom}
+          activeMenu="Projects"
+          breadcrumbItems={[{ label: "community feeds", link: "/feeds" }]}
+        />
       <div className="pt-16 pb-8">
         <div className="max-w-4xl mx-auto px-4">
           <div className="mb-8">
@@ -262,6 +277,7 @@ const CreatePostPage = () => {
           </form>
         </div>
       </div>
+    </div>
     </div>
   );
 };

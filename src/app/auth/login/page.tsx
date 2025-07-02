@@ -12,13 +12,13 @@ import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { UserCredential } from "firebase/auth";
 import { useDispatch } from "react-redux";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { axiosInstance } from "@/lib/axiosinstance";
 import { getUserData, loginGoogleUser, loginUser } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { setUser } from "@/lib/userSlice";
-// import OtpLogin from "@/components/shared/otpDialog";
+import OtpLogin from "@/components/shared/otpDialog";
 import Link from "next/link";
 // import { profile } from "console";
 
@@ -27,7 +27,13 @@ export default function LoginPage() {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isEmailLoginLoading, setIsEmailLoginLoading] =
+    useState<boolean>(false);
+  const [isGoogleLoginLoading, setIsGoogleLoginLoading] =
+    useState<boolean>(false);
 
   const handleLogin = async (): Promise<void> => {
     setIsLoading(true);
@@ -47,8 +53,13 @@ export default function LoginPage() {
             type: claims.type,
           })
         );
+        useEffect(() => {
+    if (user) {
+      console.log("🟢 User mil gaya, redirecting...");
+      router.replace("/dashboard");
+    }
+  }, [user]);
 
-        router.replace(`/dashboard`);
         toast({
           title: "Login Successful",
           description: "You have successfully logged in.",
@@ -84,10 +95,8 @@ export default function LoginPage() {
     while (!isUnique) {
       try {
         // Check if the username already exists in the database
-        await axiosInstance.get(
-          `/public/username?username=${username}`
-        );
-        
+        await axiosInstance.get(`/public/username?username=${username}`);
+
         // If the username exists, append a random number and try again
         const randomSuffix = Math.floor(Math.random() * 1000); // Random number between 0 and 999
         username = `${baseUsername}${randomSuffix}`;
@@ -106,18 +115,18 @@ export default function LoginPage() {
       // First authenticate with Google to get user credentials
       const userCredential: UserCredential = await loginGoogleUser();
       const { user: firebaseUser, claims } = await getUserData(userCredential);
-  
+
       // Split displayName into firstName and lastName
       const displayName = firebaseUser.displayName || "User Default";
       const [firstName, ...lastNameParts] = displayName.split(" ");
       const lastName = lastNameParts.join(" ") || "Unknown"; // Assign "Unknown" if lastName is empty
-  
+
       // Check if user exists in our database
       try {
         const user = await axiosInstance.get(
           `/public/user_email?user=${firebaseUser.email}`
         );
-  
+
         dispatch(setUser({ ...firebaseUser, type: claims.type }));
         router.replace(`/dashboard`);
         toast({
@@ -135,10 +144,10 @@ export default function LoginPage() {
             profilePic: firebaseUser?.photoURL,
             uid: firebaseUser.uid,
           };
-  
+
           console.log(`User data:`, newUser);
           await axiosInstance.post("/register/googleLogin_user", newUser);
-  
+
           dispatch(
             setUser({
               ...firebaseUser,
@@ -146,11 +155,12 @@ export default function LoginPage() {
               phoneVerify: false,
             })
           );
-  
+
           router.replace(`/dashboard`);
           toast({
             title: "Account Created",
-            description: "Your account has been created. Please complete your profile.",
+            description:
+              "Your account has been created. Please complete your profile.",
           });
         } catch (registrationError: any) {
           console.error("Registration error:", registrationError);
@@ -172,7 +182,7 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
-  
+
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
@@ -209,7 +219,7 @@ export default function LoginPage() {
                     id="email"
                     type="email"
                     placeholder="m@example.com"
-                    value={email}
+                    value={email ?? ""}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                   />
@@ -220,7 +230,7 @@ export default function LoginPage() {
                     id="password"
                     type="password"
                     placeholder="Your password"
-                    value={password}
+                    value={password ?? ""}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
@@ -249,6 +259,11 @@ export default function LoginPage() {
           <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
         </div>
       </div>
+      <OtpLogin
+        phoneNumber={phone}
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+      />
     </div>
   );
 }

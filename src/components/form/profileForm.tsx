@@ -72,7 +72,7 @@ export default function ProfileForm() {
             </div>
             <div>
               <Label>Phone</Label>
-              <Input type="tel" name="phone" value={formData.phone} placeholder="Enter your phone number" readOnly className="w-full bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed" />
+              <Input type="tel" name="phone" value={formData.phone|| ""} placeholder="Enter your phone number" readOnly className="w-full bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed" />
               <span className="text-sm text-gray-400">Non-editable field</span>
             </div>
 

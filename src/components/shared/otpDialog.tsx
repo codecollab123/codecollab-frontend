@@ -35,6 +35,7 @@ import { setUser } from '@/lib/userSlice';
 import { getUserData } from '@/lib/utils';
 import { axiosInstance } from '@/lib/axiosinstance';
 import { toast } from '@/hooks/use-toast';
+import PhoneChangeModal from './PhoneChangeModal';
 
 interface OtpLoginProps {
   phoneNumber: string;
@@ -45,19 +46,19 @@ interface OtpLoginProps {
 function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
   const router = useRouter();
   const dispatch = useDispatch();
-  const [otp, setOtp] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState('');
-  const [resendCountdown, setResendCountdown] = useState(0);
+ const [otp, setOtp] = useState<string>(""); // ✅ Already good
 
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState("");
+  const [resendCountdown, setResendCountdown] = useState(0);
+  const [isPending, startTransition] = useTransition();
+  const [showModal, setShowModal] = useState(false);
+  const [phone, setPhone] = useState(phoneNumber);
   const [recaptchaVerifier, setRecaptchaVerifier] =
     useState<RecaptchaVerifier | null>(null);
 
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult | null>(null);
-
-  const [isPending, startTransition] = useTransition();
-
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (resendCountdown > 0) {
@@ -89,7 +90,7 @@ function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
         setError('Please request OTP first.');
         return;
       }
-
+      
       try {
         const userCredential: UserCredential =
           await confirmationResult?.confirm(otp);
@@ -163,9 +164,11 @@ function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
   );
 
   useEffect(() => {
-    if (isModalOpen) {
-      requestOtp();
-    }
+   if (isModalOpen) {
+  setOtp(""); // Clear any old value
+  requestOtp();
+}
+
   }, [isModalOpen, requestOtp]);
 
   const loadingIndicator = (
@@ -190,6 +193,12 @@ function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
     </div>
   );
 
+  // Add a placeholder handler for phone change
+  const handlePhoneChange = (newPhone: string) => {
+    setPhone(newPhone);
+    setShowModal(false);
+  };
+
   return (
     <>
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -202,10 +211,11 @@ function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
           </DialogHeader>
           <div className="flex flex-col justify-center items-center">
             <InputOTP
-              maxLength={6}
-              value={otp}
-              onChange={(value) => setOtp(value)}
-            >
+  maxLength={6}
+  value={otp ?? ""} // ✅ Make sure it's always a string
+  onChange={(value) => setOtp(value)}
+>
+
               <InputOTPGroup>
                 <InputOTPSlot index={0} />
                 <InputOTPSlot index={1} />
@@ -236,6 +246,12 @@ function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
           </div>
         </DialogContent>
       </Dialog>
+      <PhoneChangeModal
+        open={showModal}
+        setOpen={setShowModal}
+        onSubmit={handlePhoneChange}
+        setPhone={setPhone}
+      />
       <div id="recaptcha-container" />
     </>
   );
