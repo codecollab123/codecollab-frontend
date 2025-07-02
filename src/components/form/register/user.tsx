@@ -217,6 +217,7 @@ function UserRegisterForm({
       userName: "",
       phone: "",
       password: "",
+      confirmPassword: "",
       dob: "",
     },
     mode: "all",
@@ -301,7 +302,7 @@ function UserRegisterForm({
     };
   
     try {
-        await axiosInstance.post("/public/user", formData);
+        await axiosInstance.post("/register/user", formData);
       setIsModalOpen(true);
       setTimeout(() => {
         router.push("/auth/login");
@@ -368,6 +369,8 @@ function UserRegisterForm({
                   className="w-full"
                 />
               </div>
+
+ 
 
               {/* Password and Confirm Password */}
               <div className="space-y-2">
@@ -457,16 +460,24 @@ function UserRegisterForm({
               </div>
             </div>
 
-            {/* Second Step */}
-            <div
-              className={cn("grid gap-4", currentStep === 1 ? "" : "hidden")}
-            >
-            </div>
+         
 
             {/* Final Step */}
             <div
               className={cn("grid gap-4", currentStep === 1 ? "" : "hidden")}
             >
+              
+              <div className="grid gap-4 sm:grid-cols-2">
+                {/* Username */}
+                <TextInput
+                  control={form.control}
+                  name="userName"
+                  label="Username"
+                  placeholder="john_doe_123"
+                  className="w-full"
+                />
+                </div>
+
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
                 <PhoneNumberForm
@@ -502,6 +513,8 @@ function UserRegisterForm({
                   Previous
                 </Button>
                 <Button
+                 onClick={() => onSubmit(form.getValues())}// ✅ Capital 'S' and pass form values
+
                   type="submit"
                   className="w-full sm:w-auto"
                   disabled={isLoading || !isChecked}
