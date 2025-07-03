@@ -1,287 +1,334 @@
 "use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Trophy,
-  Code,
-  HelpCircle,
-  Calendar,
-  MapPin,
-  Github,
-  Linkedin,
-} from "lucide-react";
-import { useSelector } from "react-redux";
-import { RootState } from "@/lib/store";
+import { CalendarDays, Trophy, Target, Zap, Award, Code2 } from "lucide-react";
+import SubmissionCalendar from "@/components/SubmissionCalender";
 import SidebarMenu from "@/components/menu/sidebarmenu";
-import Header from "@/components/header/header";
 import {
   menuItemsBottom,
   menuItemsTop,
 } from "@/config/menuItems/dashboardMenuItem";
-import Link from "next/link";
+import Header from "@/components/header/header";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
+import { useEffect, useState } from "react";
+import { axiosInstance } from "@/lib/axiosinstance";
 
-const personalInfo: React.FC = () => {
+const personalInfoPage = () => {
+  const userStats = {
+    totalSolved: 847,
+    ranking: 12847,
+    contestRating: 1847,
+    streakDays: 45,
+  };
+
+  type RecentPost = {
+    problem: string;
+    difficulty: "Easy" | "Medium" | "Hard";
+    status: string;
+    time: string;
+    language: string;
+  };
   const user = useSelector((state: RootState) => state.user);
-  const userStats = [
-    {
-      label: "Problems Solved",
-      value: 47,
-      icon: Code,
-      color: "text-green-600",
-    },
-    {
-      label: "Questions Asked",
-      value: 12,
-      icon: HelpCircle,
-      color: "text-blue-600",
-    },
-    {
-      label: "Challenges Won",
-      value: 3,
-      icon: Trophy,
-      color: "text-yellow-600",
-    },
-  ];
+  const userId = user?.uid;
+  const [recentSubmissions, setRecentSubmissions] = useState<RecentPost[]>([]);
 
-  const recentActivity = [
+  useEffect(() => {
+  const fetchUserPosts = async () => {
+    try {
+      if (!userId) return;
+
+      const res = await axiosInstance.get(`/post/${userId}/userpost`);
+
+      // ✅ Ensure it's an array
+      const userPosts = Array.isArray(res.data?.data) ? res.data.data : [];
+
+      const mappedPosts = userPosts.map((post: any) => ({
+        problem: post.content?.slice(0, 30) + "...",
+        difficulty: post.difficultyLevel || "Easy",
+        status: "Accepted",
+        time: new Date(post.createdAt).toLocaleString(), // changed from post.timestamp
+        language: "JavaScript",
+      }));
+
+      setRecentSubmissions(mappedPosts);
+    } catch (error) {
+      console.error("Error fetching user posts:", error);
+    }
+  };
+
+  fetchUserPosts();
+}, [userId]);
+
+
+  const badges = [
     {
-      type: "solution",
-      title: "Two Sum Problem",
-      timestamp: "2 hours ago",
-      likes: 15,
+      name: "100 Days Badge",
+      description: "Solved at least one problem for 100 consecutive days",
+      earned: true,
     },
     {
-      type: "question",
-      title: "Dynamic Programming Help",
-      timestamp: "1 day ago",
-      likes: 8,
-    },
-    {
-      type: "challenge",
-      title: "Binary Tree Challenge",
-      timestamp: "3 days ago",
-      likes: 32,
+      name: "Speed Demon",
+      description: "Solved a problem in under 30 seconds",
+      earned: true,
     },
   ];
 
   return (
-    <div className="min-h-screen">
-      <div className="flex min-h-screen w-full">
-        <SidebarMenu
+    <div className="min-h-screen bg-background text-foreground">
+      <SidebarMenu
+        menuItemsTop={menuItemsTop}
+        menuItemsBottom={menuItemsBottom}
+        active="Chats"
+      />
+      <div className="flex flex-col flex-1 min-h-screen w-full">
+        <Header
           menuItemsTop={menuItemsTop}
           menuItemsBottom={menuItemsBottom}
-          active=""
+          activeMenu="Projects"
+          breadcrumbItems={[{ label: "community feeds", link: "/feeds" }]}
         />
 
-        <div className="flex-1 flex flex-col w-full">
-          {/* Header */}
-          <Header
-            menuItemsTop={menuItemsTop}
-            menuItemsBottom={menuItemsBottom}
-            activeMenu="Projects"
-            breadcrumbItems={[
-              { label: "personalInfo", link: "/settings/personalInfo" },
-            ]}
-          />
+        <div className="max-w-6xl mx-auto px-4 space-y-8">
+          {/* Header Section */}
+          <Card className="w-full border-0 shadow-lg">
+            <CardContent className="w-full p-6">
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+                <Avatar className="w-24 h-24 border-4 border-orange-200">
+                  <AvatarImage src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=150&h=150&fit=crop&crop=faces" />
+                  <AvatarFallback className="text-2xl bg-orange-100 text-orange-700">
+                    JD
+                  </AvatarFallback>
+                </Avatar>
 
-          {/* Profile Content */}
-          <div className="pt-4 pb-10">
-            <div className="max-w-6xl mx-auto px-4">
-              {/* Profile Header */}
-              <Card className="mb-8">
-                <CardContent className="pt-6">
-                  <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
-                    <div className="relative">
-                      <Avatar className="w-32 h-32 border-4 border-green-400 neon-glow">
-                        {user?.photoURL ? (
-                          <AvatarImage src={user.photoURL} alt="Profile" />
-                        ) : (
-                          <AvatarFallback>TR</AvatarFallback>
-                        )}
-                        <AvatarFallback className="text-2xl">CM</AvatarFallback>
-                      </Avatar>
+                <div className="flex-1 space-y-4">
+                  <div>
+                    <h1 className="text-3xl font-bold ">john_developer</h1>
+                    <p className="text-gray-600 mt-1">
+                      Software Engineer at Tech Corp
+                    </p>
+                    <p className="text-sm text-gray-500 mt-2">
+                      Member since January 2022 • San Francisco, CA
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-4 text-sm">
+                    <div className="flex items-center gap-2 text-orange-600">
+                      <Target className="w-4 h-4" />
+                      <span>
+                        Ranking: #{userStats.ranking.toLocaleString()}
+                      </span>
                     </div>
+                    <div className="flex items-center gap-2 text-blue-600">
+                      <Trophy className="w-4 h-4" />
+                      <span>Contest Rating: {userStats.contestRating}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-green-600">
+                      <Zap className="w-4 h-4" />
+                      <span>{userStats.streakDays} day streak</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-                    <div className="flex-1">
-                      
+          {/* Stats Overview */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-orange-600">
+                    {userStats.totalSolved}
+                  </div>
+                  <div className="text-sm text-gray-600 mt-1">
+                    Problems Solved
+                  </div>
+                  {/* <Progress value={(userStats.totalSolved / userStats.totalProblems) * 100} className="mt-3 h-2" /> */}
+                </div>
+              </CardContent>
+            </Card>
 
-                      <p className="text-gray-600 mb-4">
-                        Full-stack developer passionate about algorithms and
-                        data structures
-                      </p>
+            <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-yellow-600">
+                    {/* {userStats.mediumSolved} */}
+                  </div>
+                  <div className="text-sm text-gray-600 mt-1">Medium</div>
+                  {/* <Progress value={65} className="mt-3 h-2" /> */}
+                </div>
+              </CardContent>
+            </Card>
 
-                      <div className="flex flex-wrap items-center gap-4 mb-4">
-                        <div className="flex items-center space-x-2 text-gray-600">
-                          <MapPin className="w-4 h-4" />
-                          <span>San Francisco, CA</span>
+            <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-red-600">
+                    {/* {userStats.hardSolved} */}
+                  </div>
+                  <div className="text-sm text-gray-600 mt-1">Hard</div>
+                  {/* <Progress value={25} className="mt-3 h-2" /> */}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Main Content Tabs */}
+          <Tabs defaultValue="submissions" className="w-full space-y-5">
+            <TabsList className="grid w-full grid-cols-3 lg:w-[500px]">
+              <TabsTrigger value="submissions">Recent Posts</TabsTrigger>
+              <TabsTrigger value="badges">Badges</TabsTrigger>
+              <TabsTrigger value="calendar">Activity</TabsTrigger>
+            </TabsList>
+
+            <TabsContent
+              value="submissions"
+              className="space-y-4 w-full min-h-[400px]"
+            >
+              <Card className="w-full border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Code2 className="w-5 h-5 text-orange-600" />
+                    Recent Posts
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {recentSubmissions.length > 0 ? (
+                      recentSubmissions.map((submission, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                        >
+                          <div className="flex-1">
+                            <h3 className="font-medium text-gray-900 line-clamp-1">
+                              {submission.problem}
+                            </h3>
+                            <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+                              <Badge
+                                variant={
+                                  submission.difficulty === "Easy"
+                                    ? "secondary"
+                                    : submission.difficulty === "Medium"
+                                    ? "default"
+                                    : "destructive"
+                                }
+                              >
+                                {submission.difficulty}
+                              </Badge>
+                              <span>{submission.language}</span>
+                              <span>{submission.time}</span>
+                            </div>
+                          </div>
+                          <Badge
+                            variant={
+                              submission.status === "Accepted"
+                                ? "default"
+                                : "destructive"
+                            }
+                            className={
+                              submission.status === "Accepted"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-red-100 text-red-800"
+                            }
+                          >
+                            {submission.status}
+                          </Badge>
                         </div>
-                        <div className="flex items-center space-x-2 text-gray-600">
-                          <Calendar className="w-4 h-4" />
-                          <span>Joined March 2024</span>
-                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center text-muted-foreground py-10">
+                        No recent posts found.
                       </div>
-
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        <Badge className="bg-blue-100 text-blue-800">
-                          React
-                        </Badge>
-                        <Badge className="bg-green-100 text-green-800">
-                          Python
-                        </Badge>
-                        <Badge className="bg-purple-100 text-purple-800">
-                          Algorithms
-                        </Badge>
-                        <Badge className="bg-orange-100 text-orange-800">
-                          JavaScript
-                        </Badge>
-                      </div>
-
-                      <div className="flex space-x-4">
-                        <Button variant="outline" size="sm">
-                          <Github className="w-4 h-4 mr-2" />
-                          GitHub
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <Linkedin className="w-4 h-4 mr-2" />
-                          LinkedIn
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="flex md:flex-col space-x-4 md:space-x-0 md:space-y-2">
-                      <Button asChild>
-                        <Link href="/settings/editprofile">Edit Profile</Link>
-                      </Button>
-                    </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
+            </TabsContent>
 
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Stats Cards */}
-                <div className="lg:col-span-1 space-y-6">
-                  {userStats.map((stat, index) => (
-                    <Card key={index}>
-                      <CardContent className="pt-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm text-gray-600">
-                              {stat.label}
-                            </p>
-                            <p className="text-2xl font-bold text-white">
-                              {stat.value}
+            <TabsContent
+              value="badges"
+              className="space-y-4 w-full min-h-[400px]"
+            >
+              <Card className="w-full border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Award className="w-5 h-5 text-orange-600" />
+                    Badges & Achievements
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="w-full">
+                  <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {badges.map((badge, index) => (
+                      <div
+                        key={index}
+                        className={`p-4 border rounded-lg ${
+                          badge.earned
+                            ? "border-orange-200 bg-orange-50"
+                            : "border-gray-200 bg-gray-50"
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div
+                            className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                              badge.earned ? "bg-orange-600" : "bg-gray-400"
+                            }`}
+                          >
+                            <Award className="w-4 h-4 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <h3
+                              className={`font-medium ${
+                                badge.earned
+                                  ? "text-orange-900"
+                                  : "text-gray-600"
+                              }`}
+                            >
+                              {badge.name}
+                            </h3>
+                            <p
+                              className={`text-sm mt-1 ${
+                                badge.earned
+                                  ? "text-orange-700"
+                                  : "text-gray-500"
+                              }`}
+                            >
+                              {badge.description}
                             </p>
                           </div>
-                          {/* <stat.icon className={`w-8 h-8 ${stat.color}`} /> */}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-
-                  {/* Achievements */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <Trophy className="w-5 h-5 text-yellow-600" />
-                        <span>Achievements</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm">First Solution</span>
-                          <Badge className="bg-green-100 text-green-800">
-                            ✓
-                          </Badge>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm">10 Day Streak</span>
-                          <Badge className="bg-blue-100 text-blue-800">✓</Badge>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm">50 Problems Solved</span>
-                          <Badge variant="outline">47/50</Badge>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-                {/* Main Tabs */}
-                <div className="lg:col-span-2 flex-1">
-                  <Tabs defaultValue="activity" className="w-full">
-                    <TabsList className="grid w-full grid-cols-3">
-                      <TabsTrigger value="activity">
-                        Recent Activity
-                      </TabsTrigger>
-                      <TabsTrigger value="posts">My Posts</TabsTrigger>
-                      <TabsTrigger value="solutions">Solutions</TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="activity" className="space-y-4">
-                      {recentActivity.map((activity, index) => (
-                        <Card key={index}>
-                          <CardContent className="pt-4">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-3">
-                                {activity.type === "solution" && (
-                                  <Code className="w-5 h-5 text-green-600" />
-                                )}
-                                {activity.type === "question" && (
-                                  <HelpCircle className="w-5 h-5 text-blue-600" />
-                                )}
-                                {activity.type === "challenge" && (
-                                  <Trophy className="w-5 h-5 text-purple-600" />
-                                )}
-                                <div>
-                                  <h3 className="font-semibold text-gray-400">
-                                    {activity.title}
-                                  </h3>
-                                  <p className="text-sm text-gray-600">
-                                    {activity.timestamp}
-                                  </p>
-                                </div>
-                              </div>
-                              <Badge variant="secondary">
-                                {activity.likes} likes
-                              </Badge>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </TabsContent>
-
-                    <TabsContent value="posts">
-                      <Card>
-                        <CardContent className="pt-6">
-                          <p className="text-center text-gray-500">
-                            Your posts will appear here
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </TabsContent>
-
-                    <TabsContent value="solutions">
-                      <Card>
-                        <CardContent className="pt-6">
-                          <p className="text-center text-gray-500">
-                            Your solutions will appear here
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </TabsContent>
-                  </Tabs>
-                </div>
-              </div>
-            </div>
-          </div>
+            <TabsContent
+              value="calendar"
+              className="space-y-4 w-full min-h-[400px]"
+            >
+              <Card className="w-full border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CalendarDays className="w-5 h-5 text-orange-600" />
+                    Study Streak
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="w-full">
+                  <SubmissionCalendar />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
   );
 };
 
-export default personalInfo;
+export default personalInfoPage;

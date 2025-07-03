@@ -2,6 +2,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface UserState {
+  uid: any;
   [key: string]: any; // You can define specific fields here as per your requirements
 }
 
