@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarDays, Trophy, Target, Zap, Award, Code2 } from "lucide-react";
+import { CalendarDays, Trophy, Target, Zap, Award } from "lucide-react";
 import SubmissionCalendar from "@/components/SubmissionCalender";
 import SidebarMenu from "@/components/menu/sidebarmenu";
 import {

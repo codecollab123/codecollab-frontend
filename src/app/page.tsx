@@ -1,6 +1,4 @@
-import { Button } from "@/components/ui/button";
 
-import Whiteboard from "@/components/whiteboard/page";
 import Image from "next/image";
 
 export default function Home() {

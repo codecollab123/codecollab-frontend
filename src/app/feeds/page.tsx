@@ -51,7 +51,6 @@ const FeedPage = () => {
   const user = useSelector((state: RootState) => state.user);
   const userId = user?.uid;
   const [contributionCount, setContributionCount] = useState<number>(0);
-  const [recentSubmissions, setRecentSubmissions] = useState<RecentPost[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
