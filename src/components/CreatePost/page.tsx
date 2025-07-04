@@ -151,7 +151,7 @@ const CreatePost = ({ post, currentUserId, onDelete }: CreatePostProps) => {
     </Button>
   )
 } */}
-            {/* {currentUserId === post.author?.id && ( */}
+            {currentUserId === post.author?.id && (
             <Button
               variant="ghost"
               size="icon"
@@ -160,7 +160,7 @@ const CreatePost = ({ post, currentUserId, onDelete }: CreatePostProps) => {
             >
               <Trash2 className="w-4 h-4" />
             </Button>
-            {/* // )} */}
+             )}
           </div>
         </div>
       </CardHeader>

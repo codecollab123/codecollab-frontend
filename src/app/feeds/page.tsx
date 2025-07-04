@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
+import { getFeedSocket } from "@/service/liveFeedSocket";
 
 type Post = {
   _id: string;
@@ -37,18 +38,15 @@ type Post = {
   contributionCount?: number;
 };
 
-type RecentPost = {
-  _id: string;
-  problem: string;
-  difficulty: "Easy" | "Medium" | "Hard";
-  status: string;
-  time: string;
-  language: string;
-};
+
 
 const FeedPage = () => {
   const [activeFilter, setActiveFilter] = useState("all");
-  const user = useSelector((state: RootState) => state.user);
+  type User = {
+    uid: string;
+  };
+
+  const user = useSelector((state: RootState) => state.user) as User | null;
   const userId = user?.uid;
   const [contributionCount, setContributionCount] = useState<number>(0);
   const [posts, setPosts] = useState<Post[]>([]);
@@ -61,7 +59,7 @@ const FeedPage = () => {
       const postData = response.data?.data;
       setPosts(postData || []);
     } catch (error: any) {
-      console.error("❌ Error fetching posts:", error.message);
+      console.error("Error fetching posts:", error.message);
     } finally {
       setIsLoading(false);
     }
@@ -87,14 +85,6 @@ const FeedPage = () => {
     );
   };
 
-  useEffect(() => {
-    getPosts();
-    console.log("User ID:", userId);
-    if (userId) {
-      getContributionCount(userId);
-    }
-  }, [userId]);
-
   const filters = [
     { id: "all", label: "All Posts", count: posts.length },
     {
@@ -118,6 +108,23 @@ const FeedPage = () => {
     activeFilter === "all"
       ? posts
       : posts.filter((post) => post.postType === activeFilter);
+
+  useEffect(() => {
+    getPosts(); // initial fetch
+    if (userId) {
+      getContributionCount(userId);
+    }
+
+    const socket = getFeedSocket(userId);
+
+    socket.on("receive_post", (newPost: Post) => {
+      setPosts((prevPosts) => [newPost, ...prevPosts]);
+    });
+
+    return () => {
+      socket.off("receive_post");
+    };
+  }, [userId]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -227,7 +234,7 @@ const FeedPage = () => {
                         post={{
                           postId: post._id,
                           author: {
-                            id: post.author?._id,
+                              id: typeof post.author === "string" ? post.author : post.author?._id,
                             name: post.author?.name || "Anonymous",
                             avatar:
                               post.author?.avatar || "/default-avatar.png",

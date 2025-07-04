@@ -32,6 +32,7 @@ const personalInfoPage = () => {
     time: string;
     language: string;
   };
+  
   const user = useSelector((state: RootState) => state.user);
   const userId = user?.uid;
   const [recentSubmissions, setRecentSubmissions] = useState<RecentPost[]>([]);
@@ -213,7 +214,7 @@ const personalInfoPage = () => {
                       post={{
                         postId: post._id,
                         author: {
-                          id: post.author?._id,
+                          id: typeof post.author === "string" ? post.author : post.author?._id,
                           name: post.author?.name || "Anonymous",
                           avatar: post.author?.avatar || "/default-avatar.png",
                           level: post.author?.level || "Beginner",
