@@ -1,7 +1,5 @@
 "use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarDays, Trophy, Target, Zap, Award, Code2 } from "lucide-react";
@@ -16,6 +14,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 import { useEffect, useState } from "react";
 import { axiosInstance } from "@/lib/axiosinstance";
+import CreatePost from "@/components/CreatePost/page";
 
 const personalInfoPage = () => {
   const userStats = {
@@ -26,6 +25,7 @@ const personalInfoPage = () => {
   };
 
   type RecentPost = {
+    _id: string;
     problem: string;
     difficulty: "Easy" | "Medium" | "Hard";
     status: string;
@@ -37,32 +37,48 @@ const personalInfoPage = () => {
   const [recentSubmissions, setRecentSubmissions] = useState<RecentPost[]>([]);
 
   useEffect(() => {
-  const fetchUserPosts = async () => {
-    try {
-      if (!userId) return;
+    const fetchUserPosts = async () => {
+      try {
+        if (!userId) return;
 
-      const res = await axiosInstance.get(`/post/${userId}/userpost`);
+        const res = await axiosInstance.get(`/post/${userId}/userpost`);
 
-      // ✅ Ensure it's an array
-      const userPosts = Array.isArray(res.data?.data) ? res.data.data : [];
+        const userPosts = Array.isArray(res.data?.data) ? res.data.data : [];
 
-      const mappedPosts = userPosts.map((post: any) => ({
-        problem: post.content?.slice(0, 30) + "...",
-        difficulty: post.difficultyLevel || "Easy",
-        status: "Accepted",
-        time: new Date(post.createdAt).toLocaleString(), // changed from post.timestamp
-        language: "JavaScript",
-      }));
+        const mappedPosts = userPosts.map((post: any) => ({
+          _id: post._id,
+          content: post.content,
+          postType: post.postType,
+          tags: post.tags || [],
+          likes: post.likes || [],
+          comments: post.comments || [],
+          shares: post.shares || 0,
+          createdAt: post.createdAt,
+          codeSnippet: post.codeSnippet,
+          difficultyLevel: post.difficultyLevel,
+          author: {
+            id: post.author,
+            name: user?.name || "You",
+            avatar: user?.avatar || "/default-avatar.png",
+            level: user?.level || "Beginner",
+          },
+          contributionCount: post.contributionCount,
+        }));
 
-      setRecentSubmissions(mappedPosts);
-    } catch (error) {
-      console.error("Error fetching user posts:", error);
-    }
+        setRecentSubmissions(mappedPosts);
+      } catch (error) {
+        console.error("Error fetching user posts:", error);
+      }
+    };
+
+    fetchUserPosts();
+  }, [userId]);
+
+  const handleDeletePost = (deletedId: string) => {
+    setRecentSubmissions((prev) =>
+      prev.filter((post) => post._id !== deletedId)
+    );
   };
-
-  fetchUserPosts();
-}, [userId]);
-
 
   const badges = [
     {
@@ -189,65 +205,40 @@ const personalInfoPage = () => {
               value="submissions"
               className="space-y-4 w-full min-h-[400px]"
             >
-              <Card className="w-full border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Code2 className="w-5 h-5 text-orange-600" />
-                    Recent Posts
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {recentSubmissions.length > 0 ? (
-                      recentSubmissions.map((submission, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                        >
-                          <div className="flex-1">
-                            <h3 className="font-medium text-gray-900 line-clamp-1">
-                              {submission.problem}
-                            </h3>
-                            <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
-                              <Badge
-                                variant={
-                                  submission.difficulty === "Easy"
-                                    ? "secondary"
-                                    : submission.difficulty === "Medium"
-                                    ? "default"
-                                    : "destructive"
-                                }
-                              >
-                                {submission.difficulty}
-                              </Badge>
-                              <span>{submission.language}</span>
-                              <span>{submission.time}</span>
-                            </div>
-                          </div>
-                          <Badge
-                            variant={
-                              submission.status === "Accepted"
-                                ? "default"
-                                : "destructive"
-                            }
-                            className={
-                              submission.status === "Accepted"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-red-100 text-red-800"
-                            }
-                          >
-                            {submission.status}
-                          </Badge>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-center text-muted-foreground py-10">
-                        No recent posts found.
-                      </div>
-                    )}
+              <div className="space-y-6 mt-6">
+                {recentSubmissions.length > 0 ? (
+                  recentSubmissions.map((post: any) => (
+                    <CreatePost
+                      key={post._id}
+                      post={{
+                        postId: post._id,
+                        author: {
+                          id: post.author?._id,
+                          name: post.author?.name || "Anonymous",
+                          avatar: post.author?.avatar || "/default-avatar.png",
+                          level: post.author?.level || "Beginner",
+                        },
+                        content: post.content,
+                        type: post.postType ?? "question",
+                        tags: post.tags ?? [],
+                        likes: post.likes?.length ?? 0,
+                        comments: post.comments?.length ?? 0,
+                        shares: post.shares ?? 0,
+                        timestamp: post.createdAt ?? new Date().toISOString(),
+                        codeSnippet: post.codeSnippet,
+                        difficulty: post.difficultyLevel ?? "Easy",
+                        contributionCount: post.contributionCount,
+                      }}
+                      currentUserId={userId}
+                      onDelete={handleDeletePost}
+                    />
+                  ))
+                ) : (
+                  <div className="text-center text-muted-foreground py-10">
+                    No recent posts found.
                   </div>
-                </CardContent>
-              </Card>
+                )}
+              </div>
             </TabsContent>
 
             <TabsContent

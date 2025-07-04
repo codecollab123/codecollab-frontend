@@ -22,6 +22,7 @@ type Post = {
   postType: "question" | "solution" | "challenge";
   content: string;
   author: {
+    _id: string;
     name: string;
     avatar: string;
     level: string;
@@ -33,15 +34,24 @@ type Post = {
   timestamp: string;
   codeSnippet?: string;
   difficulty: "Easy" | "Medium" | "Hard";
-  contributionCount?: number; 
+  contributionCount?: number;
 };
 
-const HomePage = () => {
+type RecentPost = {
+  _id: string;
+  problem: string;
+  difficulty: "Easy" | "Medium" | "Hard";
+  status: string;
+  time: string;
+  language: string;
+};
+
+const FeedPage = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const user = useSelector((state: RootState) => state.user);
-const userId = user?.uid;
-const [contributionCount, setContributionCount] = useState<number>(0);
-
+  const userId = user?.uid;
+  const [contributionCount, setContributionCount] = useState<number>(0);
+  const [recentSubmissions, setRecentSubmissions] = useState<RecentPost[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -58,29 +68,35 @@ const [contributionCount, setContributionCount] = useState<number>(0);
     }
   };
 
-const getContributionCount = async (userId: string) => {
-  try {
-    const res = await axiosInstance.get(`/post/${userId}/contributions`);
-    const count = res.data?.data?.contributionCount ?? 0;
-    setContributionCount(count); // <-- SETTING THE STATE
-  } catch (error) {
-    console.error(`❌ Error fetching contribution count for ${userId}:`, error);
-    setContributionCount(0); // fallback to 0 if API fails
-  }
-};
+  const getContributionCount = async (userId: string) => {
+    try {
+      const res = await axiosInstance.get(`/post/${userId}/contributions`);
+      const count = res.data?.data?.contributionCount ?? 0;
+      setContributionCount(count); // <-- SETTING THE STATE
+    } catch (error) {
+      console.error(
+        `❌ Error fetching contribution count for ${userId}:`,
+        error
+      );
+      setContributionCount(0); // fallback to 0 if API fails
+    }
+  };
+  const handleDeletePost = (deletedId: string) => {
+    console.log("Deleted post ID:", deletedId);
+    setPosts(
+      (prev) => prev.filter((post) => post._id !== deletedId) // make sure it's 'id' not '_id'
+    );
+  };
 
+  useEffect(() => {
+    getPosts();
+    console.log("User ID:", userId);
+    if (userId) {
+      getContributionCount(userId);
+    }
+  }, [userId]);
 
-
-
-useEffect(() => {
-  getPosts();
-  console.log("User ID:", userId);
-  if (userId) {
-    getContributionCount(userId);
-  }
-}, [userId]);
-
- const filters = [
+  const filters = [
     { id: "all", label: "All Posts", count: posts.length },
     {
       id: "question",
@@ -210,8 +226,9 @@ useEffect(() => {
                       <CreatePost
                         key={post._id}
                         post={{
-                          id: post._id, // 👈 convert _id to id
+                          postId: post._id,
                           author: {
+                            id: post.author?._id,
                             name: post.author?.name || "Anonymous",
                             avatar:
                               post.author?.avatar || "/default-avatar.png",
@@ -226,8 +243,10 @@ useEffect(() => {
                           timestamp: post.timestamp ?? new Date().toISOString(),
                           codeSnippet: post.codeSnippet,
                           difficulty: post.difficulty ?? "Easy",
-                          contributionCount:post.contributionCount,
+                          contributionCount: post.contributionCount,
                         }}
+                        currentUserId={userId}
+                        onDelete={handleDeletePost}
                       />
                     ))}
                   </div>
@@ -251,7 +270,9 @@ useEffect(() => {
                         <span className="text-muted-foreground">
                           Contributions
                         </span>
-                        <span className="font-semibold text-blue-600">{contributionCount}</span>
+                        <span className="font-semibold text-blue-600">
+                          {contributionCount}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Streak</span>
@@ -296,4 +317,4 @@ useEffect(() => {
   );
 };
 
-export default HomePage;
+export default FeedPage;
