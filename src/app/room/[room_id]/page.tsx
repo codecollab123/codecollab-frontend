@@ -3,7 +3,7 @@
 import Header from "@/components/header/header";
 import SidebarMenu from "@/components/menu/sidebarmenu";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import {
   MoreHorizontal,
@@ -21,7 +21,7 @@ import {
   menuItemsBottom,
   menuItemsTop,
 } from "@/config/menuItems/dashboardMenuItem";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {  useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Editor } from "@monaco-editor/react";
 import { editor } from "monaco-editor";

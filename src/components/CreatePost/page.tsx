@@ -5,12 +5,22 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Heart, MessageCircle, Share2, Code, Trophy, HelpCircle } from "lucide-react";
+import {
+  Heart,
+  MessageCircle,
+  Share2,
+  Code,
+  Trophy,
+  HelpCircle,
+  Trash2,
+} from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { axiosInstance } from "@/lib/axiosinstance";
 
 interface Post {
-  id: string;
+  postId: string;
   author: {
+    id?: string; // added this so we can match current user
     name: string;
     avatar: string;
     level: string;
@@ -24,14 +34,16 @@ interface Post {
   timestamp: string;
   codeSnippet?: string;
   difficulty?: "Easy" | "Medium" | "Hard";
-  contributionCount?: number; 
+  contributionCount?: number;
 }
 
 interface CreatePostProps {
   post: Post;
+  currentUserId?: string;
+  onDelete?: (postId: string) => void;
 }
 
-const CreatePost = ({ post }: CreatePostProps) => {
+const CreatePost = ({ post, currentUserId, onDelete }: CreatePostProps) => {
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes);
   const [showComments, setShowComments] = useState(false);
@@ -49,6 +61,22 @@ const CreatePost = ({ post }: CreatePostProps) => {
     toast({
       description: "Link copied to clipboard!",
     });
+  };
+
+  const handleDelete = async () => {
+    try {
+      await axiosInstance.delete(`/post/${post.postId}`);
+      toast({ description: "Post deleted successfully" });
+      console.log("Post Author:", post.author);
+      console.log("Current User:", currentUserId);
+
+      if (onDelete) onDelete(post.postId);
+    } catch (error: any) {
+      toast({
+        description: error?.response?.data?.message || "Failed to delete post",
+        variant: "destructive",
+      });
+    }
   };
 
   const getTypeColor = () => {
@@ -82,7 +110,9 @@ const CreatePost = ({ post }: CreatePostProps) => {
           <div className="flex items-center space-x-3">
             <Avatar>
               <AvatarImage src={post.author.avatar} />
-              <AvatarFallback>{post.author.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+              <AvatarFallback>
+                {post.author.name.slice(0, 2).toUpperCase()}
+              </AvatarFallback>
             </Avatar>
             <div>
               <h3 className="font-semibold">{post.author.name}</h3>
@@ -90,10 +120,13 @@ const CreatePost = ({ post }: CreatePostProps) => {
                 <Badge variant="secondary" className="text-xs">
                   {post.author.level}
                 </Badge>
-                <span className="text-xs text-muted-foreground">{post.timestamp}</span>
+                <span className="text-xs text-muted-foreground">
+                  {post.timestamp}
+                </span>
               </div>
             </div>
           </div>
+
           <div className="flex items-center space-x-2">
             <Badge className={`${getTypeColor()} border-0`}>
               {post.type === "question" && <HelpCircle className="w-4 h-4" />}
@@ -106,18 +139,44 @@ const CreatePost = ({ post }: CreatePostProps) => {
                 {post.difficulty}
               </Badge>
             )}
+            {/* {
+  (post.author?.id === currentUserId ) && ( // 👈 FOR TESTING ONLY
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={handleDelete}
+      className="text-red-500 hover:text-red-700"
+    >
+      <Trash2 className="w-4 h-4" />
+    </Button>
+  )
+} */}
+            {/* {currentUserId === post.author?.id && ( */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleDelete}
+              className="text-red-500 hover:text-red-700"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+            {/* // )} */}
           </div>
         </div>
       </CardHeader>
 
       <CardContent className="pt-0">
-        <p className="text-muted-foreground mb-4 leading-relaxed">{post.content}</p>
+        <p className="text-muted-foreground mb-4 leading-relaxed">
+          {post.content}
+        </p>
 
         {post.codeSnippet && (
           <div className="bg-muted rounded-lg p-4 mb-4 border border-border">
             <div className="flex items-center space-x-2 mb-2">
               <Code className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-medium text-muted-foreground">Code Snippet</span>
+              <span className="text-sm font-medium text-muted-foreground">
+                Code Snippet
+              </span>
             </div>
             <pre className="text-sm overflow-x-auto text-foreground">
               <code>{post.codeSnippet}</code>
@@ -127,7 +186,11 @@ const CreatePost = ({ post }: CreatePostProps) => {
 
         <div className="flex flex-wrap gap-2 mb-4">
           {post.tags.map((tag, index) => (
-            <Badge key={index} variant="outline" className="text-xs text-muted-foreground border-border">
+            <Badge
+              key={index}
+              variant="outline"
+              className="text-xs text-muted-foreground border-border"
+            >
               #{tag}
             </Badge>
           ))}

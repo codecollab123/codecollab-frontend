@@ -9,7 +9,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ArrowLeft,
   ArrowRight,
-  Briefcase,
   CheckCircle2,
   Eye,
   EyeOff,

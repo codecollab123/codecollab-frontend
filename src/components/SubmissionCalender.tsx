@@ -1,5 +1,5 @@
 'use client'
-import { Calendar } from "./ui/calender";
+
 import { cn } from "@/lib/utils";
 
 interface SubmissionCalendarProps {
@@ -62,7 +62,7 @@ const SubmissionCalendar = ({ className }: SubmissionCalendarProps) => {
     const startOfWeek = new Date(startDate);
     startOfWeek.setDate(startDate.getDate() - startDate.getDay());
     
-    let currentDate = new Date(startOfWeek);
+    const currentDate = new Date(startOfWeek);
     
     // Generate 53 weeks
     for (let week = 0; week < 53; week++) {
