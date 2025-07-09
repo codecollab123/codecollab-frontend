@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 
-import NotesContainer from './NoteContainer';
+import NotesContainer from "./NoteContainer";
 
-import { Note } from '@/utils/type/note';
+import { Note } from "@/utils/type/note";
 
 interface NotesRenderProps {
   notes: Note[];

@@ -1,11 +1,11 @@
 // components/NoteCard.tsx
-import React from 'react';
-import { ArchiveRestoreIcon, RotateCwIcon, Trash2Icon } from 'lucide-react';
+import React from "react";
+import { ArchiveRestoreIcon, RotateCwIcon, Trash2Icon } from "lucide-react";
 
-import { Badge } from '../ui/badge';
+import { Badge } from "../ui/badge";
 
-import BannerChangerPopover from './BannerChangerPopUp';
-import DropdownNavNotes from './DropdownNavNotes';
+import BannerChangerPopover from "./BannerChangerPopUp";
+import DropdownNavNotes from "./DropdownNavNotes";
 
 import {
   Card,
@@ -13,9 +13,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { badgeColors, Note, NoteType } from '@/utils/type/note';
-import { truncateHTMLContent, truncateText } from '@/utils/notes/noteHelpers';
+} from "@/components/ui/card";
+import { badgeColors, Note, NoteType } from "@/utils/type/note";
+import { truncateHTMLContent, truncateText } from "@/utils/notes/noteHelpers";
 
 interface NoteCardProps {
   note: Note;
@@ -68,10 +68,10 @@ const NoteCard = ({
         note.banner
           ? {
               backgroundImage: `url(${note.banner})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
+              backgroundSize: "cover",
+              backgroundPosition: "center",
             }
-          : { backgroundColor: note.bgColor || '#ffffff' }
+          : { backgroundColor: note.bgColor || "#ffffff" }
       }
     >
       <div onClick={() => onEditNote(note)}>
@@ -79,7 +79,7 @@ const NoteCard = ({
           {note.type && (
             <div className="absolute top-1 left-1">
               <Badge
-                className={`text-xs py-0.5 ${badgeColors[note.type] || ' '}`}
+                className={`text-xs py-0.5 ${badgeColors[note.type] || " "}`}
               >
                 {note.type.toLowerCase()}
               </Badge>

@@ -1,36 +1,36 @@
-'use client';
+"use client";
 
 import {
   ConfirmationResult,
   RecaptchaVerifier,
   signInWithPhoneNumber,
   UserCredential,
-} from 'firebase/auth';
-import React, { useEffect, useState, useTransition, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { useDispatch } from 'react-redux';
+} from "firebase/auth";
+import React, { useEffect, useState, useTransition, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
 
-import PhoneChangeModal from './PhoneChangeModel';
+import PhoneChangeModal from "./PhoneChangeModel";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from '@/components/ui/input-otp';
+} from "@/components/ui/input-otp";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@/components/ui/dialog';
-import { auth } from '@/config/firebaseConfig';
-import { setUser } from '@/lib/userSlice';
-import { getUserData } from '@/lib/utils';
-import { axiosInstance } from '@/lib/axiosinstance';
-import { toast } from '@/hooks/use-toast';
+} from "@/components/ui/dialog";
+import { auth } from "@/config/firebaseConfig";
+import { setUser } from "@/lib/userSlice";
+import { getUserData } from "@/lib/utils";
+import { axiosInstance } from "@/lib/axiosinstance";
+import { toast } from "@/hooks/use-toast";
 
 interface OtpLoginProps {
   phoneNumber: string;
@@ -41,9 +41,9 @@ interface OtpLoginProps {
 function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
   const router = useRouter();
   const dispatch = useDispatch();
-  const [otp, setOtp] = useState('');
+  const [otp, setOtp] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState('');
+  const [success, setSuccess] = useState("");
   const [resendCountdown, setResendCountdown] = useState(0);
   const [isPending, startTransition] = useTransition();
   const [showModal, setShowModal] = useState(false);
@@ -66,9 +66,9 @@ function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
   useEffect(() => {
     const recaptchaVerifier = new RecaptchaVerifier(
       auth,
-      'recaptcha-container',
+      "recaptcha-container",
       {
-        size: 'invisible',
+        size: "invisible",
       },
     );
 
@@ -81,10 +81,10 @@ function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
 
   const verifyOtp = useCallback(async () => {
     startTransition(async () => {
-      setError('');
+      setError("");
 
       if (!confirmationResult) {
-        setError('Please request OTP first.');
+        setError("Please request OTP first.");
         return;
       }
 
@@ -103,11 +103,11 @@ function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
         router.replace(`/dashboard/${claims.type}`);
       } catch (error) {
         console.log(error);
-        setError('Failed to verify OTP. Please check the OTP.');
+        setError("Failed to verify OTP. Please check the OTP.");
         toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: 'Something went wrong.Please try again.',
+          variant: "destructive",
+          title: "Error",
+          description: "Something went wrong.Please try again.",
         }); // Error toast
       }
     });
@@ -122,10 +122,10 @@ function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
 
   const requestOtp = useCallback(async () => {
     startTransition(async () => {
-      setError('');
+      setError("");
       setResendCountdown(60);
       if (!recaptchaVerifier) {
-        return setError('RecaptchaVerifier is not initialized.');
+        return setError("RecaptchaVerifier is not initialized.");
       }
       try {
         if (phoneNumber.length > 0) {
@@ -135,17 +135,17 @@ function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
             recaptchaVerifier,
           );
           setConfirmationResult(confirmationResult);
-          setSuccess('OTP sent successfully.');
+          setSuccess("OTP sent successfully.");
         }
       } catch (err: any) {
         console.error(err);
         setResendCountdown(0);
-        if (err.code === 'auth/invalid-phone-number') {
-          setError('Invalid phone number. Please check the number.');
-        } else if (err.code === 'auth/too-many-requests') {
-          setError('Too many requests. Please try again later.');
+        if (err.code === "auth/invalid-phone-number") {
+          setError("Invalid phone number. Please check the number.");
+        } else if (err.code === "auth/too-many-requests") {
+          setError("Too many requests. Please try again later.");
         } else {
-          setError('Failed to send OTP. Please try again.');
+          setError("Failed to send OTP. Please try again.");
         }
       }
     });
@@ -157,7 +157,7 @@ function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
   };
 
   useEffect(() => {
-    if (isModalOpen && phoneNumber !== '') {
+    if (isModalOpen && phoneNumber !== "") {
       requestOtp();
     }
   }, [isModalOpen, requestOtp, phoneNumber]);
@@ -190,9 +190,9 @@ function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
         <DialogContent>
           <DialogHeader>
             <p className="text-sm text-center text-gray-500">
-              OTP sent to{' '}
+              OTP sent to{" "}
               <strong>
-                {(phone || phoneNumber)?.substring(0, 3)}{' '}
+                {(phone || phoneNumber)?.substring(0, 3)}{" "}
                 {(phone || phoneNumber)?.substring(3)}
               </strong>
             </p>
@@ -234,8 +234,8 @@ function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
               {resendCountdown > 0
                 ? `Resend OTP in ${resendCountdown}`
                 : isPending
-                  ? 'Sending OTP'
-                  : 'Send OTP'}
+                  ? "Sending OTP"
+                  : "Send OTP"}
             </Button>
 
             <div className="p-10 text-center">

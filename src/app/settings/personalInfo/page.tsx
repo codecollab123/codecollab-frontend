@@ -1,10 +1,12 @@
 "use client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CalendarDays, Trophy, Target, Zap, Award, Code2 } from "lucide-react";
+import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarDays, Trophy, Target, Zap, Award, Code2 } from "lucide-react";
 import SubmissionCalendar from "@/components/SubmissionCalender";
 import SidebarMenu from "@/components/menu/sidebarmenu";
 import {
@@ -12,57 +14,54 @@ import {
   menuItemsTop,
 } from "@/config/menuItems/dashboardMenuItem";
 import Header from "@/components/header/header";
-import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
-import { useEffect, useState } from "react";
 import { axiosInstance } from "@/lib/axiosinstance";
 
-const personalInfoPage = () => {
-  const userStats = {
-    totalSolved: 847,
-    ranking: 12847,
-    contestRating: 1847,
-    streakDays: 45,
-  };
+const userStats = {
+  totalSolved: 847,
+  ranking: 12847,
+  contestRating: 1847,
+  streakDays: 45,
+};
 
-  type RecentPost = {
-    problem: string;
-    difficulty: "Easy" | "Medium" | "Hard";
-    status: string;
-    time: string;
-    language: string;
-  };
+type RecentPost = {
+  problem: string;
+  difficulty: "Easy" | "Medium" | "Hard";
+  status: string;
+  time: string;
+  language: string;
+};
+const PersonalInfoPage = () => {
   const user = useSelector((state: RootState) => state.user);
   const userId = user?.uid;
   const [recentSubmissions, setRecentSubmissions] = useState<RecentPost[]>([]);
 
   useEffect(() => {
-  const fetchUserPosts = async () => {
-    try {
-      if (!userId) return;
+    const fetchUserPosts = async () => {
+      try {
+        if (!userId) return;
 
-      const res = await axiosInstance.get(`/post/${userId}/userpost`);
+        const res = await axiosInstance.get(`/post/${userId}/userpost`);
 
-      // ✅ Ensure it's an array
-      const userPosts = Array.isArray(res.data?.data) ? res.data.data : [];
+        // ✅ Ensure it's an array
+        const userPosts = Array.isArray(res.data?.data) ? res.data.data : [];
 
-      const mappedPosts = userPosts.map((post: any) => ({
-        problem: post.content?.slice(0, 30) + "...",
-        difficulty: post.difficultyLevel || "Easy",
-        status: "Accepted",
-        time: new Date(post.createdAt).toLocaleString(), // changed from post.timestamp
-        language: "JavaScript",
-      }));
+        const mappedPosts = userPosts.map((post: any) => ({
+          problem: post.content?.slice(0, 30) + "...",
+          difficulty: post.difficultyLevel || "Easy",
+          status: "Accepted",
+          time: new Date(post.createdAt).toLocaleString(), // changed from post.timestamp
+          language: "JavaScript",
+        }));
 
-      setRecentSubmissions(mappedPosts);
-    } catch (error) {
-      console.error("Error fetching user posts:", error);
-    }
-  };
+        setRecentSubmissions(mappedPosts);
+      } catch (error) {
+        console.error("Error fetching user posts:", error);
+      }
+    };
 
-  fetchUserPosts();
-}, [userId]);
-
+    fetchUserPosts();
+  }, [userId]);
 
   const badges = [
     {
@@ -214,8 +213,8 @@ const personalInfoPage = () => {
                                   submission.difficulty === "Easy"
                                     ? "secondary"
                                     : submission.difficulty === "Medium"
-                                    ? "default"
-                                    : "destructive"
+                                      ? "default"
+                                      : "destructive"
                                 }
                               >
                                 {submission.difficulty}
@@ -331,4 +330,4 @@ const personalInfoPage = () => {
   );
 };
 
-export default personalInfoPage;
+export default PersonalInfoPage;

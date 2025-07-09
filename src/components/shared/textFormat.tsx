@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface TextFormatProps {
   input: string;
@@ -7,15 +7,15 @@ interface TextFormatProps {
 
 const TextFormat: React.FC<TextFormatProps> = ({ input, setInput }) => {
   const formatText = (formatType: string) => {
-    let formattedText = '';
+    let formattedText = "";
     switch (formatType) {
-      case 'bold':
+      case "bold":
         formattedText = `**${input.trim()}**`;
         break;
-      case 'italic':
+      case "italic":
         formattedText = `*${input.trim()}*`;
         break;
-      case 'link':
+      case "link":
         formattedText = `[${input.trim()}](https://example.com)`;
         break;
       default:
@@ -27,18 +27,18 @@ const TextFormat: React.FC<TextFormatProps> = ({ input, setInput }) => {
   return (
     <div className="flex space-x-2 mb-2">
       <button
-        onClick={() => formatText('bold')}
+        onClick={() => formatText("bold")}
         className="btn-format text-xl font-bold"
       >
         B
       </button>
       <button
-        onClick={() => formatText('italic')}
+        onClick={() => formatText("italic")}
         className="btn-format text-xl italic"
       >
         I
       </button>
-      <button onClick={() => formatText('link')} className="btn-format text-xl">
+      <button onClick={() => formatText("link")} className="btn-format text-xl">
         Link
       </button>
     </div>

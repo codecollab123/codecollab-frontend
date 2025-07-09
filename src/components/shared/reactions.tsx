@@ -1,9 +1,9 @@
-import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
+import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
 
-import { Badge } from '../ui/badge';
+import { Badge } from "../ui/badge";
 
-import { RootState } from '@/lib/store';
+import { RootState } from "@/lib/store";
 
 // Define the types for reactions and messages
 type MessageReaction = Record<string, string[]>; // Maps emoji to user IDs
@@ -33,15 +33,15 @@ const Reactions: React.FC<ReactionProps> = ({
           onClick={() => handleEmojiClick(emoji)} // Handle click to toggle reaction
           className={`cursor-pointer ${
             Array.isArray(users) && users.includes(user.uid)
-              ? 'bg-gray-400'
-              : 'bg-green'
+              ? "bg-gray-400"
+              : "bg-green"
           }`}
         >
           <span className="flex items-center">
             {emoji} {/* Display emoji */}
             {users.length > 0 && (
               <span className="ml-2">{users.length}</span>
-            )}{' '}
+            )}{" "}
             {/* Display user count */}
           </span>
         </Badge>

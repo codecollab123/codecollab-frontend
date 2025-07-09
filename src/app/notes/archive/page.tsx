@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { Loader2 } from 'lucide-react';
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { Loader2 } from "lucide-react";
 
-import NotesRender from '@/components/shared/NotesRender';
-import NotesHeader from '@/components/notes/NotesHeader';
+import NotesRender from "@/components/shared/NotesRender";
+import NotesHeader from "@/components/notes/NotesHeader";
 import SidebarMenu from "@/components/menu/sidebarmenu";
 import {
   menuItemsBottom,
   menuItemsTop,
   notesMenu,
 } from "@/config/menuItems/dashboardMenuItem";
-import useFetchNotes from '@/hooks/useFetchNotes';
-import Header from '@/components/header/header';
+import useFetchNotes from "@/hooks/useFetchNotes";
+import Header from "@/components/header/header";
 
 const Page = () => {
   const user = useSelector((state: any) => state.user);
@@ -40,8 +40,8 @@ const Page = () => {
           menuItemsBottom={menuItemsBottom}
           activeMenu="Archive"
           breadcrumbItems={[
-            { label: 'Notes', link: '/notes' },
-            { label: 'Archive', link: '/archive' },
+            { label: "Notes", link: "/notes" },
+            { label: "Archive", link: "/archive" },
           ]}
         />
         {/* Main content area */}

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -10,9 +10,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Note } from '@/utils/type/note';
-import { CreateNoteDialog } from '@/components/shared/CreateNoteDialog';
+} from "@/components/ui/dropdown-menu";
+import { Note } from "@/utils/type/note";
+import { CreateNoteDialog } from "@/components/shared/CreateNoteDialog";
 
 const NotesHeader = ({
   onNoteCreate,
@@ -25,11 +25,11 @@ const NotesHeader = ({
   setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
   isTrash: boolean;
 }) => {
-  const [selectedSortOption, setSelectedSortOption] = useState<string>('');
+  const [selectedSortOption, setSelectedSortOption] = useState<string>("");
 
   const sortByColor = () => {
     const sortedNotes = [...notes].sort((a, b) =>
-      (a.bgColor || '').localeCompare(b.bgColor || ''),
+      (a.bgColor || "").localeCompare(b.bgColor || ""),
     );
     setNotes(sortedNotes);
   };
@@ -76,27 +76,27 @@ const NotesHeader = ({
                   <DropdownMenuLabel className="">Sort Notes</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuCheckboxItem
-                    checked={selectedSortOption === 'color'}
+                    checked={selectedSortOption === "color"}
                     onCheckedChange={() => {
-                      setSelectedSortOption('color');
+                      setSelectedSortOption("color");
                       sortByColor();
                     }}
                   >
                     Sort by color
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
-                    checked={selectedSortOption === 'latest'}
+                    checked={selectedSortOption === "latest"}
                     onCheckedChange={() => {
-                      setSelectedSortOption('latest');
+                      setSelectedSortOption("latest");
                       sortByLatest();
                     }}
                   >
                     Sort by latest
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
-                    checked={selectedSortOption === 'oldest'}
+                    checked={selectedSortOption === "oldest"}
                     onCheckedChange={() => {
-                      setSelectedSortOption('oldest');
+                      setSelectedSortOption("oldest");
                       sortByOldest();
                     }}
                   >

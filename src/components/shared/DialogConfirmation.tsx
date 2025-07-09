@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 import {
   Dialog,
@@ -7,9 +7,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Note } from '@/utils/type/note';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Note } from "@/utils/type/note";
 
 type DialogConfirmationProps = {
   note: Note | null;
@@ -30,7 +30,7 @@ const DialogConfirmation = ({
             Confirm Deletion
           </DialogTitle>
           <DialogDescription className="mt-2 text-sm text-gray-600">
-            Are you sure you want to delete the note titled{' '}
+            Are you sure you want to delete the note titled{" "}
             <strong>{note?.title}</strong>? This action cannot be undone.
           </DialogDescription>
         </DialogHeader>

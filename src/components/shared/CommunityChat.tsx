@@ -1,5 +1,5 @@
 //chat.tsx
-import * as React from 'react';
+import * as React from "react";
 import {
   Send,
   LoaderCircle,
@@ -12,66 +12,66 @@ import {
   Italic,
   Underline,
   CheckCheck,
-} from 'lucide-react';
-import { useSelector } from 'react-redux';
-import { DocumentData } from 'firebase/firestore';
-import ReactMarkdown from 'react-markdown'; // Import react-markdown to render markdown
+} from "lucide-react";
+import { useSelector } from "react-redux";
+import { DocumentData } from "firebase/firestore";
+import ReactMarkdown from "react-markdown"; // Import react-markdown to render markdown
 import {
   formatDistanceToNow,
   format,
   isToday,
   isYesterday,
   isThisYear,
-} from 'date-fns';
-import { useEffect, useRef, useState } from 'react';
+} from "date-fns";
+import { useEffect, useRef, useState } from "react";
 // import Image from 'next/image';
 
-import { EmojiPicker } from './emojiPicker';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '../ui/tooltip';
+} from "../ui/tooltip";
 
-import { Conversation } from './CommunityChatList';
-import Reactions from './reactions';
+import { EmojiPicker } from "./emojiPicker";
+import { Conversation } from "./CommunityChatList";
+import Reactions from "./reactions";
 // import { FileAttachment } from './fileAttachment';
 
-import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   subscribeToFirestoreCollection,
   updateConversationWithMessageTransaction,
   updateDataInFirestore,
-} from '@/utils/common/firestoreUtils';
-import { axiosInstance } from '@/lib/axiosinstance';
-import { RootState } from '@/lib/store';
-import { toast } from '@/hooks/use-toast';
+} from "@/utils/common/firestoreUtils";
+import { axiosInstance } from "@/lib/axiosinstance";
+import { RootState } from "@/lib/store";
+import { toast } from "@/hooks/use-toast";
 
 function formatChatTimestamp(timestamp: string) {
   const date = new Date(timestamp);
 
   if (isToday(date)) {
-    return format(date, 'hh:mm a'); // Example: "10:30 AM"
+    return format(date, "hh:mm a"); // Example: "10:30 AM"
   }
 
   if (isYesterday(date)) {
-    return `Yesterday, ${format(date, 'hh:mm a')}`; // Example: "Yesterday, 10:30 AM"
+    return `Yesterday, ${format(date, "hh:mm a")}`; // Example: "Yesterday, 10:30 AM"
   }
 
   if (isThisYear(date)) {
-    return format(date, 'MMM dd, hh:mm a'); // Example: "Oct 12, 10:30 AM"
+    return format(date, "MMM dd, hh:mm a"); // Example: "Oct 12, 10:30 AM"
   }
 
-  return format(date, 'yyyy MMM dd, hh:mm a'); // Example: "2023 Oct 12, 10:30 AM"
+  return format(date, "yyyy MMM dd, hh:mm a"); // Example: "2023 Oct 12, 10:30 AM"
 }
 
 type User = {
@@ -103,19 +103,19 @@ export function CardsChat({
   // setActiveConversation,
 }: CardsChatProps) {
   const [primaryUser, setPrimaryUser] = useState<User>({
-    userName: '',
-    email: '',
-    profilePic: '',
+    userName: "",
+    email: "",
+    profilePic: "",
   });
 
   const [messages, setMessages] = useState<DocumentData[]>([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [loading, setLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
   // const inputLength = input.trim().length;
   const user = useSelector((state: RootState) => state.user);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-  const [replyToMessageId, setReplyToMessageId] = useState<string>('');
+  const [replyToMessageId, setReplyToMessageId] = useState<string>("");
   const [hoveredMessageId, setHoveredMessageId] = useState(null); // state to track hovered message
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const [showFormattingOptions, setShowFormattingOptions] =
@@ -131,10 +131,10 @@ export function CardsChat({
       }
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     handleResize();
 
-    return () => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
@@ -148,11 +148,11 @@ export function CardsChat({
           const response = await axiosInstance.get(`/freelancer/${primaryUid}`);
           setPrimaryUser(response.data.data);
         } catch (error) {
-          console.error('Error fetching primary user:', error);
+          console.error("Error fetching primary user:", error);
           toast({
-            variant: 'destructive',
-            title: 'Error',
-            description: 'Something went wrong.Please try again.',
+            variant: "destructive",
+            title: "Error",
+            description: "Something went wrong.Please try again.",
           }); // Error toast
         }
       }
@@ -167,7 +167,7 @@ export function CardsChat({
           setMessages(messagesData);
           setLoading(false);
         },
-        'desc',
+        "desc",
       );
     };
 
@@ -183,7 +183,7 @@ export function CardsChat({
 
   useEffect(() => {
     if (messages.length > prevMessagesLength.current) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
     prevMessagesLength.current = messages.length;
   }, [messages.length]);
@@ -198,7 +198,7 @@ export function CardsChat({
       const datentime = new Date().toISOString();
 
       const messageId = await updateConversationWithMessageTransaction(
-        'conversations',
+        "conversations",
         conversation?.id,
         {
           ...message,
@@ -209,13 +209,13 @@ export function CardsChat({
       );
 
       if (messageId) {
-        setInput('');
+        setInput("");
         setIsSending(false);
       } else {
-        console.error('Failed to send message');
+        console.error("Failed to send message");
       }
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error("Error sending message:", error);
     } finally {
       setIsSending(false);
     }
@@ -227,8 +227,8 @@ export function CardsChat({
 
   // Handle image upload
   async function handleFileUpload() {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file'; // Allows selection of any file type
+    const fileInput = document.createElement("input");
+    fileInput.type = "file"; // Allows selection of any file type
 
     fileInput.onchange = async () => {
       const file = fileInput.files?.[0];
@@ -237,14 +237,14 @@ export function CardsChat({
       try {
         // Create FormData to send the file
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append("file", file);
 
         // Post request to upload the file
         const postFileResponse = await axiosInstance.post(
-          '/register/upload-image', // Endpoint that handles both files and images
+          "/register/upload-image", // Endpoint that handles both files and images
           formData,
           {
-            headers: { 'Content-Type': 'multipart/form-data' },
+            headers: { "Content-Type": "multipart/form-data" },
           },
         );
 
@@ -261,7 +261,7 @@ export function CardsChat({
         // Send the message with the file URL
         sendMessage(conversation, message, setInput);
       } catch (error) {
-        console.error('Error uploading file:', error);
+        console.error("Error uploading file:", error);
       }
     };
 
@@ -270,7 +270,7 @@ export function CardsChat({
 
   async function handleCreateMeet() {
     try {
-      const response = await axiosInstance.post('/meeting', {
+      const response = await axiosInstance.post("/meeting", {
         participants: conversation.participants,
       });
 
@@ -283,7 +283,7 @@ export function CardsChat({
 
       sendMessage(conversation, message, setInput);
     } catch (error) {
-      console.error('Error creating meet:', error);
+      console.error("Error creating meet:", error);
     }
   }
 
@@ -419,7 +419,7 @@ export function CardsChat({
                   message.timestamp,
                 );
                 const readableTimestamp =
-                  formatDistanceToNow(new Date(message.timestamp)) + ' ago';
+                  formatDistanceToNow(new Date(message.timestamp)) + " ago";
 
                 return (
                   <div
@@ -443,10 +443,10 @@ export function CardsChat({
 
                     <div
                       className={cn(
-                        'flex w-max max-w-[65%] flex-col gap-1 rounded-lg px-3 py-2 text-sm',
+                        "flex w-max max-w-[65%] flex-col gap-1 rounded-lg px-3 py-2 text-sm",
                         message.senderId === user.uid
-                          ? 'ml-auto bg-[#9155bc] dark:bg-[#580d8f] text-white  rounded-tr-none'
-                          : 'bg-[#d9d9d9] dark:bg-[#333333] text-white  rounded-tl-none',
+                          ? "ml-auto bg-[#9155bc] dark:bg-[#580d8f] text-white  rounded-tr-none"
+                          : "bg-[#d9d9d9] dark:bg-[#333333] text-white  rounded-tl-none",
                       )}
                       onClick={() => {
                         if (message.replyTo) {
@@ -459,28 +459,28 @@ export function CardsChat({
                             );
                             if (replyMessageElement) {
                               replyMessageElement.classList.add(
-                                'bg-gray-200',
-                                'dark:bg-gray-600',
-                                'border-2',
-                                'border-gray-300',
-                                'dark:border-gray-500',
-                                'bg-opacity-50',
-                                'dark:bg-opacity-50',
+                                "bg-gray-200",
+                                "dark:bg-gray-600",
+                                "border-2",
+                                "border-gray-300",
+                                "dark:border-gray-500",
+                                "bg-opacity-50",
+                                "dark:bg-opacity-50",
                               );
 
                               replyMessageElement.scrollIntoView({
-                                behavior: 'smooth',
+                                behavior: "smooth",
                               });
 
                               setTimeout(() => {
                                 replyMessageElement.classList.remove(
-                                  'bg-gray-200',
-                                  'dark:bg-gray-600',
-                                  'border-2',
-                                  'border-gray-300',
-                                  'dark:border-gray-500',
-                                  'bg-opacity-50',
-                                  'dark:bg-opacity-50',
+                                  "bg-gray-200",
+                                  "dark:bg-gray-600",
+                                  "border-2",
+                                  "border-gray-300",
+                                  "dark:border-gray-500",
+                                  "bg-opacity-50",
+                                  "dark:bg-opacity-50",
                                 );
                               }, 2000);
                             }
@@ -498,7 +498,7 @@ export function CardsChat({
                                     <span className="font-semibold">
                                       {messages.find(
                                         (msg) => msg.id === message.replyTo,
-                                      )?.content || 'Message not found'}
+                                      )?.content || "Message not found"}
                                     </span>
                                   </div>
                                 </div>
@@ -527,11 +527,11 @@ export function CardsChat({
                                   }
                                 />
                               ) : ( */}
-                                <ReactMarkdown
-                                  className={` ${message.senderId === user.uid ? 'text-white' : 'text-black'} dark:text-gray-100`}
-                                >
-                                  {message.content}
-                                </ReactMarkdown>
+                              <ReactMarkdown
+                                className={` ${message.senderId === user.uid ? "text-white" : "text-black"} dark:text-gray-100`}
+                              >
+                                {message.content}
+                              </ReactMarkdown>
                               {/* )} */}
                             </div>
                           </TooltipTrigger>
@@ -549,10 +549,10 @@ export function CardsChat({
 
                       <div
                         className={cn(
-                          'text-[10px] mt-1 text-right',
+                          "text-[10px] mt-1 text-right",
                           message.senderId === user.uid
-                            ? 'text-gray-100 dark:text-gray-300 flex items-center gap-0.5'
-                            : 'text-gray-500 dark:text-gray-400',
+                            ? "text-gray-100 dark:text-gray-300 flex items-center gap-0.5"
+                            : "text-gray-500 dark:text-gray-400",
                         )}
                       >
                         {formattedTimestamp}
@@ -565,12 +565,12 @@ export function CardsChat({
                     </div>
 
                     <div
-                      className={`relative ${message.senderId === user.uid ? 'text-right' : 'text-left'}`}
+                      className={`relative ${message.senderId === user.uid ? "text-right" : "text-left"}`}
                     >
                       {hoveredMessageId === message.id && (
                         <Reply
                           className={`h-4 w-4 absolute cursor-pointer top-0 z-10 pointer-events-auto 
-        ${message.senderId === user.uid ? 'right-2 text-white ' : '-left-5 text-black'}`}
+        ${message.senderId === user.uid ? "right-2 text-white " : "-left-5 text-black"}`}
                           onClick={() => setReplyToMessageId(message.id)}
                         />
                       )}
@@ -602,7 +602,7 @@ export function CardsChat({
                 };
 
                 sendMessage(conversation, newMessage, setInput);
-                setReplyToMessageId('');
+                setReplyToMessageId("");
               }}
               className="flex flex-col w-full mb-2"
             >
@@ -613,11 +613,11 @@ export function CardsChat({
                     <span className="font-semibold">
                       {messages
                         .find((msg) => msg.id === replyToMessageId)
-                        ?.content.replace(/\*/g, '') || 'Message not found'}
+                        ?.content.replace(/\*/g, "") || "Message not found"}
                     </span>
                   </div>
                   <Button
-                    onClick={() => setReplyToMessageId('')}
+                    onClick={() => setReplyToMessageId("")}
                     className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 bg-transparent hover:bg-gray-200 dark:hover:bg-gray-600 h-6 rounded-full"
                     title="Cancel Reply"
                     variant="ghost"
@@ -639,8 +639,8 @@ export function CardsChat({
                 <div
                   className={`absolute bottom-full left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg transition-transform duration-300 ${
                     openDrawer
-                      ? 'translate-y-0 opacity-100'
-                      : 'translate-y-5 opacity-0 pointer-events-none'
+                      ? "translate-y-0 opacity-100"
+                      : "translate-y-5 opacity-0 pointer-events-none"
                   }`}
                 >
                   <div className="flex justify-around space-x-3">
@@ -715,12 +715,12 @@ export function CardsChat({
                   rows={1}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey) {
+                    if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey) {
                       e.preventDefault();
                       if (input.trim().length > 0) {
                         setIsSending(true);
                         setTimeout(() => {
-                          setInput('');
+                          setInput("");
                           setIsSending(false);
                         }, 1000);
                       }

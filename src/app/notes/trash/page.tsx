@@ -1,18 +1,18 @@
-'use client';
-import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { Loader2 } from 'lucide-react';
+"use client";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { Loader2 } from "lucide-react";
 
-import NotesRender from '@/components/shared/NotesRender';
-import NotesHeader from '@/components/notes/NotesHeader';
+import NotesRender from "@/components/shared/NotesRender";
+import NotesHeader from "@/components/notes/NotesHeader";
 import SidebarMenu from "@/components/menu/sidebarmenu";
 import {
   menuItemsBottom,
   menuItemsTop,
   notesMenu,
 } from "@/config/menuItems/dashboardMenuItem";
-import useFetchNotes from '@/hooks/useFetchNotes';
-import Header from '@/components/header/header';
+import useFetchNotes from "@/hooks/useFetchNotes";
+import Header from "@/components/header/header";
 
 const TrashPage = () => {
   const userId = useSelector((state: any) => state.user?.uid);
@@ -38,8 +38,8 @@ const TrashPage = () => {
             menuItemsBottom={menuItemsBottom}
             activeMenu="Trash"
             breadcrumbItems={[
-              { label: 'Notes', link: '/notes' },
-              { label: 'Trash', link: '/trash' },
+              { label: "Notes", link: "/notes" },
+              { label: "Trash", link: "/trash" },
             ]}
           />
         </div>

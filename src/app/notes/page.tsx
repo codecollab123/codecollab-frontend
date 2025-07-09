@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { Loader2 } from 'lucide-react';
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { Loader2 } from "lucide-react";
 
 import SidebarMenu from "@/components/menu/sidebarmenu";
 import {
@@ -10,13 +10,13 @@ import {
   menuItemsTop,
   notesMenu,
 } from "@/config/menuItems/dashboardMenuItem";
-import NotesHeader from '@/components/notes/NotesHeader';
-import NotesRender from '@/components/shared/NotesRender';
-import { axiosInstance } from '@/lib/axiosinstance';
-import { LabelType, Note, NoteType } from '@/utils/type/note';
-import { toast } from '@/components/ui/use-toast';
-import useFetchNotes from '@/hooks/useFetchNotes';
-import Header from '@/components/header/header';
+import NotesHeader from "@/components/notes/NotesHeader";
+import NotesRender from "@/components/shared/NotesRender";
+import { axiosInstance } from "@/lib/axiosinstance";
+import { LabelType, Note, NoteType } from "@/utils/type/note";
+import { toast } from "@/components/ui/use-toast";
+import useFetchNotes from "@/hooks/useFetchNotes";
+import Header from "@/components/header/header";
 
 const Notes = () => {
   // Get userId from Redux
@@ -33,8 +33,8 @@ const Notes = () => {
   const handleCreateNote = async (note: Partial<Note>) => {
     if (!note.title || !note.content || !userId) {
       toast({
-        title: 'Missing required fields',
-        description: 'Title and content are required to create a note.',
+        title: "Missing required fields",
+        description: "Title and content are required to create a note.",
         duration: 3000,
       });
       return;
@@ -43,8 +43,8 @@ const Notes = () => {
     const tempNote = {
       ...note,
       userId,
-      bgColor: note.bgColor || '#FFFFFF',
-      banner: note.banner || '',
+      bgColor: note.bgColor || "#FFFFFF",
+      banner: note.banner || "",
       noteType: NoteType.NOTE,
       type: LabelType.PERSONAL,
       entityType: user?.type?.toUpperCase(),
@@ -54,20 +54,20 @@ const Notes = () => {
     setNotes((prev) => [tempNote, ...prev]);
 
     try {
-      const response = await axiosInstance.post('/notes', tempNote);
+      const response = await axiosInstance.post("/notes", tempNote);
       if (response?.data) {
         toast({
-          title: 'Note Created',
-          description: 'Your note was successfully created.',
+          title: "Note Created",
+          description: "Your note was successfully created.",
           duration: 3000,
         });
         fetchNotes();
       }
     } catch (error) {
-      console.error('Failed to create note:', error);
+      console.error("Failed to create note:", error);
       toast({
-        title: 'Error',
-        description: 'Failed to create the note.',
+        title: "Error",
+        description: "Failed to create the note.",
         duration: 3000,
       });
 
@@ -91,7 +91,7 @@ const Notes = () => {
             menuItemsTop={menuItemsTop}
             menuItemsBottom={menuItemsBottom}
             activeMenu="Notes"
-            breadcrumbItems={[{ label: 'Notes', link: '/notes' }]}
+            breadcrumbItems={[{ label: "Notes", link: "/notes" }]}
           />
         </div>
         {/* Main content area */}

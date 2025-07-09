@@ -76,8 +76,8 @@ const Stepper: React.FC<StepperProps> = ({ currentStep = 0 }) => {
                   currentStep > step.id
                     ? "bg-primary border-primary"
                     : currentStep === step.id
-                    ? "border-primary bg-background text-primary"
-                    : "border-muted bg-background text-muted"
+                      ? "border-primary bg-background text-primary"
+                      : "border-muted bg-background text-muted"
                 }`}
               >
                 {currentStep > step.id ? (
@@ -154,7 +154,7 @@ const profileFormSchema = z
         },
         {
           message: "You must be at least 16 years old",
-        }
+        },
       ),
     confirmPassword: z
       .string()
@@ -191,10 +191,7 @@ interface RegisterFormProps {
   setCurrentStep: (step: number) => void;
 }
 
-function UserRegisterForm({
-  currentStep,
-  setCurrentStep,
-}: RegisterFormProps) {
+function UserRegisterForm({ currentStep, setCurrentStep }: RegisterFormProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [code, setCode] = useState<string>("IN");
@@ -254,7 +251,7 @@ function UserRegisterForm({
         try {
           const username = userName;
           const response = await axiosInstance.get(
-            `/public/username/check-duplicate?username=${username}&is_user=true`
+            `/public/username/check-duplicate?username=${username}&is_user=true`,
           );
 
           if (response.data.duplicate === false) {
@@ -290,7 +287,7 @@ function UserRegisterForm({
     const referralCodeFromQuery = searchParams.get("referral");
 
     setPhone(
-      `${countries.find((c) => c.code === code)?.dialCode}${data.phone}`
+      `${countries.find((c) => c.code === code)?.dialCode}${data.phone}`,
     );
 
     setIsLoading(true);
@@ -300,9 +297,9 @@ function UserRegisterForm({
       phoneVerify: false,
       dob: data.dob ? new Date(data.dob).toISOString() : null,
     };
-  
+
     try {
-        await axiosInstance.post("/register/user", formData);
+      await axiosInstance.post("/register/user", formData);
       setIsModalOpen(true);
       setTimeout(() => {
         router.push("/auth/login");
@@ -369,8 +366,6 @@ function UserRegisterForm({
                   className="w-full"
                 />
               </div>
-
- 
 
               {/* Password and Confirm Password */}
               <div className="space-y-2">
@@ -460,13 +455,10 @@ function UserRegisterForm({
               </div>
             </div>
 
-         
-
             {/* Final Step */}
             <div
               className={cn("grid gap-4", currentStep === 1 ? "" : "hidden")}
             >
-              
               <div className="grid gap-4 sm:grid-cols-2">
                 {/* Username */}
                 <TextInput
@@ -476,7 +468,7 @@ function UserRegisterForm({
                   placeholder="john_doe_123"
                   className="w-full"
                 />
-                </div>
+              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
@@ -513,8 +505,7 @@ function UserRegisterForm({
                   Previous
                 </Button>
                 <Button
-                 onClick={() => onSubmit(form.getValues())}// ✅ Capital 'S' and pass form values
-
+                  onClick={() => onSubmit(form.getValues())} // ✅ Capital 'S' and pass form values
                   type="submit"
                   className="w-full sm:w-auto"
                   disabled={isLoading || !isChecked}

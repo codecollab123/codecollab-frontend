@@ -1,16 +1,16 @@
-'use client';
-import { LoaderCircle } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+"use client";
+import { LoaderCircle } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-import { ThemeToggle } from '@/components/shared/themeToggle';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { toast } from '@/components/ui/use-toast';
-import { resetPassword } from '@/lib/utils';
+import { ThemeToggle } from "@/components/shared/themeToggle";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "@/components/ui/use-toast";
+import { resetPassword } from "@/lib/utils";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState<string>("");
@@ -24,15 +24,15 @@ export default function ForgotPassword() {
     try {
       await resetPassword(email);
       toast({
-        title: 'Success',
-        description: 'Password reset email sent! Please check your inbox.',
+        title: "Success",
+        description: "Password reset email sent! Please check your inbox.",
       });
-      router.push('/auth/login');
+      router.push("/auth/login");
     } catch (error: any) {
       toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Invalid Email or Password. Please try again.',
+        variant: "destructive",
+        title: "Error",
+        description: "Invalid Email or Password. Please try again.",
       }); // Error toast
       console.error(error.message);
     } finally {
@@ -70,13 +70,13 @@ export default function ForgotPassword() {
                 {isLoading ? (
                   <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
-                  'Send Reset Link'
+                  "Send Reset Link"
                 )}
               </Button>
             </div>
           </form>
           <div className="mt-4 text-center text-sm">
-            Remembered your password?{' '}
+            Remembered your password?{" "}
             <Button variant="outline" size="sm" className="ml-2" asChild>
               <Link href="/auth/sign-in">Login</Link>
             </Button>

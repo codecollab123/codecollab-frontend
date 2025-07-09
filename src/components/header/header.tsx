@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 
-import CollapsibleSidebarMenu from '../menu/collapsibleSidebar';
-import { MenuItem } from '../menu/sidebarmenu';
-import Breadcrumb from '../shared/breadcrumbList';
-import DropdownProfile from '../shared/DropdownProfile';
+import CollapsibleSidebarMenu from "../menu/collapsibleSidebar";
+import { MenuItem } from "../menu/sidebarmenu";
+import Breadcrumb from "../shared/breadcrumbList";
+import DropdownProfile from "../shared/DropdownProfile";
 
 interface HeaderProps {
   menuItemsTop: MenuItem[];
@@ -37,10 +37,12 @@ const Header: React.FC<HeaderProps> = ({
       <Breadcrumb items={breadcrumbItems} />
 
       {/* Profile Dropdown */}
-     <div className='ml-auto'> <DropdownProfile /></div>
+      <div className="ml-auto">
+        {" "}
+        <DropdownProfile />
+      </div>
     </header>
   );
 };
 
 export default Header;
-

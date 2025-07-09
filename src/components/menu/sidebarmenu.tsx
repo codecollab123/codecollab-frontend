@@ -1,14 +1,14 @@
-import React from 'react';
-import Link from 'next/link';
+import React from "react";
+import Link from "next/link";
 
-import { ThemeToggle } from '../shared/themeToggle';
+import { ThemeToggle } from "../shared/themeToggle";
 
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-  TooltipProvider, 
-} from '@/components/ui/tooltip';
+  TooltipProvider,
+} from "@/components/ui/tooltip";
 
 export interface MenuItem {
   href: string;
@@ -20,7 +20,7 @@ type SidebarMenuProps = {
   menuItemsTop: MenuItem[];
   menuItemsBottom: MenuItem[];
   active: string;
-  setActive?: (page: string) => void; 
+  setActive?: (page: string) => void;
 };
 
 const SidebarMenu: React.FC<SidebarMenuProps> = ({
@@ -30,7 +30,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
   setActive = () => null,
 }) => {
   return (
-    <TooltipProvider> 
+    <TooltipProvider>
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
         <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
           {menuItemsTop.map((item, index) => (
@@ -40,11 +40,11 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                   href={item.href}
                   onClick={() => setActive(item.label)}
                   className={`flex h-9 w-9 items-center justify-center rounded-lg  ${
-                    item.label === active || item.label === 'Code Collab'
-                      ? item.label === 'Code Collab'
-                        ? 'group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base'
-                        : 'flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8'
-                      : 'flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8'
+                    item.label === active || item.label === "Code Collab"
+                      ? item.label === "Code Collab"
+                        ? "group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
+                        : "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                      : "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                   } transition-colors hover:text-foreground md:h-8 md:w-8`}
                 >
                   {item.icon}
@@ -66,11 +66,11 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                 <Link
                   href={item.href}
                   className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-                    item.label === active || item.label === 'Code Collab'
-                      ? item.label === 'Code Collab'
-                        ? 'group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base'
-                        : 'flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8'
-                      : 'flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8'
+                    item.label === active || item.label === "Code Collab"
+                      ? item.label === "Code Collab"
+                        ? "group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
+                        : "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                      : "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                   } transition-colors hover:text-foreground md:h-8 md:w-8`}
                 >
                   {item.icon}

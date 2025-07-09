@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 import {
   Dialog,
@@ -6,11 +6,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Note } from '@/utils/type/note';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Note } from "@/utils/type/note";
 
 type DialogSelectedNoteProps = {
   note: Note;
@@ -23,19 +23,19 @@ const DialogSelectedNote = ({
   onClose,
   onSave,
 }: DialogSelectedNoteProps) => {
-  const [title, setTitle] = useState(note.title || '');
-  const [content, setContent] = useState(note.content || '');
-  const [entityID, setEntityID] = useState(note.entityID || '');
-  const [error, setError] = useState('');
+  const [title, setTitle] = useState(note.title || "");
+  const [content, setContent] = useState(note.content || "");
+  const [entityID, setEntityID] = useState(note.entityID || "");
+  const [error, setError] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
 
   const handleSave = () => {
     if (!title.trim() || !content.trim()) {
-      setError('Title and content cannot be empty.');
+      setError("Title and content cannot be empty.");
       return;
     }
 
-    setError('');
+    setError("");
     const updatedNote = { ...note, title, content };
     onSave(updatedNote);
     setIsEditMode(false);
@@ -46,7 +46,7 @@ const DialogSelectedNote = ({
       <DialogContent className="sm:max-w-[425px] p-6 rounded-lg shadow-lg">
         <DialogHeader className="border-b pb-4">
           <DialogTitle className="text-2xl font-semibold">
-            {isEditMode ? 'Edit Note' : 'Note Details'}
+            {isEditMode ? "Edit Note" : "Note Details"}
           </DialogTitle>
         </DialogHeader>
 

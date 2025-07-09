@@ -1,20 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Search, TrendingUp, Filter } from "lucide-react";
+import Link from "next/link";
+import { useSelector } from "react-redux";
+
 import { axiosInstance } from "@/lib/axiosinstance";
 import CreatePost from "@/components/CreatePost/page";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, TrendingUp, Filter } from "lucide-react";
 import SidebarMenu from "@/components/menu/sidebarmenu";
 import Header from "@/components/header/header";
 import {
   menuItemsBottom,
   menuItemsTop,
 } from "@/config/menuItems/dashboardMenuItem";
-import Link from "next/link";
-import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 
 type Post = {
@@ -33,14 +34,14 @@ type Post = {
   timestamp: string;
   codeSnippet?: string;
   difficulty: "Easy" | "Medium" | "Hard";
-  contributionCount?: number; 
+  contributionCount?: number;
 };
 
 const HomePage = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const user = useSelector((state: RootState) => state.user);
-const userId = user?.uid;
-const [contributionCount, setContributionCount] = useState<number>(0);
+  const userId = user?.uid;
+  const [contributionCount, setContributionCount] = useState<number>(0);
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -58,29 +59,29 @@ const [contributionCount, setContributionCount] = useState<number>(0);
     }
   };
 
-const getContributionCount = async (userId: string) => {
-  try {
-    const res = await axiosInstance.get(`/post/${userId}/contributions`);
-    const count = res.data?.data?.contributionCount ?? 0;
-    setContributionCount(count); // <-- SETTING THE STATE
-  } catch (error) {
-    console.error(`❌ Error fetching contribution count for ${userId}:`, error);
-    setContributionCount(0); // fallback to 0 if API fails
-  }
-};
+  const getContributionCount = async (userId: string) => {
+    try {
+      const res = await axiosInstance.get(`/post/${userId}/contributions`);
+      const count = res.data?.data?.contributionCount ?? 0;
+      setContributionCount(count); // <-- SETTING THE STATE
+    } catch (error) {
+      console.error(
+        `❌ Error fetching contribution count for ${userId}:`,
+        error,
+      );
+      setContributionCount(0); // fallback to 0 if API fails
+    }
+  };
 
+  useEffect(() => {
+    getPosts();
+    console.log("User ID:", userId);
+    if (userId) {
+      getContributionCount(userId);
+    }
+  }, [userId]);
 
-
-
-useEffect(() => {
-  getPosts();
-  console.log("User ID:", userId);
-  if (userId) {
-    getContributionCount(userId);
-  }
-}, [userId]);
-
- const filters = [
+  const filters = [
     { id: "all", label: "All Posts", count: posts.length },
     {
       id: "question",
@@ -226,7 +227,7 @@ useEffect(() => {
                           timestamp: post.timestamp ?? new Date().toISOString(),
                           codeSnippet: post.codeSnippet,
                           difficulty: post.difficulty ?? "Easy",
-                          contributionCount:post.contributionCount,
+                          contributionCount: post.contributionCount,
                         }}
                       />
                     ))}
@@ -251,7 +252,9 @@ useEffect(() => {
                         <span className="text-muted-foreground">
                           Contributions
                         </span>
-                        <span className="font-semibold text-blue-600">{contributionCount}</span>
+                        <span className="font-semibold text-blue-600">
+                          {contributionCount}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Streak</span>

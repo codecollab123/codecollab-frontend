@@ -1,10 +1,5 @@
 "use client";
 
-import Header from "@/components/header/header";
-import SidebarMenu from "@/components/menu/sidebarmenu";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
 import {
   MoreHorizontal,
   Play,
@@ -17,20 +12,26 @@ import {
   Link as Linking,
   ChevronDown,
 } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Editor } from "@monaco-editor/react";
+import { editor } from "monaco-editor";
+import { useParams } from "next/navigation";
+import { Socket } from "socket.io-client";
+import { useSelector } from "react-redux";
+
+import Header from "@/components/header/header";
+import SidebarMenu from "@/components/menu/sidebarmenu";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
 import {
   menuItemsBottom,
   menuItemsTop,
 } from "@/config/menuItems/dashboardMenuItem";
-import { useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Editor } from "@monaco-editor/react";
-import { editor } from "monaco-editor";
-import { useParams } from "next/navigation";
 import { getSocket } from "@/service/socket";
-import { Socket } from "socket.io-client";
 import { axiosInstance } from "@/lib/axiosinstance";
 import { toast } from "@/components/ui/use-toast";
-import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 import {
   Dialog,
@@ -66,7 +67,7 @@ export default function CodingRoom() {
   const languages = ["c", "cpp", "java", "python", "javascript", "go", "rust"];
   const socketRef = useRef<Socket | null>(null);
   const [users, setUsers] = useState<{ socketId: string; userName: string }[]>(
-    []
+    [],
   );
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const isLocalChange = useRef(false); // Flag to track local changes
@@ -301,7 +302,7 @@ export default function CodingRoom() {
     // This is a placeholder for actual code execution
     // In a real implementation, you would send the code to a backend service
     setOutputText(
-      `Running ${selectedLanguage} code...\n\n// Execution results would appear here`
+      `Running ${selectedLanguage} code...\n\n// Execution results would appear here`,
     );
 
     toast({
@@ -415,7 +416,7 @@ export default function CodingRoom() {
           if (hasAudio && audioStreamRef.current) {
             initiateWebRTCConnection(socketId);
           }
-        }
+        },
       );
 
       // Listen for audio capability announcement
@@ -426,7 +427,7 @@ export default function CodingRoom() {
             // Create peer connection if remote user is audio capable and we are too
             initiateWebRTCConnection(socketId);
           }
-        }
+        },
       );
 
       // Listen for audio capability announcement
@@ -437,7 +438,7 @@ export default function CodingRoom() {
             // Create peer connection if remote user is audio capable and we are too
             initiateWebRTCConnection(socketId);
           }
-        }
+        },
       );
 
       // Rest of your existing socket event listeners...
@@ -473,7 +474,7 @@ export default function CodingRoom() {
 
         // Set the remote description (the offer)
         await peerConnection.setRemoteDescription(
-          new RTCSessionDescription(offer)
+          new RTCSessionDescription(offer),
         );
 
         // Create and send answer
@@ -491,7 +492,7 @@ export default function CodingRoom() {
         const peerConnection = peerConnectionsRef.current.get(socketId);
         if (peerConnection) {
           await peerConnection.setRemoteDescription(
-            new RTCSessionDescription(answer)
+            new RTCSessionDescription(answer),
           );
         }
       });
@@ -531,7 +532,7 @@ export default function CodingRoom() {
               return prev;
             });
           }
-        }
+        },
       );
 
       socketRef.current.on("disconnected", ({ socketId, userName }) => {
@@ -542,7 +543,7 @@ export default function CodingRoom() {
         });
 
         setUsers((prev) =>
-          prev.filter((client) => client.socketId !== socketId)
+          prev.filter((client) => client.socketId !== socketId),
         );
 
         // Remove from active speakers
@@ -565,10 +566,10 @@ export default function CodingRoom() {
 
       // Handle socket errors
       socketRef.current.on("connect_error", (err) =>
-        console.error("Socket error:", err)
+        console.error("Socket error:", err),
       );
       socketRef.current.on("connect_failed", (err) =>
-        console.error("Socket connection failed:", err)
+        console.error("Socket connection failed:", err),
       );
     };
 
@@ -912,22 +913,24 @@ export default function CodingRoom() {
                       Send
                     </button>
                     <Dialog>
-      {/* Button to Open Dialog */}
-      <DialogTrigger asChild>
-        <button className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-sm">
-          White Board
-        </button>
-      </DialogTrigger>
+                      {/* Button to Open Dialog */}
+                      <DialogTrigger asChild>
+                        <button className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-sm">
+                          White Board
+                        </button>
+                      </DialogTrigger>
 
-      {/* Whiteboard Modal/Dialog */}
-      <DialogContent className="max-w-6xl h-[90vh] flex flex-col">
-        {/* Required Title for Accessibility */}
-        <DialogTitle className="sr-only">Whiteboard</DialogTitle> 
+                      {/* Whiteboard Modal/Dialog */}
+                      <DialogContent className="max-w-6xl h-[90vh] flex flex-col">
+                        {/* Required Title for Accessibility */}
+                        <DialogTitle className="sr-only">
+                          Whiteboard
+                        </DialogTitle>
 
-        {/* Whiteboard Component */}
-        <Whiteboard room_id={room_id} />
-      </DialogContent>
-    </Dialog>
+                        {/* Whiteboard Component */}
+                        <Whiteboard room_id={room_id} />
+                      </DialogContent>
+                    </Dialog>
                   </div>
                   <div>
                     <button

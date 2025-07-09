@@ -1,9 +1,10 @@
 // hooks/useNotes.ts
-import { useState } from 'react';
+import { useState } from "react";
 
-import { axiosInstance } from '@/lib/axiosinstance';
-import { toast } from './use-toast';
-import { Note, NoteType, LabelType } from '@/utils/type/note';
+import { toast } from "./use-toast";
+
+import { axiosInstance } from "@/lib/axiosinstance";
+import { Note, NoteType, LabelType } from "@/utils/type/note";
 
 const useNotes = (fetchNotes: () => Promise<void>, notes: Note[]) => {
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
@@ -15,9 +16,9 @@ const useNotes = (fetchNotes: () => Promise<void>, notes: Note[]) => {
 
   const showError = (message: string) => {
     toast({
-      title: 'Error',
+      title: "Error",
       description: message,
-      variant: 'destructive',
+      variant: "destructive",
       duration: 5000,
     });
   };
@@ -31,7 +32,7 @@ const useNotes = (fetchNotes: () => Promise<void>, notes: Note[]) => {
 
   const handleSaveEditNote = async (note: Note) => {
     if (!note._id) {
-      showError('Missing required fields for updating the note.');
+      showError("Missing required fields for updating the note.");
       return;
     }
     console.log(note);
@@ -40,20 +41,20 @@ const useNotes = (fetchNotes: () => Promise<void>, notes: Note[]) => {
       const response = await axiosInstance.put(`/notes/${note._id}`, {
         title: note.title,
         content: note.content,
-        bgColor: note.bgColor || '#FFFFFF',
-        banner: note.banner || '',
+        bgColor: note.bgColor || "#FFFFFF",
+        banner: note.banner || "",
         isHTML: note.isHTML || false,
-        entityID: note.entityID || '',
-        entityType: note.entityType || '',
+        entityID: note.entityID || "",
+        entityType: note.entityType || "",
         noteType: note?.noteType || NoteType.NOTE,
         type: note?.type || LabelType.PERSONAL,
       });
 
       if (response?.status === 200) {
-        showSuccess('Note updated successfully.');
+        showSuccess("Note updated successfully.");
       }
     } catch (error) {
-      showError('Failed to update the note.');
+      showError("Failed to update the note.");
     } finally {
       await fetchNotes(); // Refresh notes
       setSelectedNote(null); // Clear selection
@@ -67,19 +68,19 @@ const useNotes = (fetchNotes: () => Promise<void>, notes: Note[]) => {
 
   const handleDeletePermanently = async (noteId: string | null) => {
     if (!noteId) {
-      showError('Invalid note ID.');
+      showError("Invalid note ID.");
       return;
     }
     try {
       await axiosInstance.delete(`/notes/${noteId}`);
-      showSuccess('Note deleted permanently.');
+      showSuccess("Note deleted permanently.");
       fetchNotes();
     } catch (error) {
-      showError('Failed to delete the note.');
+      showError("Failed to delete the note.");
       toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Something went wrong.Please try again.',
+        variant: "destructive",
+        title: "Error",
+        description: "Something went wrong.Please try again.",
       }); // Error toast
     }
     setIsDeleting(false);
@@ -92,7 +93,7 @@ const useNotes = (fetchNotes: () => Promise<void>, notes: Note[]) => {
     const noteToUpdate = notes.find((note) => note._id === noteId);
 
     if (!noteToUpdate) {
-      showError('Note not found.');
+      showError("Note not found.");
       return;
     }
     try {
@@ -108,9 +109,9 @@ const useNotes = (fetchNotes: () => Promise<void>, notes: Note[]) => {
     } catch (error) {
       showError(`Failed to update the note banner.`);
       toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Something went wrong.Please try again.',
+        variant: "destructive",
+        title: "Error",
+        description: "Something went wrong.Please try again.",
       }); // Error toast
       console.log(error);
     }
@@ -123,7 +124,7 @@ const useNotes = (fetchNotes: () => Promise<void>, notes: Note[]) => {
     const noteToUpdate = notes.find((note) => note._id === noteId);
 
     if (!noteToUpdate) {
-      showError('Note not found.');
+      showError("Note not found.");
       return;
     }
     try {
@@ -149,7 +150,7 @@ const useNotes = (fetchNotes: () => Promise<void>, notes: Note[]) => {
     const noteToUpdate = notes.find((note) => note._id === noteId);
 
     if (!noteToUpdate) {
-      showError('Note not found.');
+      showError("Note not found.");
       return;
     }
     try {

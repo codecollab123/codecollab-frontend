@@ -1,21 +1,22 @@
-'use client';
+"use client";
 
-import { useSelector } from 'react-redux';
-import { RootState } from '@/lib/store';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useState } from 'react';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { useSelector } from "react-redux";
+import { useState } from "react";
+
+import { RootState } from "@/lib/store";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export default function ProfileForm() {
   const user = useSelector((state: RootState) => state.user);
   const [formData, setFormData] = useState({
-    firstName: user?.firstName || '',
-    lastName: user?.lastName || '',
-    email: user?.email || '',
-    phone: user?.phone || '',
-    profilePic: user?.profilePic || '',
+    firstName: user?.firstName || "",
+    lastName: user?.lastName || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    profilePic: user?.profilePic || "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,7 +34,7 @@ export default function ProfileForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Updated Profile Data:', formData);
+    console.log("Updated Profile Data:", formData);
   };
 
   return (
@@ -47,7 +48,13 @@ export default function ProfileForm() {
               <AvatarImage src={formData.profilePic} alt="Profile Picture" />
               <AvatarFallback>+</AvatarFallback>
             </Avatar>
-            <input type="file" id="profilePic" accept="image/*" onChange={handleFileChange} className="hidden" />
+            <input
+              type="file"
+              id="profilePic"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+            />
           </label>
         </div>
 
@@ -57,33 +64,61 @@ export default function ProfileForm() {
             {/* Name */}
             <div>
               <Label>First Name</Label>
-              <Input name="firstName" value={formData.firstName} onChange={handleChange} placeholder="Enter your first name" required className="w-full bg-gray-800 border-gray-700" />
+              <Input
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                placeholder="Enter your first name"
+                required
+                className="w-full bg-gray-800 border-gray-700"
+              />
             </div>
             <div>
               <Label>Last Name</Label>
-              <Input name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Enter your last name" required className="w-full bg-gray-800 border-gray-700" />
+              <Input
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                placeholder="Enter your last name"
+                required
+                className="w-full bg-gray-800 border-gray-700"
+              />
             </div>
 
             {/* Email & Phone */}
             <div>
               <Label>Email</Label>
-              <Input type="email" name="email" value={formData.email} placeholder="Enter your email" readOnly className="w-full bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed" />
+              <Input
+                type="email"
+                name="email"
+                value={formData.email}
+                placeholder="Enter your email"
+                readOnly
+                className="w-full bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed"
+              />
               <span className="text-sm text-gray-400">Non-editable field</span>
             </div>
             <div>
               <Label>Phone</Label>
-              <Input type="tel" name="phone" value={formData.phone|| ""} placeholder="Enter your phone number" readOnly className="w-full bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed" />
+              <Input
+                type="tel"
+                name="phone"
+                value={formData.phone || ""}
+                placeholder="Enter your phone number"
+                readOnly
+                className="w-full bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed"
+              />
               <span className="text-sm text-gray-400">Non-editable field</span>
             </div>
 
             {/* Company Details */}
-            
-            
-           
           </div>
 
           {/* Submit Button */}
-          <Button type="submit" className="w-full bg-white text-black hover:bg-gray-300 py-3 text-lg font-semibold">
+          <Button
+            type="submit"
+            className="w-full bg-white text-black hover:bg-gray-300 py-3 text-lg font-semibold"
+          >
             Save changes
           </Button>
         </form>

@@ -1,11 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import {
+  Heart,
+  MessageCircle,
+  Share2,
+  Code,
+  Trophy,
+  HelpCircle,
+} from "lucide-react";
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Heart, MessageCircle, Share2, Code, Trophy, HelpCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface Post {
@@ -24,7 +32,7 @@ interface Post {
   timestamp: string;
   codeSnippet?: string;
   difficulty?: "Easy" | "Medium" | "Hard";
-  contributionCount?: number; 
+  contributionCount?: number;
 }
 
 interface CreatePostProps {
@@ -82,7 +90,9 @@ const CreatePost = ({ post }: CreatePostProps) => {
           <div className="flex items-center space-x-3">
             <Avatar>
               <AvatarImage src={post.author.avatar} />
-              <AvatarFallback>{post.author.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+              <AvatarFallback>
+                {post.author.name.slice(0, 2).toUpperCase()}
+              </AvatarFallback>
             </Avatar>
             <div>
               <h3 className="font-semibold">{post.author.name}</h3>
@@ -90,7 +100,9 @@ const CreatePost = ({ post }: CreatePostProps) => {
                 <Badge variant="secondary" className="text-xs">
                   {post.author.level}
                 </Badge>
-                <span className="text-xs text-muted-foreground">{post.timestamp}</span>
+                <span className="text-xs text-muted-foreground">
+                  {post.timestamp}
+                </span>
               </div>
             </div>
           </div>
@@ -111,13 +123,17 @@ const CreatePost = ({ post }: CreatePostProps) => {
       </CardHeader>
 
       <CardContent className="pt-0">
-        <p className="text-muted-foreground mb-4 leading-relaxed">{post.content}</p>
+        <p className="text-muted-foreground mb-4 leading-relaxed">
+          {post.content}
+        </p>
 
         {post.codeSnippet && (
           <div className="bg-muted rounded-lg p-4 mb-4 border border-border">
             <div className="flex items-center space-x-2 mb-2">
               <Code className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-medium text-muted-foreground">Code Snippet</span>
+              <span className="text-sm font-medium text-muted-foreground">
+                Code Snippet
+              </span>
             </div>
             <pre className="text-sm overflow-x-auto text-foreground">
               <code>{post.codeSnippet}</code>
@@ -127,7 +143,11 @@ const CreatePost = ({ post }: CreatePostProps) => {
 
         <div className="flex flex-wrap gap-2 mb-4">
           {post.tags.map((tag, index) => (
-            <Badge key={index} variant="outline" className="text-xs text-muted-foreground border-border">
+            <Badge
+              key={index}
+              variant="outline"
+              className="text-xs text-muted-foreground border-border"
+            >
               #{tag}
             </Badge>
           ))}

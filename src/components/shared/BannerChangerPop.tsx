@@ -1,9 +1,7 @@
-import React from 'react';
-import Image from 'next/image';
+import React from "react";
+import Image from "next/image";
 
-import {
-  HoverCardContent,
-} from '@/components/ui/hover-card';
+import { HoverCardContent } from "@/components/ui/hover-card";
 
 interface BannerChangerPopoverProps {
   handleChangeBanner: (banner: string) => void;
@@ -13,13 +11,13 @@ const BannerChangerPopover: React.FC<BannerChangerPopoverProps> = ({
   handleChangeBanner,
 }) => {
   const banners = [
-    '/banner1.svg',
-    '/banner2.svg',
-    '/banner3.svg',
-    '/banner4.svg',
-    '/banner5.svg',
-    '/banner6.svg',
-    '/banner7.svg',
+    "/banner1.svg",
+    "/banner2.svg",
+    "/banner3.svg",
+    "/banner4.svg",
+    "/banner5.svg",
+    "/banner6.svg",
+    "/banner7.svg",
   ];
 
   return (

@@ -1,4 +1,10 @@
 "use client";
+import { useRouter } from "next/navigation";
+import { UserCredential } from "firebase/auth";
+import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,17 +15,12 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useRouter } from "next/navigation";
-import { UserCredential } from "firebase/auth";
-import { useDispatch } from "react-redux";
-import { useEffect, useState } from "react";
-
 import { axiosInstance } from "@/lib/axiosinstance";
 import { getUserData, loginGoogleUser, loginUser } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { setUser } from "@/lib/userSlice";
 import OtpLogin from "@/components/shared/otpDialog";
-import Link from "next/link";
+
 // import { profile } from "console";
 
 export default function LoginPage() {
@@ -38,46 +39,39 @@ export default function LoginPage() {
   const handleLogin = async (): Promise<void> => {
     setIsLoading(true);
     try {
-      const response = await axiosInstance.get(
-        `/public/user_email?user=${email}`
-      );
-      const phoneVerify = response.data?.phoneVerify;
+      const res = await axiosInstance.get(`/public/user_email?user=${email}`);
+      const phoneVerify = res.data?.phoneVerify;
 
-      if (phoneVerify) {
-        const userCredential: UserCredential = await loginUser(email, password);
-        const { user, claims } = await getUserData(userCredential);
-
-        dispatch(
-          setUser({
-            ...user,
-            type: claims.type,
-          })
-        );
-        useEffect(() => {
-    if (user) {
-      console.log("🟢 User mil gaya, redirecting...");
-      router.replace("/dashboard");
-    }
-  }, [user]);
-
-        toast({
-          title: "Login Successful",
-          description: "You have successfully logged in.",
-        });
-      } else {
+      if (!phoneVerify) {
         toast({
           variant: "destructive",
           title: "Phone Verification Required",
           description: "Please verify your phone number to proceed.",
         });
+        return;
       }
-    } catch (error: any) {
+
+      const cred: UserCredential = await loginUser(email, password);
+      const { user, claims } = await getUserData(cred);
+
+      dispatch(setUser({ ...user, type: claims.type }));
+
+      /* ✅ direct redirect — hook ki जरूरत नहीं */
+      router.replace("/dashboard");
+
+      toast({
+        title: "Login Successful",
+        description: "You have successfully logged in.",
+      });
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error ? err.message : "Invalid email or password.";
       toast({
         variant: "destructive",
         title: "Login Failed",
-        description: "Invalid email or password. Please try again.",
+        description: msg,
       });
-      console.error(error.message);
+      console.error("Login error:", msg);
     } finally {
       setIsLoading(false);
     }
@@ -85,7 +79,7 @@ export default function LoginPage() {
 
   const generateUniqueUsername = async (
     firstName: string,
-    lastName: string
+    lastName: string,
   ): Promise<string> => {
     const baseUsername =
       `${firstName.toLowerCase()}${lastName.toLowerCase()}`.replace(/\s+/g, ""); // Remove spaces
@@ -124,7 +118,7 @@ export default function LoginPage() {
       // Check if user exists in our database
       try {
         const user = await axiosInstance.get(
-          `/public/user_email?user=${firebaseUser.email}`
+          `/public/user_email?user=${firebaseUser.email}`,
         );
 
         dispatch(setUser({ ...firebaseUser, type: claims.type }));
@@ -153,7 +147,7 @@ export default function LoginPage() {
               ...firebaseUser,
               type: claims.type || "user",
               phoneVerify: false,
-            })
+            }),
           );
 
           router.replace(`/dashboard`);
@@ -256,7 +250,14 @@ export default function LoginPage() {
         </div>
         <div className="text-center text-xs text-muted-foreground">
           By clicking continue, you agree to our{" "}
-          <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+          <Link href="/terms" className="underline">
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" className="underline">
+            Privacy Policy
+          </Link>
+          .
         </div>
       </div>
       <OtpLogin

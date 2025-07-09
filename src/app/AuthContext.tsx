@@ -1,11 +1,11 @@
-'use client';
-import { createContext, useContext, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { useRouter } from 'next/navigation';
+"use client";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
 
-import { setUser, clearUser } from '@/lib/userSlice';
-import { initializeAxiosWithToken } from '@/lib/axiosinstance';
-import { auth } from '@/config/firebaseConfig';
+import { setUser, clearUser } from "@/lib/userSlice";
+import { initializeAxiosWithToken } from "@/lib/axiosinstance";
+import { auth } from "@/config/firebaseConfig";
 
 interface AuthContextProps {
   user: SerializableUser | null;
@@ -34,8 +34,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const storedToken = localStorage.getItem('token');
+    const storedUser = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("token");
 
     if (storedUser && storedToken) {
       try {
@@ -44,9 +44,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         initializeAxiosWithToken(storedToken);
         dispatch(setUser(parsedUser));
       } catch (error) {
-        console.error('Error parsing stored user:', error);
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
+        console.error("Error parsing stored user:", error);
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
       }
       setLoading(false);
     }
@@ -68,20 +68,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             type: claims.claims.type,
           };
 
-          localStorage.setItem('user', JSON.stringify(userData));
-          localStorage.setItem('token', accessToken);
+          localStorage.setItem("user", JSON.stringify(userData));
+          localStorage.setItem("token", accessToken);
           setUserState(userData);
           initializeAxiosWithToken(accessToken);
           dispatch(setUser(userData));
         } catch (error) {
-          console.error('Error processing Firebase user:', error);
+          console.error("Error processing Firebase user:", error);
         }
       } else {
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
         setUserState(null);
         dispatch(clearUser());
-        router.replace('/auth/login');
+        router.replace("/auth/login");
       }
       setLoading(false);
     });

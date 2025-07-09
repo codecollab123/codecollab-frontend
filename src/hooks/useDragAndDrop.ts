@@ -1,9 +1,10 @@
 // hooks/useDragAndDrop.ts
-import { useState } from 'react';
+import { useState } from "react";
 
-import { axiosInstance } from '@/lib/axiosinstance';
-import { Note } from '@/utils/type/note';
-import { toast } from './use-toast';
+import { toast } from "./use-toast";
+
+import { axiosInstance } from "@/lib/axiosinstance";
+import { Note } from "@/utils/type/note";
 
 const useDragAndDrop = (notes: Note[], setNotes: (notes: Note[]) => void) => {
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
@@ -44,7 +45,7 @@ const useDragAndDrop = (notes: Note[], setNotes: (notes: Note[]) => void) => {
       if (userId) {
         try {
           const response = await axiosInstance.patch(
-            '/notes/update-noteorder',
+            "/notes/update-noteorder",
             {
               userId,
               noteOrder: updatedNoteOrder,
@@ -52,29 +53,29 @@ const useDragAndDrop = (notes: Note[], setNotes: (notes: Note[]) => void) => {
           );
 
           if (response.status === 200) {
-            console.log('Notes order updated successfully:', response.data);
+            console.log("Notes order updated successfully:", response.data);
           } else {
-            console.error('Failed to update note order:', response.statusText);
+            console.error("Failed to update note order:", response.statusText);
             toast({
-              variant: 'destructive',
-              title: 'Error',
-              description: 'Something went wrong.Please try again.',
+              variant: "destructive",
+              title: "Error",
+              description: "Something went wrong.Please try again.",
             }); // Error toast
           }
         } catch (error: any) {
-          console.error('Error updating note order:', error.message);
+          console.error("Error updating note order:", error.message);
           toast({
-            variant: 'destructive',
-            title: 'Error',
-            description: 'Something went wrong.Please try again.',
+            variant: "destructive",
+            title: "Error",
+            description: "Something went wrong.Please try again.",
           }); // Error toast
         }
       } else {
-        console.error('User ID is missing. Cannot update note order.');
+        console.error("User ID is missing. Cannot update note order.");
         toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: 'Something went wrong.Please try again.',
+          variant: "destructive",
+          title: "Error",
+          description: "Something went wrong.Please try again.",
         }); // Error toast
       }
     }
