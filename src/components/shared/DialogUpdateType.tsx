@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 import {
   Dialog,
@@ -6,16 +6,16 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Note } from '@/utils/type/note';
+} from "@/components/ui/select";
+import { Note } from "@/utils/type/note";
 
 interface DialogUpdateTypeProps {
   note: Note;
@@ -28,7 +28,7 @@ const DialogUpdateType = ({
   onClose,
   onUpdate,
 }: DialogUpdateTypeProps) => {
-  const [selectedType, setSelectedType] = useState(note.type || '');
+  const [selectedType, setSelectedType] = useState(note.type || "");
 
   const handleUpdate = () => {
     if (selectedType) {

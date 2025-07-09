@@ -1,41 +1,36 @@
-'use client';
+"use client";
 
 import {
   ConfirmationResult,
   RecaptchaVerifier,
   signInWithPhoneNumber,
   UserCredential,
-} from 'firebase/auth';
-import React, {
-  FormEvent,
-  useEffect,
-  useState,
-  useTransition,
-  useCallback,
-} from 'react';
-import { useRouter } from 'next/navigation';
-import { useDispatch } from 'react-redux';
+} from "firebase/auth";
+import React, { useEffect, useState, useTransition, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
 
-import { Button } from '@/components/ui/button';
+import PhoneChangeModal from "./PhoneChangeModel";
+
+import { Button } from "@/components/ui/button";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from '@/components/ui/input-otp';
+} from "@/components/ui/input-otp";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@/components/ui/dialog';
-import { auth } from '@/config/firebaseConfig';
-import { setUser } from '@/lib/userSlice';
-import { getUserData } from '@/lib/utils';
-import { axiosInstance } from '@/lib/axiosinstance';
-import { toast } from '@/hooks/use-toast';
-import PhoneChangeModal from './PhoneChangeModal';
+} from "@/components/ui/dialog";
+import { auth } from "@/config/firebaseConfig";
+import { setUser } from "@/lib/userSlice";
+import { getUserData } from "@/lib/utils";
+import { axiosInstance } from "@/lib/axiosinstance";
+import { toast } from "@/hooks/use-toast";
 
 interface OtpLoginProps {
   phoneNumber: string;
@@ -46,19 +41,20 @@ interface OtpLoginProps {
 function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
   const router = useRouter();
   const dispatch = useDispatch();
- const [otp, setOtp] = useState<string>(""); // ✅ Already good
-
+  const [otp, setOtp] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState("");
   const [resendCountdown, setResendCountdown] = useState(0);
   const [isPending, startTransition] = useTransition();
   const [showModal, setShowModal] = useState(false);
   const [phone, setPhone] = useState(phoneNumber);
+
   const [recaptchaVerifier, setRecaptchaVerifier] =
     useState<RecaptchaVerifier | null>(null);
 
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult | null>(null);
+
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (resendCountdown > 0) {
@@ -66,12 +62,13 @@ function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
     }
     return () => clearTimeout(timer);
   }, [resendCountdown]);
+
   useEffect(() => {
     const recaptchaVerifier = new RecaptchaVerifier(
       auth,
-      'recaptcha-container',
+      "recaptcha-container",
       {
-        size: 'invisible',
+        size: "invisible",
       },
     );
 
@@ -84,22 +81,21 @@ function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
 
   const verifyOtp = useCallback(async () => {
     startTransition(async () => {
-      setError('');
+      setError("");
 
       if (!confirmationResult) {
-        setError('Please request OTP first.');
+        setError("Please request OTP first.");
         return;
       }
-      
+
       try {
         const userCredential: UserCredential =
           await confirmationResult?.confirm(otp);
 
         const { user, claims } = await getUserData(userCredential);
-
         // Update phone verification status in mongoDb and firebase
         await axiosInstance.put(`/${claims.type}`, {
-          phone: phoneNumber,
+          phone: phone,
           phoneVerify: true,
         });
 
@@ -107,15 +103,15 @@ function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
         router.replace(`/dashboard/${claims.type}`);
       } catch (error) {
         console.log(error);
-        setError('Failed to verify OTP. Please check the OTP.');
+        setError("Failed to verify OTP. Please check the OTP.");
         toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: 'Something went wrong.Please try again.',
+          variant: "destructive",
+          title: "Error",
+          description: "Something went wrong.Please try again.",
         }); // Error toast
       }
     });
-  }, [confirmationResult, otp, dispatch, router, phoneNumber]);
+  }, [confirmationResult, otp, dispatch, router, phone]);
 
   useEffect(() => {
     const hasEnteredAllDigits = otp.length === 6;
@@ -124,52 +120,47 @@ function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
     }
   }, [otp, verifyOtp]);
 
-  const requestOtp = useCallback(
-    async (e?: FormEvent<HTMLFormElement>) => {
-      e?.preventDefault();
-
+  const requestOtp = useCallback(async () => {
+    startTransition(async () => {
+      setError("");
       setResendCountdown(60);
-
-      startTransition(async () => {
-        setError('');
-
-        if (!recaptchaVerifier) {
-          return setError('RecaptchaVerifier is not initialized.');
-        }
-
-        try {
+      if (!recaptchaVerifier) {
+        return setError("RecaptchaVerifier is not initialized.");
+      }
+      try {
+        if (phoneNumber.length > 0) {
           const confirmationResult = await signInWithPhoneNumber(
             auth,
             phoneNumber,
             recaptchaVerifier,
           );
-
           setConfirmationResult(confirmationResult);
-          setSuccess('OTP sent successfully.');
-        } catch (err: any) {
-          console.log(err);
-          setResendCountdown(0);
-
-          if (err.code === 'auth/invalid-phone-number') {
-            setError('Invalid phone number. Please check the number.');
-          } else if (err.code === 'auth/too-many-requests') {
-            setError('Too many requests. Please try again later.');
-          } else {
-            setError('Failed to send OTP. Please try again.');
-          }
+          setSuccess("OTP sent successfully.");
         }
-      });
-    },
-    [recaptchaVerifier, phoneNumber],
-  );
+      } catch (err: any) {
+        console.error(err);
+        setResendCountdown(0);
+        if (err.code === "auth/invalid-phone-number") {
+          setError("Invalid phone number. Please check the number.");
+        } else if (err.code === "auth/too-many-requests") {
+          setError("Too many requests. Please try again later.");
+        } else {
+          setError("Failed to send OTP. Please try again.");
+        }
+      }
+    });
+  }, [phoneNumber, recaptchaVerifier]);
+  const handlePhoneChange = (newPhone: string) => {
+    setPhone(newPhone);
+    requestOtp();
+    setShowModal(false);
+  };
 
   useEffect(() => {
-   if (isModalOpen) {
-  setOtp(""); // Clear any old value
-  requestOtp();
-}
-
-  }, [isModalOpen, requestOtp]);
+    if (isModalOpen && phoneNumber !== "") {
+      requestOtp();
+    }
+  }, [isModalOpen, requestOtp, phoneNumber]);
 
   const loadingIndicator = (
     <div role="status" className="flex justify-center">
@@ -193,29 +184,36 @@ function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
     </div>
   );
 
-  // Add a placeholder handler for phone change
-  const handlePhoneChange = (newPhone: string) => {
-    setPhone(newPhone);
-    setShowModal(false);
-  };
-
   return (
     <>
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent>
           <DialogHeader>
+            <p className="text-sm text-center text-gray-500">
+              OTP sent to{" "}
+              <strong>
+                {(phone || phoneNumber)?.substring(0, 3)}{" "}
+                {(phone || phoneNumber)?.substring(3)}
+              </strong>
+            </p>
+            <button
+              className="text-blue-600 text-sm underline mt-1"
+              onClick={() => setShowModal(true)}
+            >
+              Not your number? Change it
+            </button>
             <DialogTitle>Enter OTP</DialogTitle>
             <DialogDescription>
               Please enter the OTP sent to your phone number.
             </DialogDescription>
           </DialogHeader>
+
           <div className="flex flex-col justify-center items-center">
             <InputOTP
-  maxLength={6}
-  value={otp ?? ""} // ✅ Make sure it's always a string
-  onChange={(value) => setOtp(value)}
->
-
+              maxLength={6}
+              value={otp}
+              onChange={(value) => setOtp(value)}
+            >
               <InputOTPGroup>
                 <InputOTPSlot index={0} />
                 <InputOTPSlot index={1} />
@@ -228,6 +226,7 @@ function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
                 <InputOTPSlot index={5} />
               </InputOTPGroup>
             </InputOTP>
+
             <Button
               disabled={isPending || resendCountdown > 0}
               className="mt-5"
@@ -235,9 +234,10 @@ function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
               {resendCountdown > 0
                 ? `Resend OTP in ${resendCountdown}`
                 : isPending
-                  ? 'Sending OTP'
-                  : 'Send OTP'}
+                  ? "Sending OTP"
+                  : "Send OTP"}
             </Button>
+
             <div className="p-10 text-center">
               {error && <p className="text-red-500">{error}</p>}
               {success && <p className="text-green-500">{success}</p>}
@@ -246,12 +246,14 @@ function OtpLogin({ phoneNumber, isModalOpen, setIsModalOpen }: OtpLoginProps) {
           </div>
         </DialogContent>
       </Dialog>
+
       <PhoneChangeModal
         open={showModal}
         setOpen={setShowModal}
         onSubmit={handlePhoneChange}
         setPhone={setPhone}
       />
+
       <div id="recaptcha-container" />
     </>
   );

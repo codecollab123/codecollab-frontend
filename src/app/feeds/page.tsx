@@ -1,20 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Search, TrendingUp, Filter } from "lucide-react";
+import Link from "next/link";
+import { useSelector } from "react-redux";
+
 import { axiosInstance } from "@/lib/axiosinstance";
 import CreatePost from "@/components/CreatePost/page";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, TrendingUp, Filter } from "lucide-react";
 import SidebarMenu from "@/components/menu/sidebarmenu";
 import Header from "@/components/header/header";
 import {
   menuItemsBottom,
   menuItemsTop,
 } from "@/config/menuItems/dashboardMenuItem";
-import Link from "next/link";
-import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 import { getFeedSocket } from "@/service/liveFeedSocket";
 
@@ -37,8 +38,6 @@ type Post = {
   difficulty: "Easy" | "Medium" | "Hard";
   contributionCount?: number;
 };
-
-
 
 const FeedPage = () => {
   const [activeFilter, setActiveFilter] = useState("all");
@@ -72,8 +71,8 @@ const FeedPage = () => {
       setContributionCount(count); // <-- SETTING THE STATE
     } catch (error) {
       console.error(
-        `❌ Error fetching contribution count for ${userId}:`,
-        error
+        `❌ Error fetching contribution count for ${userId}:,
+        error`,
       );
       setContributionCount(0); // fallback to 0 if API fails
     }
@@ -81,7 +80,7 @@ const FeedPage = () => {
   const handleDeletePost = (deletedId: string) => {
     console.log("Deleted post ID:", deletedId);
     setPosts(
-      (prev) => prev.filter((post) => post._id !== deletedId) // make sure it's 'id' not '_id'
+      (prev) => prev.filter((post) => post._id !== deletedId), // make sure it's 'id' not '_id'
     );
   };
 
@@ -234,9 +233,11 @@ const FeedPage = () => {
                         post={{
                           postId: post._id,
                           author: {
+
                               id: typeof post.author === "string" ? post.author : post.author?.id,
                             // name: post.author?.name || "Anonymous",
                             name: "Anonymous",
+
                             avatar:
                               post.author?.avatar || "/default-avatar.png",
                             level: post.author?.level || "Beginner",

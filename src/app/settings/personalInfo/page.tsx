@@ -1,8 +1,11 @@
 "use client";
+import { CalendarDays, Trophy, Target, Zap, Award } from "lucide-react";
+import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarDays, Trophy, Target, Zap, Award } from "lucide-react";
 import SubmissionCalendar from "@/components/SubmissionCalender";
 import SidebarMenu from "@/components/menu/sidebarmenu";
 import {
@@ -10,9 +13,7 @@ import {
   menuItemsTop,
 } from "@/config/menuItems/dashboardMenuItem";
 import Header from "@/components/header/header";
-import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
-import { useEffect, useState } from "react";
 import { axiosInstance } from "@/lib/axiosinstance";
 import CreatePost from "@/components/CreatePost/page";
 
@@ -32,7 +33,7 @@ const personalInfoPage = () => {
     time: string;
     language: string;
   };
-  
+
   const user = useSelector((state: RootState) => state.user);
   const userId = user?.uid;
   const [recentSubmissions, setRecentSubmissions] = useState<RecentPost[]>([]);
@@ -77,7 +78,7 @@ const personalInfoPage = () => {
 
   const handleDeletePost = (deletedId: string) => {
     setRecentSubmissions((prev) =>
-      prev.filter((post) => post._id !== deletedId)
+      prev.filter((post) => post._id !== deletedId),
     );
   };
 
@@ -214,7 +215,10 @@ const personalInfoPage = () => {
                       post={{
                         postId: post._id,
                         author: {
-                          id: typeof post.author === "string" ? post.author : post.author?._id,
+                          id:
+                            typeof post.author === "string"
+                              ? post.author
+                              : post.author?._id,
                           name: post.author?.name || "Anonymous",
                           avatar: post.author?.avatar || "/default-avatar.png",
                           level: post.author?.level || "Beginner",

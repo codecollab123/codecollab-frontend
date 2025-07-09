@@ -1,8 +1,9 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState } from "react";
 
-import { axiosInstance } from '@/lib/axiosinstance';
-import { Note } from '@/utils/type/note';
-import { toast } from './use-toast';
+import { toast } from "./use-toast";
+
+import { axiosInstance } from "@/lib/axiosinstance";
+import { Note } from "@/utils/type/note";
 
 // this is hook to fetch notes from the server
 const useFetchNotes = (userId: string | undefined) => {
@@ -16,7 +17,7 @@ const useFetchNotes = (userId: string | undefined) => {
 
     setIsLoading(true);
     try {
-      const response = await axiosInstance.get('/notes', {
+      const response = await axiosInstance.get("/notes", {
         params: { userId },
       });
       if (response?.data?.notes) {
@@ -25,11 +26,11 @@ const useFetchNotes = (userId: string | undefined) => {
         setTrash(response.data.notes.trash || []);
       }
     } catch (error) {
-      console.error('Failed to fetch notes:', error);
+      console.error("Failed to fetch notes:", error);
       toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Something went wrong.Please try again.',
+        variant: "destructive",
+        title: "Error",
+        description: "Something went wrong.Please try again.",
       }); // Error toast
     } finally {
       setIsLoading(false);

@@ -1,48 +1,48 @@
-'use client'
+"use client";
 
-import React from 'react'
-import { motion } from 'framer-motion'
-import { Trophy, Flame, Target,  Award, Zap } from 'lucide-react'
+import React from "react";
+import { motion } from "framer-motion";
+import { Trophy, Flame, Target, Star, Award, Zap } from "lucide-react";
 type Achievement = {
-  id: number
-  name: string
-  icon: string
-  color: string
-}
+  id: number;
+  name: string;
+  icon: string;
+  color: string;
+};
 
 type User = {
-  id: string
-  name: string
-  level: number
-  xp: number
-  nextLevelXP: number
-  streak: number
-  problemsSolved: number
-  rank: string
-  avatar: string
-  achievements: Achievement[]
-}
+  id: string;
+  name: string;
+  level: number;
+  xp: number;
+  nextLevelXP: number;
+  streak: number;
+  problemsSolved: number;
+  rank: string;
+  avatar: string;
+  achievements: Achievement[];
+};
 
 const UserProfile: React.FC = () => {
   const userStats: User = {
-    id: '1',
-    name: 'John Doe',
+    id: "1",
+    name: "John Doe",
     level: 42,
     xp: 15420,
     nextLevelXP: 18000,
     streak: 15,
     problemsSolved: 287,
-    rank: 'Code Warrior',
-    avatar: 'JD',
+    rank: "Code Warrior",
+    avatar: "JD",
     achievements: [
-      { id: 1, name: 'First Blood', icon: '🎯', color: 'text-neon-green' },
-      { id: 2, name: 'Speed Demon', icon: '⚡', color: 'text-neon-blue' },
-      { id: 3, name: 'Helper', icon: '🤝', color: 'text-neon-purple' },
-      { id: 4, name: 'Streak Master', icon: '🔥', color: 'text-neon-pink' },
-    ]
-  }
+      { id: 1, name: "First Blood", icon: "🎯", color: "text-neon-green" },
+      { id: 2, name: "Speed Demon", icon: "⚡", color: "text-neon-blue" },
+      { id: 3, name: "Helper", icon: "🤝", color: "text-neon-purple" },
+      { id: 4, name: "Streak Master", icon: "🔥", color: "text-neon-pink" },
+    ],
+  };
 
-  const xpProgress = (userStats.xp / userStats.nextLevelXP) * 100
+  const xpProgress = (userStats.xp / userStats.nextLevelXP) * 100;
 
   return (
     <motion.div
@@ -57,17 +57,21 @@ const UserProfile: React.FC = () => {
           <div className="relative mx-auto w-24 h-24 mb-4">
             <div className="w-full h-full bg-gradient-to-r from-neon-green to-neon-blue rounded-full p-1">
               <div className="w-full h-full bg-cyber-black rounded-full flex items-center justify-center">
-                <span className="text-2xl font-bold text-neon-green">{userStats.avatar}</span>
+                <span className="text-2xl font-bold text-neon-green">
+                  {userStats.avatar}
+                </span>
               </div>
             </div>
             <div className="absolute -top-2 -right-2 bg-gradient-to-r from-neon-purple to-neon-pink rounded-full w-8 h-8 flex items-center justify-center">
               <span className="text-xs font-bold">{userStats.level}</span>
             </div>
           </div>
-          
-          <h3 className="text-xl font-bold text-white mb-1">{userStats.name}</h3>
+
+          <h3 className="text-xl font-bold text-white mb-1">
+            {userStats.name}
+          </h3>
           <p className="text-neon-green font-semibold mb-2">{userStats.rank}</p>
-          
+
           {/* XP Progress */}
           <div className="mb-4">
             <div className="flex justify-between text-sm text-gray-400 mb-1">
@@ -93,16 +97,20 @@ const UserProfile: React.FC = () => {
           className="cyber-card text-center"
         >
           <Flame className="w-8 h-8 text-neon-pink mx-auto mb-2" />
-          <p className="text-2xl font-bold text-neon-pink">{userStats.streak}</p>
+          <p className="text-2xl font-bold text-neon-pink">
+            {userStats.streak}
+          </p>
           <p className="text-xs text-gray-400">Day Streak</p>
         </motion.div>
-        
+
         <motion.div
           whileHover={{ scale: 1.05 }}
           className="cyber-card text-center"
         >
           <Target className="w-8 h-8 text-neon-blue mx-auto mb-2" />
-          <p className="text-2xl font-bold text-neon-blue">{userStats.problemsSolved}</p>
+          <p className="text-2xl font-bold text-neon-blue">
+            {userStats.problemsSolved}
+          </p>
           <p className="text-xs text-gray-400">Problems Solved</p>
         </motion.div>
       </div>
@@ -139,7 +147,7 @@ const UserProfile: React.FC = () => {
           <Zap className="w-5 h-5" />
           <span>Join Coding Room</span>
         </motion.button>
-        
+
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -150,7 +158,7 @@ const UserProfile: React.FC = () => {
         </motion.button>
       </div>
     </motion.div>
-  )
-}
+  );
+};
 
-export default UserProfile
+export default UserProfile;

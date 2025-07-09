@@ -40,7 +40,11 @@ export default function Timer() {
               setRunning(!running);
             }}
           >
-            {running ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            {running ? (
+              <Pause className="w-4 h-4" />
+            ) : (
+              <Play className="w-4 h-4" />
+            )}
           </button>
 
           {/* Reset Button */}

@@ -1,4 +1,3 @@
-import { MenuItem } from "@/components/menu/sidebarmenu";
 import {
   Boxes,
   Home,
@@ -9,9 +8,11 @@ import {
   Archive,
   StickyNote,
   Trash2,
-  Newspaper, 
-  Book
+  Newspaper,
+  Book,
 } from "lucide-react";
+
+import { MenuItem } from "@/components/menu/sidebarmenu";
 
 export const menuItemsTop: MenuItem[] = [
   {
@@ -26,7 +27,9 @@ export const menuItemsTop: MenuItem[] = [
   },
   {
     href: "/feeds",
-    icon: <Newspaper  className="h-4 w-4 transition-all group-hover:scale-110" />,
+    icon: (
+      <Newspaper className="h-4 w-4 transition-all group-hover:scale-110" />
+    ),
     label: "Feeds",
   },
   {
@@ -109,4 +112,4 @@ export const dashboardMenu: MenuItem[] = [
   //   icon: <Boxes className="h-4 w-4 transition-all group-hover:scale-110" />,
   //   label: "A",
   // },
-]
+];

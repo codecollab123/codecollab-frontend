@@ -1,4 +1,3 @@
-import { MenuItem } from "@/components/menu/sidebarmenu";
 import {
   Boxes,
   Home,
@@ -10,6 +9,8 @@ import {
   StickyNote,
   Trash2,
 } from "lucide-react";
+
+import { MenuItem } from "@/components/menu/sidebarmenu";
 
 export const menuItemsTop: MenuItem[] = [
   {
@@ -31,7 +32,8 @@ export const menuItemsTop: MenuItem[] = [
     href: "/dashboard/profiles",
     icon: <Home className="h-5 w-5" />,
     label: "Dashboard",
-  }, {
+  },
+  {
     href: "/dashboard/activity",
     icon: <Home className="h-5 w-5" />,
     label: "Dashboard",

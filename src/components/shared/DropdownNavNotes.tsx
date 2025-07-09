@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { MoreVertical } from 'lucide-react';
+import React, { useState } from "react";
+import { MoreVertical } from "lucide-react";
 
 import {
   HoverCard,
   HoverCardTrigger,
   HoverCardContent,
-} from '@/components/ui/hover-card';
+} from "@/components/ui/hover-card";
 
 interface DropdownNavNotesProps {
   navItems: {
@@ -36,7 +36,7 @@ const DropdownNavNotes = ({ navItems, noteId }: DropdownNavNotesProps) => {
       </HoverCardTrigger>
       <HoverCardContent
         className="shadow-md rounded-md w-auto p-2 bg-white dark:bg-black"
-        style={{ display: isDropdownOpen ? 'block' : 'none' }}
+        style={{ display: isDropdownOpen ? "block" : "none" }}
       >
         <ul className="flex flex-row gap-2 md:flex-col">
           {navItems.map((item, index) => (

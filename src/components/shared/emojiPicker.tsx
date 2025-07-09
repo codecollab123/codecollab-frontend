@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { Smile } from 'lucide-react';
-import Picker from '@emoji-mart/react';
+import React, { useState } from "react";
+import { Smile } from "lucide-react";
+import Picker from "@emoji-mart/react";
 
-import { Button } from '@/components/ui/button'; // Import Button from ShadCN UI
+import { Button } from "@/components/ui/button"; // Import Button from ShadCN UI
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from '@/components/ui/popover'; // Import Popover components
+} from "@/components/ui/popover"; // Import Popover components
 
 export const EmojiPicker = ({
   onSelect,

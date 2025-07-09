@@ -1,5 +1,5 @@
-import { FC } from 'react';
-import { Control, FieldValues } from 'react-hook-form';
+import { FC } from "react";
+import { Control, FieldValues } from "react-hook-form";
 
 import {
   FormControl,
@@ -7,9 +7,9 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from '@/components/ui/form'; // Adjust import path as needed
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from "@/components/ui/form"; // Adjust import path as needed
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface TextInputProps<T extends FieldValues> {
   control: Control<T>;
@@ -25,10 +25,10 @@ const TextInput: FC<TextInputProps<any>> = ({
   control,
   name,
   label,
-  placeholder = 'Enter value',
-  type = 'text',
-  description = '',
-  className = '', // Default to an empty string if no className is passed
+  placeholder = "Enter value",
+  type = "text",
+  description = "",
+  className = "", // Default to an empty string if no className is passed
 }) => {
   return (
     <div className="space-y-2">
@@ -46,14 +46,14 @@ const TextInput: FC<TextInputProps<any>> = ({
                 className={`p-2 border rounded-md ${className}`} // Apply className here
                 onChange={(e) => {
                   const value = e.target.value;
-                  if (type === 'number') {
+                  if (type === "number") {
                     // Convert value to number only for 'number' type
-                    field.onChange(value ? parseFloat(value) : '');
+                    field.onChange(value ? parseFloat(value) : "");
                   } else {
                     field.onChange(value);
                   }
                 }}
-                value={type === 'number' ? field.value ?? '' : field.value}
+                value={type === "number" ? (field.value ?? "") : field.value}
               />
             </FormControl>
             <FormDescription>{description}</FormDescription>

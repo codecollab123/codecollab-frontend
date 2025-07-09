@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import React, { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 import {
   Dialog,
@@ -9,11 +9,11 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '../ui/dialog';
-import { Label } from '../ui/label';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
-import { toast } from '../ui/use-toast';
+} from "../ui/dialog";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { toast } from "../ui/use-toast";
 
 interface PhoneChangeModalProps {
   open: boolean;
@@ -36,9 +36,9 @@ const PhoneChangeModal: React.FC<PhoneChangeModalProps> = ({
 
     if (newPhone.length !== 10) {
       toast({
-        variant: 'destructive',
-        title: 'Invalid Phone Number',
-        description: 'Please enter a valid 10-digit number.',
+        variant: "destructive",
+        title: "Invalid Phone Number",
+        description: "Please enter a valid 10-digit number.",
       });
       return;
     }
@@ -49,15 +49,15 @@ const PhoneChangeModal: React.FC<PhoneChangeModalProps> = ({
       setPhone(formattedPhone);
       await onSubmit(formattedPhone);
       toast({
-        title: 'Sending OTP',
+        title: "Sending OTP",
         description: `Sending OTP to ${formattedPhone}. Please wait...`,
       });
       setOpen(false);
     } catch (error) {
       toast({
-        variant: 'destructive',
-        title: 'Failed to Send OTP',
-        description: 'Something went wrong. Please try again.',
+        variant: "destructive",
+        title: "Failed to Send OTP",
+        description: "Something went wrong. Please try again.",
       });
     } finally {
       setLoading(false);
@@ -80,9 +80,9 @@ const PhoneChangeModal: React.FC<PhoneChangeModalProps> = ({
             <div className="mt-2">
               <Input
                 type="tel"
-                value={newPhone ?? ""}
+                value={newPhone}
                 onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, '');
+                  const value = e.target.value.replace(/\D/g, "");
                   if (value.length <= 10) setNewPhone(value);
                 }}
                 maxLength={10}
@@ -108,7 +108,7 @@ const PhoneChangeModal: React.FC<PhoneChangeModalProps> = ({
                   Sending...
                 </>
               ) : (
-                'Send OTP'
+                "Send OTP"
               )}
             </Button>
           </div>

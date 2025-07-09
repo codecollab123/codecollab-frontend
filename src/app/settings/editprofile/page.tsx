@@ -5,10 +5,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
+
 import { RootState } from "@/lib/store";
 import { setUser } from "@/lib/userSlice";
 import { axiosInstance } from "@/lib/axiosinstance";
-
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -68,11 +68,11 @@ export default function EditProfile() {
   }, [user, form]);
 
   const onSubmit = async (data: ProfileFormValues) => {
-    console.log("Form Data:", data); 
-    
+    console.log("Form Data:", data);
+
     setLoading(true);
     try {
-      const res = await axiosInstance.put(`/user/update/${user._id}`, data)
+      const res = await axiosInstance.put(`/user/update/${user._id}`, data);
 
       const updatedUser = res.data.data;
 

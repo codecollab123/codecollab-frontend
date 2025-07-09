@@ -2,11 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { getSocket } from "@/service/socket"; 
 import { v4 as uuidv4 } from "uuid";
+import { Copy, Check } from "lucide-react";
+
+import { getSocket } from "@/service/socket";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Copy, Check } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -24,17 +25,24 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
-export function CreateRoom({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
+export function CreateRoom({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<"div">) {
   const router = useRouter();
-  const [roomID, setRoomID] = useState("");  
+  const [roomID, setRoomID] = useState("");
   const [userName, setUserName] = useState("");
   const [showRoomID, setShowRoomID] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [users, setUsers] = useState<{ socketId: string; userName: string }[]>([]); // Store users in room
+  const [users, setUsers] = useState<{ socketId: string; userName: string }[]>(
+    [],
+  ); // Store users in room
   const socket = getSocket();
-  
+
   useEffect(() => {
-    socket.on("connect", () => console.log("Connected to WebSocket server", socket.id));
+    socket.on("connect", () =>
+      console.log("Connected to WebSocket server", socket.id),
+    );
 
     // Listen for user list updates
     socket.on("user_joined", ({ users }) => {
@@ -62,7 +70,8 @@ export function CreateRoom({ className, ...props }: React.ComponentPropsWithoutR
   };
 
   const handleJoinRoom = () => {
-    if (!roomID || !userName) return alert("Please enter a Room ID and Username.");
+    if (!roomID || !userName)
+      return alert("Please enter a Room ID and Username.");
 
     socket.emit("join", { room_id: roomID, userName });
     router.push(`/room/${roomID}`);
@@ -75,11 +84,21 @@ export function CreateRoom({ className, ...props }: React.ComponentPropsWithoutR
   };
 
   return (
-    <div className={cn("flex flex-col items-center justify-center min-h-screen p-6", className)} {...props}>
+    <div
+      className={cn(
+        "flex flex-col items-center justify-center min-h-screen p-6",
+        className,
+      )}
+      {...props}
+    >
       <Card className="shadow-lg max-w-md w-full">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-semibold">Welcome to the Coding Room</CardTitle>
-          <CardDescription>Create or join a room to start coding!</CardDescription>
+          <CardTitle className="text-2xl font-semibold">
+            Welcome to the Coding Room
+          </CardTitle>
+          <CardDescription>
+            Create or join a room to start coding!
+          </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
           {!showRoomID ? (
@@ -92,7 +111,11 @@ export function CreateRoom({ className, ...props }: React.ComponentPropsWithoutR
               <div className="flex items-center justify-center gap-2">
                 <p className="text-xl font-bold text-green-600">{roomID}</p>
                 <Button variant="ghost" size="icon" onClick={copyToClipboard}>
-                  {copied ? <Check className="w-5 h-5 text-green-600" /> : <Copy className="w-5 h-5" />}
+                  {copied ? (
+                    <Check className="w-5 h-5 text-green-600" />
+                  ) : (
+                    <Copy className="w-5 h-5" />
+                  )}
                 </Button>
               </div>
               <Button className="w-full mt-4" onClick={handleEnterRoom}>
@@ -101,19 +124,24 @@ export function CreateRoom({ className, ...props }: React.ComponentPropsWithoutR
 
               {/* Show user count */}
               <p className="mt-2 text-sm text-gray-600">
-                {users.length} {users.length === 1 ? "user" : "users"} in the room
+                {users.length} {users.length === 1 ? "user" : "users"} in the
+                room
               </p>
             </div>
           )}
 
           <Dialog>
             <DialogTrigger asChild>
-              <Button className="w-full border border-gray-300">Join Room</Button>
+              <Button className="w-full border border-gray-300">
+                Join Room
+              </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Join a Room</DialogTitle>
-                <DialogDescription>Enter the Room ID and your name to join.</DialogDescription>
+                <DialogDescription>
+                  Enter the Room ID and your name to join.
+                </DialogDescription>
               </DialogHeader>
               <div className="grid gap-3 mt-4">
                 <Input
@@ -128,7 +156,10 @@ export function CreateRoom({ className, ...props }: React.ComponentPropsWithoutR
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
                 />
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-white" onClick={handleJoinRoom}>
+                <Button
+                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                  onClick={handleJoinRoom}
+                >
                   Join Room
                 </Button>
               </div>

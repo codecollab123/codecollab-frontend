@@ -1,4 +1,3 @@
-import { MenuItem } from "@/components/menu/sidebarmenu";
 import {
   Boxes,
   Home,
@@ -10,6 +9,8 @@ import {
   // StickyNote,
   // Trash2,
 } from "lucide-react";
+
+import { MenuItem } from "@/components/menu/sidebarmenu";
 
 export const menuItemsTop: MenuItem[] = [
   {

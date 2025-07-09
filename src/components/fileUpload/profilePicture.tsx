@@ -1,20 +1,20 @@
-import React, { useState, useRef } from 'react';
-import { Plus, Loader2, Minus } from 'lucide-react'; // Import Loader2
-import Image from 'next/image';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useRef } from "react";
+import { Plus, Loader2, Minus } from "lucide-react"; // Import Loader2
+import Image from "next/image";
+import { useDispatch, useSelector } from "react-redux";
 
-import { Button } from '@/components/ui/button';
-import { axiosInstance } from '@/lib/axiosinstance';
-import { setUser } from '@/lib/userSlice';
-import { RootState } from '@/lib/store';
+import { Button } from "@/components/ui/button";
+import { axiosInstance } from "@/lib/axiosinstance";
+import { setUser } from "@/lib/userSlice";
+import { RootState } from "@/lib/store";
 // import { Type } from '@/utils/enum';
-import { toast } from '@/hooks/use-toast';
+import { toast } from "@/hooks/use-toast";
 const allowedImageFormats = [
-  'image/png',
-  'image/jpeg',
-  'image/jpg',
-  'image/gif',
-  'image/svg+xml',
+  "image/png",
+  "image/jpeg",
+  "image/jpg",
+  "image/gif",
+  "image/svg+xml",
 ];
 const maxImageSize = 1 * 1024 * 1024; // 1MB
 
@@ -23,7 +23,7 @@ const ProfilePictureUpload = ({
   profile,
 }: {
   user_id: string;
-  profile: string;// Specify possible values for entityType
+  profile: string; // Specify possible values for entityType
 }) => {
   const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
@@ -41,16 +41,16 @@ const ProfilePictureUpload = ({
         setPreviewUrl(URL.createObjectURL(file));
       } else {
         toast({
-          variant: 'destructive',
-          title: 'File too large',
-          description: 'Image size should not exceed 1MB.',
+          variant: "destructive",
+          title: "File too large",
+          description: "Image size should not exceed 1MB.",
         });
       }
     } else {
       toast({
-        variant: 'destructive',
-        title: 'Invalid file type',
-        description: `Please upload a valid image file. Allowed formats: ${allowedImageFormats.join(', ')}`,
+        variant: "destructive",
+        title: "Invalid file type",
+        description: `Please upload a valid image file. Allowed formats: ${allowedImageFormats.join(", ")}`,
       });
     }
   };
@@ -60,9 +60,9 @@ const ProfilePictureUpload = ({
 
     if (!selectedProfilePicture) {
       toast({
-        variant: 'destructive',
-        title: 'No Image Selected',
-        description: 'Please select an image before submitting.',
+        variant: "destructive",
+        title: "No Image Selected",
+        description: "Please select an image before submitting.",
       });
       return;
     }
@@ -70,15 +70,15 @@ const ProfilePictureUpload = ({
     setIsUploading(true); // Disable the upload button and show loader
 
     const formData = new FormData();
-    formData.append('profilePicture', selectedProfilePicture);
+    formData.append("profilePicture", selectedProfilePicture);
 
     try {
       const postResponse = await axiosInstance.post(
-        '/register/upload-image',
+        "/register/upload-image",
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         },
       );
@@ -105,11 +105,11 @@ const ProfilePictureUpload = ({
       //   throw new Error('Failed to update profile picture');
       // }
     } catch (error) {
-      console.error('Error during upload:', error);
+      console.error("Error during upload:", error);
       toast({
-        variant: 'destructive',
-        title: 'Upload failed',
-        description: 'Image upload failed. Please try again.',
+        variant: "destructive",
+        title: "Upload failed",
+        description: "Image upload failed. Please try again.",
       });
     } finally {
       setIsUploading(false); // Re-enable the upload button
@@ -121,7 +121,7 @@ const ProfilePictureUpload = ({
       <form onSubmit={handleSubmit} className="space-y-6">
         <input
           type="file"
-          accept={allowedImageFormats.join(',')}
+          accept={allowedImageFormats.join(",")}
           onChange={handleImageChange}
           className="hidden"
           ref={fileInputRef}
@@ -182,7 +182,7 @@ const ProfilePictureUpload = ({
                 Please wait
               </>
             ) : (
-              'Upload Profile Picture'
+              "Upload Profile Picture"
             )}
           </Button>
         )}

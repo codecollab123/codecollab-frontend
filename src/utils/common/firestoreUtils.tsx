@@ -28,7 +28,7 @@ import { db } from "../../config/firebaseConfig";
 export function subscribeToFirestoreDoc(
   collectionPath: string,
   docId: string,
-  callback: (data: DocumentData | null) => void
+  callback: (data: DocumentData | null) => void,
 ) {
   const docRef = doc(db, collectionPath, docId);
   return onSnapshot(docRef, (docSnapshot) => {
@@ -48,7 +48,7 @@ export function subscribeToFirestoreDoc(
 export function subscribeToFirestoreCollection(
   collectionPath: string,
   callback: (data: { id: string; [key: string]: any }[]) => void,
-  sort: "asc" | "desc" = "asc"
+  sort: "asc" | "desc" = "asc",
 ) {
   // Create a collection reference
   const collectionRef = collection(db, collectionPath);
@@ -79,8 +79,8 @@ export function subscribeToUserConversations(
   collectionPath: string,
   userID: string,
   callback: (
-    data: { id: string; lastMessage: any | null; [key: string]: any }[]
-  ) => void
+    data: { id: string; lastMessage: any | null; [key: string]: any }[],
+  ) => void,
 ) {
   // Create a collection reference
   const collectionRef = collection(db, collectionPath);
@@ -89,7 +89,7 @@ export function subscribeToUserConversations(
   const filteredQuery = query(
     collectionRef,
     where("participants", "array-contains", userID),
-    orderBy("lastMessage.timestamp", "desc") // Sort conversations by the timestamp of the last message (descending)
+    orderBy("lastMessage.timestamp", "desc"), // Sort conversations by the timestamp of the last message (descending)
   );
 
   // Subscribe to the query with onSnapshot
@@ -100,7 +100,7 @@ export function subscribeToUserConversations(
         snapshot.docs.map(async (doc) => {
           const conversation: {
             id: string;
-            [key: string]:unknown ;
+            [key: string]: unknown;
           } = {
             id: doc.id,
             ...doc.data(),
@@ -113,12 +113,12 @@ export function subscribeToUserConversations(
             ...conversation,
             lastMessage, // Include the last message for each conversation
           };
-        })
+        }),
       );
 
       // Pass the updated data to the callback function
       callback(data);
-    }
+    },
   );
 }
 
@@ -129,7 +129,7 @@ export function subscribeToUserConversations(
  */
 export function subscribeToFirestoreQuery(
   queryRef: Query<DocumentData>,
-  callback: (data: DocumentData[]) => void
+  callback: (data: DocumentData[]) => void,
 ) {
   return onSnapshot(queryRef, (snapshot) => {
     const data = snapshot.docs.map((doc) => ({
@@ -145,7 +145,7 @@ export function subscribeToFirestoreQuery(
  */
 export async function addDataToFirestore(
   collectionPath: string,
-  data: Record<string, unknown>
+  data: Record<string, unknown>,
 ): Promise<string | null> {
   try {
     const docRef = await addDoc(collection(db, collectionPath), data);
@@ -168,7 +168,7 @@ export async function updateConversationWithMessageTransaction(
   collectionPath: string,
   conversationId: string,
   message: Record<string, unknown>,
-  datentime: number | string
+  datentime: number | string,
 ) {
   try {
     await runTransaction(db, async (transaction) => {
@@ -180,7 +180,7 @@ export async function updateConversationWithMessageTransaction(
         db,
         collectionPath,
         conversationId,
-        "messages"
+        "messages",
       );
 
       // Update the conversation document with the last message and timestamp
@@ -212,7 +212,7 @@ export async function updateConversationWithMessageTransaction(
 export async function setDataToFirestore(
   collectionPath: string,
   docId: string,
-  data: Record<string, unknown>
+  data: Record<string, unknown>,
 ): Promise<void> {
   try {
     await setDoc(doc(db, collectionPath, docId), data);
@@ -228,7 +228,7 @@ export async function setDataToFirestore(
 export async function updateDataInFirestore(
   collectionPath: string,
   docId: string,
-  data: Record<string, any>
+  data: Record<string, any>,
 ): Promise<void> {
   try {
     const docRef = doc(db, collectionPath, docId);
@@ -237,14 +237,14 @@ export async function updateDataInFirestore(
   } catch (error) {
     console.error(
       "Error updating document:",
-      (error as FirestoreError).message
+      (error as FirestoreError).message,
     );
   }
 }
 
 export const subscribeToUserNotifications = (
   userId: string,
-  callback: (notifications: DocumentData[]) => void
+  callback: (notifications: DocumentData[]) => void,
 ) => {
   const notificationsRef = collection(db, "notifications");
   const q = query(notificationsRef, where("userId", "array-contains", userId));
@@ -273,7 +273,7 @@ export const markAllNotificationsAsRead = async (userId: string) => {
     const q = query(
       notificationsRef,
       where("userId", "==", userId),
-      where("isRead", "==", false)
+      where("isRead", "==", false),
     );
     const querySnapshot = await getDocs(q);
 

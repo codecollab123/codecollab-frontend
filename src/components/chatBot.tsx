@@ -1,13 +1,16 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { axiosInstance } from "@/lib/axiosinstance";
 import { Clipboard } from "lucide-react";
+
+import { axiosInstance } from "@/lib/axiosinstance";
 
 const CHAT_WITH_GEMINI = "/chat";
 
 const Chatbot = () => {
-  const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
+  const [messages, setMessages] = useState<{ role: string; content: string }[]>(
+    [],
+  );
   const [input, setInput] = useState("");
   const [isVisible, setIsVisible] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -44,7 +47,10 @@ const Chatbot = () => {
       }
     } catch (error) {
       console.error("Error:", error);
-      setMessages([...newMessages, { role: "bot", content: "An error occurred, please try again." }]);
+      setMessages([
+        ...newMessages,
+        { role: "bot", content: "An error occurred, please try again." },
+      ]);
     }
   };
 
@@ -52,12 +58,18 @@ const Chatbot = () => {
     navigator.clipboard.writeText(text);
   };
 
-  const renderMessage = (msg: { role: string; content: string }, index: number) => {
+  const renderMessage = (
+    msg: { role: string; content: string },
+    index: number,
+  ) => {
     const codeMatch = msg.content.match(/```([\s\S]+?)```/);
-    
+
     if (codeMatch) {
       return (
-        <div key={index} className="bg-gray-900 text-white p-3 my-2 rounded-lg relative">
+        <div
+          key={index}
+          className="bg-gray-900 text-white p-3 my-2 rounded-lg relative"
+        >
           <button
             onClick={() => copyToClipboard(codeMatch[1])}
             className="absolute top-2 right-2 text-gray-400 hover:text-white"
@@ -70,7 +82,7 @@ const Chatbot = () => {
         </div>
       );
     }
-    
+
     return (
       <div
         key={index}
@@ -96,7 +108,9 @@ const Chatbot = () => {
         &times;
       </button>
 
-      <h2 className="text-lg font-bold mb-3 ml-1 text-gray-300">Ask Anything</h2>
+      <h2 className="text-lg font-bold mb-3 ml-1 text-gray-300">
+        Ask Anything
+      </h2>
 
       <div className="h-72 overflow-y-auto bg-black/20 p-4 rounded-lg border border-gray-600">
         {messages.map(renderMessage)}

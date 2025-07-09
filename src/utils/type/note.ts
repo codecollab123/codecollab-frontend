@@ -1,20 +1,20 @@
 // Define an enum for note entity types
 export enum EntityType {
-  USER = 'USER',
+  USER = "USER",
 }
 
 // Define an enum for label types (labels)
 export enum LabelType {
-  PERSONAL = 'PERSONAL',
-  WORK = 'WORK',
-  REMINDER = 'REMINDER',
-  TASK = 'TASK',
+  PERSONAL = "PERSONAL",
+  WORK = "WORK",
+  REMINDER = "REMINDER",
+  TASK = "TASK",
 }
 // Define an enum for note types
 export enum NoteType {
-  NOTE = 'NOTE',
-  TRASH = 'TRASH',
-  ARCHIVE = 'ARCHIVE',
+  NOTE = "NOTE",
+  TRASH = "TRASH",
+  ARCHIVE = "ARCHIVE",
 }
 
 // Updated Note type
@@ -34,8 +34,8 @@ export type Note = {
 };
 
 export const badgeColors: { [key: string]: string } = {
-  PERSONAL: 'bg-blue-500 text-white hover:text-black',
-  WORK: 'bg-green-500 text-white hover:text-black',
-  REMINDER: 'bg-yellow-500 text-black hover:text-black',
-  TASK: 'bg-red-500 text-white hover:text-black',
+  PERSONAL: "bg-blue-500 text-white hover:text-black",
+  WORK: "bg-green-500 text-white hover:text-black",
+  REMINDER: "bg-yellow-500 text-black hover:text-black",
+  TASK: "bg-red-500 text-white hover:text-black",
 };

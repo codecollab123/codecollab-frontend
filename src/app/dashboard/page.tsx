@@ -39,30 +39,11 @@ export default function Dashboard() {
   );
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // function x(){
-  // for (var i=1; i<=5; i++){
-  // setTimeOut(function(){
-  // console.log(i);
-  // }, 1000*i);
+// for (var i=1; i<=5; i++){
+// setTimeOut(function(){
+// console.log(i);
+// }, 1000*i);
 // }
 // }
 // x();

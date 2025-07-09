@@ -1,16 +1,16 @@
 //chatlist.tsx
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { formatDistanceToNow } from 'date-fns';
-import { DocumentData } from 'firebase/firestore';
-import { MessageSquare } from 'lucide-react'; // Import an icon from lucide-react
+import React, { useState, useEffect, useCallback } from "react";
+import { formatDistanceToNow } from "date-fns";
+import { DocumentData } from "firebase/firestore";
+import { MessageSquare } from "lucide-react"; // Import an icon from lucide-react
 
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { cn } from '@/lib/utils'; // Utility class names
-import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'; // Importing Table components
-import { Card } from '@/components/ui/card'; // Importing Card component
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils"; // Utility class names
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table"; // Importing Table components
+import { Card } from "@/components/ui/card"; // Importing Card component
 
 export interface Conversation extends DocumentData {
   id: string;
@@ -42,7 +42,7 @@ export function ChatList({
     conversations.forEach((conversation) => {
       if (conversation.timestamp) {
         updatedTimes[conversation.id] =
-          formatDistanceToNow(new Date(conversation.timestamp)) + ' ago';
+          formatDistanceToNow(new Date(conversation.timestamp)) + " ago";
       }
     });
 
@@ -65,7 +65,7 @@ export function ChatList({
           <TableBody>
             {conversations.length > 0 ? (
               conversations.map((conversation) => {
-                const lastUpdated = lastUpdatedTimes[conversation.id] || 'N/A';
+                const lastUpdated = lastUpdatedTimes[conversation.id] || "N/A";
 
                 return (
                   <TableRow
@@ -76,8 +76,8 @@ export function ChatList({
                     <TableCell colSpan={2} className="p-0 my-2">
                       <div
                         className={cn(
-                          'flex items-center justify-between p-4 rounded-md hover:bg-muted', // Apply rounded corners and hover effect
-                          active?.id === conversation.id && 'bg-muted',
+                          "flex items-center justify-between p-4 rounded-md hover:bg-muted", // Apply rounded corners and hover effect
+                          active?.id === conversation.id && "bg-muted",
                         )}
                       >
                         <div className="flex items-center space-x-4">
@@ -94,14 +94,14 @@ export function ChatList({
                           </Avatar>
                           <div className="flex flex-col">
                             <p className="font-medium">
-                              {conversation.name || 'Unnamed Project'}
+                              {conversation.name || "Unnamed Project"}
                             </p>
                             <p className="text-sm text-muted-foreground">
                               {conversation.lastMessage?.content?.length > 50
                                 ? conversation.lastMessage.content.substring(
                                     0,
                                     50,
-                                  ) + '...'
+                                  ) + "..."
                                 : conversation.lastMessage?.content}
                             </p>
                           </div>

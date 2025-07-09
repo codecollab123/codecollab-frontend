@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { TooltipProvider } from '@/components/ui/tooltip';
-import { ThemeProvider } from '@/components/theme-provider';
-import { AuthProvider } from './AuthContext';
+import { Provider } from "react-redux";
+
+import { AuthProvider } from "./AuthContext";
 import StoreProvider from "./storeProvider";
+
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,20 +32,20 @@ export default function RootLayout({
 }>) {
   return (
     <StoreProvider>
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-      <AuthProvider>
-      <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <TooltipProvider>{children}</TooltipProvider>
-        </ThemeProvider>
-      </AuthProvider>
-      </body>
-    </html>
+      <html lang="en">
+        <body className={`${geistSans.variable} ${geistMono.variable}`}>
+          <AuthProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <TooltipProvider>{children}</TooltipProvider>
+            </ThemeProvider>
+          </AuthProvider>
+        </body>
+      </html>
     </StoreProvider>
   );
 }

@@ -1,10 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import {
   Heart,
   MessageCircle,
@@ -14,6 +10,11 @@ import {
   HelpCircle,
   Trash2,
 } from "lucide-react";
+
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { axiosInstance } from "@/lib/axiosinstance";
 
@@ -152,15 +153,15 @@ const CreatePost = ({ post, currentUserId, onDelete }: CreatePostProps) => {
   )
 } */}
             {currentUserId === post.author?.id && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleDelete}
-              className="text-red-500 hover:text-red-700"
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
-             )}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleDelete}
+                className="text-red-500 hover:text-red-700"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            )}
           </div>
         </div>
       </CardHeader>

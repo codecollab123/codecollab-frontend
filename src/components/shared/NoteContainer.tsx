@@ -1,15 +1,15 @@
 // components/NotesContainer.tsx
-import React from 'react';
-import { TagIcon, Trash2Icon, RecycleIcon, EditIcon } from 'lucide-react';
+import React from "react";
+import { TagIcon, Trash2Icon, RecycleIcon, EditIcon } from "lucide-react";
 
-import NoteCard from './NoteCard';
-import DialogConfirmation from './DialogConfirmation';
-import DialogSelectedNote from './DialogSelectedNote';
-import DialogUpdateType from './DialogUpdateType';
+import NoteCard from "./NoteCard";
+import DialogConfirmation from "./DialogConfirmation";
+import DialogSelectedNote from "./DialogSelectedNote";
+import DialogUpdateType from "./DialogUpdateType";
 
-import { Note, NoteType } from '@/utils/type/note';
-import useNotes from '@/hooks/useNotes';
-import useDragAndDrop from '@/hooks/useDragAndDrop';
+import { Note, NoteType } from "@/utils/type/note";
+import useNotes from "@/hooks/useNotes";
+import useDragAndDrop from "@/hooks/useDragAndDrop";
 
 interface NotesContainerProps {
   notes: Note[];
@@ -50,14 +50,14 @@ const NotesContainer = ({
 
   const navItems = [
     {
-      label: 'Edit',
+      label: "Edit",
       icon: <EditIcon size={15} className="text-white-500" />,
       onClick: (noteId: string | undefined, notes: Note[]) => {
         setSelectedNote(notes.find((note) => note._id === noteId) || null);
       },
     },
     {
-      label: 'Delete',
+      label: "Delete",
       icon: <Trash2Icon size={15} className="text-white-500" />,
       onClick: (noteId: string | undefined, notes: Note[]) => {
         setIsDeleting(true);
@@ -67,21 +67,20 @@ const NotesContainer = ({
       },
     },
     {
-      label: 'Recycle',
+      label: "Recycle",
       icon: <RecycleIcon size={15} className="text-white-500" />,
       onClick: (noteId: string | undefined) => {
         handleUpdateNoteType(noteId, NoteType.TRASH);
       },
     },
     {
-      label: 'Label',
+      label: "Label",
       icon: <TagIcon size={15} className="text-white-500" />,
       onClick: (noteId: string | undefined, notes: Note[]) => {
         setSelectedTypeNote(notes.find((note) => note._id === noteId) || null);
       },
     },
   ];
-
 
   return (
     <div className="flex justify-center items-center">
@@ -95,7 +94,6 @@ const NotesContainer = ({
               e.preventDefault();
               handleDragOver(index);
             }}
-            
             onDrop={handleDrop}
             notes={notes}
             setNotes={setNotes}
@@ -114,7 +112,7 @@ const NotesContainer = ({
           />
         ))}
       </div>
-     
+
       {isDeleting && (
         <DialogConfirmation
           onClose={handleDialogClose}

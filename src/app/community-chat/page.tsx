@@ -1,21 +1,19 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { DocumentData } from 'firebase/firestore';
-import { LoaderCircle, MessageSquare } from 'lucide-react';
-import { useSelector } from 'react-redux';
-
+import { useEffect, useState } from "react";
+import { DocumentData } from "firebase/firestore";
+import { LoaderCircle, MessageSquare } from "lucide-react";
+import { useSelector } from "react-redux";
 
 import Header from "@/components/header/header";
 import SidebarMenu from "@/components/menu/sidebarmenu";
-import { CardsChat } from '@/components/shared/CommunityChat';
-
-import { subscribeToUserConversations } from '@/utils/common/firestoreUtils';
-import { RootState } from '@/lib/store';
+import { CardsChat } from "@/components/shared/CommunityChat";
+import { subscribeToUserConversations } from "@/utils/common/firestoreUtils";
+import { RootState } from "@/lib/store";
 import {
-    menuItemsBottom,
-    menuItemsTop,
-  } from "@/config/menuItems/dashboardMenuItem";
+  menuItemsBottom,
+  menuItemsTop,
+} from "@/config/menuItems/dashboardMenuItem";
 
 // Define the Conversation interface to match the expected shape
 interface Conversation extends DocumentData {
@@ -39,7 +37,7 @@ const HomePage = () => {
     const fetchConversations = async () => {
       setLoading(true);
       unsubscribe = await subscribeToUserConversations(
-        'conversations',
+        "conversations",
         user.uid,
         (data) => {
           setConversations(data as Conversation[]);
@@ -64,7 +62,7 @@ const HomePage = () => {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
-       <SidebarMenu
+      <SidebarMenu
         menuItemsTop={menuItemsTop}
         menuItemsBottom={menuItemsBottom}
         active="Chats"

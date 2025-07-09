@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
+import { Code, Trophy, HelpCircle, Plus, X } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Code, Trophy, HelpCircle, Plus, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { axiosInstance } from "@/lib/axiosinstance";
 import { RootState } from "@/lib/store";
@@ -33,7 +34,7 @@ const CreatePostPage = () => {
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [difficulty, setDifficulty] = useState<"Easy" | "Medium" | "Hard">(
-    "Easy"
+    "Easy",
   );
 
   const handleAddTag = () => {
@@ -66,6 +67,7 @@ const CreatePostPage = () => {
       difficultyLevel: difficulty.toLowerCase(), // convert to 'easy' | 'medium' | 'hard'
       tags,
       image: "https://example.com/image.png",
+ socket/livefeed/riya
       author: {
         id: user?.uid ?? "",
         // name:user.name,

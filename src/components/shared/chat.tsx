@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
-import { getSocket } from "@/service/socket"; 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Send, X, Reply, MessageSquare } from "lucide-react";
-import { Textarea } from "@/components/ui/textarea";
 import { useParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
 
-
-
+import { getSocket } from "@/service/socket";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Textarea } from "@/components/ui/textarea";
 
 type Message = {
   id: string;
@@ -94,12 +97,22 @@ const ChatComponent: React.FC = () => {
             <CardHeader className="flex  bg-gray-100 p-1 border-b">
               <div className="flex items-end space-x-3 left-0">
                 <Avatar>
-                  <AvatarImage src="https://randomuser.me/api/portraits/women/1.jpg" alt="Profile Image" />
+                  <AvatarImage
+                    src="https://randomuser.me/api/portraits/women/1.jpg"
+                    alt="Profile Image"
+                  />
                   <AvatarFallback>{userName}</AvatarFallback>
                 </Avatar>
-                <p className="text-lg font-semibold text-gray-800">{userName}</p>
+                <p className="text-lg font-semibold text-gray-800">
+                  {userName}
+                </p>
               </div>
-              <Button className="flex items-start justify-end"variant="ghost" size="icon" onClick={() => setIsChatOpen(false)}>
+              <Button
+                className="flex items-start justify-end"
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsChatOpen(false)}
+              >
                 <X className="h-5 w-5 text-gray-600" />
               </Button>
             </CardHeader>
@@ -112,14 +125,17 @@ const ChatComponent: React.FC = () => {
                 >
                   {message.replyTo && (
                     <div className="text-gray-500 text-sm italic mb-1">
-                      Replying to: {messages.find((msg) => msg.id === message.replyTo)?.content || "Message not found"}
+                      Replying to:{" "}
+                      {messages.find((msg) => msg.id === message.replyTo)
+                        ?.content || "Message not found"}
                     </div>
                   )}
                   <p>{message.content}</p>
-                 
-                  
-                    <Reply  onClick={() => setReplyToMessageId(message.id)} className="cursor-pointer h-4 w-4 text-green-800 right-3" />
-               
+
+                  <Reply
+                    onClick={() => setReplyToMessageId(message.id)}
+                    className="cursor-pointer h-4 w-4 text-green-800 right-3"
+                  />
                 </div>
               ))}
               <div ref={messagesEndRef} />
@@ -129,10 +145,12 @@ const ChatComponent: React.FC = () => {
               {replyToMessageId && (
                 <div className="flex items-center justify-between p-2 bg-green-100 text-gray-500 text-sm">
                   <span className="font-semibold">Replying to:</span>{" "}
-                  {messages.find((msg) => msg.id === replyToMessageId)?.content || "Message not found"}
-               
-                    <X onClick={() => setReplyToMessageId(null)} className="h-4 w-4 text-red-500" />
-                 
+                  {messages.find((msg) => msg.id === replyToMessageId)
+                    ?.content || "Message not found"}
+                  <X
+                    onClick={() => setReplyToMessageId(null)}
+                    className="h-4 w-4 text-red-500"
+                  />
                 </div>
               )}
               <Textarea
@@ -142,7 +160,10 @@ const ChatComponent: React.FC = () => {
                 rows={1}
                 placeholder="Type a message..."
               />
-              <Button onClick={sendMessage} className=" text-white p-2 rounded-lg">
+              <Button
+                onClick={sendMessage}
+                className=" text-white p-2 rounded-lg"
+              >
                 <Send className="h-5 w-5" />
               </Button>
             </CardFooter>
