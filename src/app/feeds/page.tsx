@@ -24,8 +24,8 @@ type Post = {
   postType: "question" | "solution" | "challenge";
   content: string;
   author: {
-    _id: string;
-    name: string;
+    id: string;
+    // name: string;
     avatar: string;
     level: string;
   };
@@ -233,11 +233,11 @@ const FeedPage = () => {
                         post={{
                           postId: post._id,
                           author: {
-                            id:
-                              typeof post.author === "string"
-                                ? post.author
-                                : post.author?._id,
-                            name: post.author?.name || "Anonymous",
+
+                              id: typeof post.author === "string" ? post.author : post.author?.id,
+                            // name: post.author?.name || "Anonymous",
+                            name: "Anonymous",
+
                             avatar:
                               post.author?.avatar || "/default-avatar.png",
                             level: post.author?.level || "Beginner",
