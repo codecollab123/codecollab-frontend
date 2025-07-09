@@ -17,12 +17,14 @@ import {
   menuItemsTop,
 } from "@/config/menuItems/dashboardMenuItem";
 import { RootState } from "@/lib/store";
+import { getFeedSocket } from "@/service/liveFeedSocket";
 
 type Post = {
   _id: string;
   postType: "question" | "solution" | "challenge";
   content: string;
   author: {
+    _id: string;
     name: string;
     avatar: string;
     level: string;
@@ -37,12 +39,15 @@ type Post = {
   contributionCount?: number;
 };
 
-const HomePage = () => {
+const FeedPage = () => {
   const [activeFilter, setActiveFilter] = useState("all");
-  const user = useSelector((state: RootState) => state.user);
+  type User = {
+    uid: string;
+  };
+
+  const user = useSelector((state: RootState) => state.user) as User | null;
   const userId = user?.uid;
   const [contributionCount, setContributionCount] = useState<number>(0);
-
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -53,7 +58,7 @@ const HomePage = () => {
       const postData = response.data?.data;
       setPosts(postData || []);
     } catch (error: any) {
-      console.error("❌ Error fetching posts:", error.message);
+      console.error("Error fetching posts:", error.message);
     } finally {
       setIsLoading(false);
     }
@@ -66,20 +71,18 @@ const HomePage = () => {
       setContributionCount(count); // <-- SETTING THE STATE
     } catch (error) {
       console.error(
-        `❌ Error fetching contribution count for ${userId}:`,
-        error,
+        `❌ Error fetching contribution count for ${userId}:,
+        error`,
       );
       setContributionCount(0); // fallback to 0 if API fails
     }
   };
-
-  useEffect(() => {
-    getPosts();
-    console.log("User ID:", userId);
-    if (userId) {
-      getContributionCount(userId);
-    }
-  }, [userId]);
+  const handleDeletePost = (deletedId: string) => {
+    console.log("Deleted post ID:", deletedId);
+    setPosts(
+      (prev) => prev.filter((post) => post._id !== deletedId), // make sure it's 'id' not '_id'
+    );
+  };
 
   const filters = [
     { id: "all", label: "All Posts", count: posts.length },
@@ -104,6 +107,23 @@ const HomePage = () => {
     activeFilter === "all"
       ? posts
       : posts.filter((post) => post.postType === activeFilter);
+
+  useEffect(() => {
+    getPosts(); // initial fetch
+    if (userId) {
+      getContributionCount(userId);
+    }
+
+    const socket = getFeedSocket(userId);
+
+    socket.on("receive_post", (newPost: Post) => {
+      setPosts((prevPosts) => [newPost, ...prevPosts]);
+    });
+
+    return () => {
+      socket.off("receive_post");
+    };
+  }, [userId]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -211,8 +231,12 @@ const HomePage = () => {
                       <CreatePost
                         key={post._id}
                         post={{
-                          id: post._id, // 👈 convert _id to id
+                          postId: post._id,
                           author: {
+                            id:
+                              typeof post.author === "string"
+                                ? post.author
+                                : post.author?._id,
                             name: post.author?.name || "Anonymous",
                             avatar:
                               post.author?.avatar || "/default-avatar.png",
@@ -229,6 +253,8 @@ const HomePage = () => {
                           difficulty: post.difficulty ?? "Easy",
                           contributionCount: post.contributionCount,
                         }}
+                        currentUserId={userId}
+                        onDelete={handleDeletePost}
                       />
                     ))}
                   </div>
@@ -299,4 +325,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default FeedPage;
