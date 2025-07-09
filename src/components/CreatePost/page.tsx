@@ -21,7 +21,7 @@ interface Post {
   postId: string;
   author: {
     id?: string; // added this so we can match current user
-    name: string;
+    name?: string;
     avatar: string;
     level: string;
   };
@@ -111,7 +111,7 @@ const CreatePost = ({ post, currentUserId, onDelete }: CreatePostProps) => {
             <Avatar>
               <AvatarImage src={post.author.avatar} />
               <AvatarFallback>
-                {post.author.name.slice(0, 2).toUpperCase()}
+                {/* {post.author.name.slice(0, 2).toUpperCase()} */}
               </AvatarFallback>
             </Avatar>
             <div>

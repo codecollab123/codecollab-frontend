@@ -13,7 +13,10 @@ import { toast } from "@/hooks/use-toast";
 import { axiosInstance } from "@/lib/axiosinstance";
 import { RootState } from "@/lib/store";
 import SidebarMenu from "@/components/menu/sidebarmenu";
-import { menuItemsBottom, menuItemsTop } from "@/config/menuItems/dashboardMenuItem";
+import {
+  menuItemsBottom,
+  menuItemsTop,
+} from "@/config/menuItems/dashboardMenuItem";
 import Header from "@/components/header/header";
 
 const CreatePostPage = () => {
@@ -59,16 +62,19 @@ const CreatePostPage = () => {
     const payload = {
       title,
       content,
-      type: postType,
-      difficulty,
-      codeSnippet,
+      postType, // must be one of 3 allowed enums
+      difficultyLevel: difficulty.toLowerCase(), // convert to 'easy' | 'medium' | 'hard'
       tags,
-      image: "https://example.com/image.png", 
-      timestamp: new Date().toISOString(),
-      author: userId, // 👈 string expected by backend
-      likes: 0,
-      comments: 0,
-      shares: 0,
+      image: "https://example.com/image.png",
+      author: {
+        id: user?.uid ?? "",
+        // name:user.name,
+        avatar: user?.avatar ?? "/default-avatar.png",
+        level: user?.level ?? "Beginner",
+      },
+
+      likes: [],
+      comments: [],
     };
 
     try {
@@ -100,184 +106,184 @@ const CreatePostPage = () => {
         menuItemsBottom={menuItemsBottom}
         active="Chats"
       />
-       <div className="flex flex-col flex-1 min-h-screen w-full">
-      <Header
+      <div className="flex flex-col flex-1 min-h-screen w-full">
+        <Header
           menuItemsTop={menuItemsTop}
           menuItemsBottom={menuItemsBottom}
           activeMenu="Projects"
           breadcrumbItems={[{ label: "community feeds", link: "/feeds" }]}
         />
-      <div className="pt-16 pb-8">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold">Create New Post</h1>
-            <p className="text-muted-foreground">
-              Share your knowledge, ask questions, or create challenges for the
-              community
-            </p>
-          </div>
+        <div className="pt-16 pb-8">
+          <div className="max-w-4xl mx-auto px-4">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold">Create New Post</h1>
+              <p className="text-muted-foreground">
+                Share your knowledge, ask questions, or create challenges for
+                the community
+              </p>
+            </div>
 
-          <form onSubmit={handleSubmit}>
-            {/* Post Type */}
-            <Card className="mb-6 border border-border">
-              <CardHeader>
-                <CardTitle>Post Type</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {postTypes.map((type) => (
-                    <Button
-                      key={type.id}
-                      type="button"
-                      variant={postType === type.id ? "default" : "outline"}
-                      onClick={() => setPostType(type.id as typeof postType)}
-                      className="h-20 flex-col space-y-2"
-                    >
-                      <type.icon className="w-6 h-6" />
-                      <span>{type.label}</span>
-                    </Button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Post Details */}
-            <Card className="mb-6 border border-border">
-              <CardHeader>
-                <CardTitle>Post Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label
-                    htmlFor="title"
-                    className="block text-sm font-medium text-muted-foreground mb-2"
-                  >
-                    Title *
-                  </label>
-                  <Input
-                    id="title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Enter a descriptive title..."
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="content"
-                    className="block text-sm font-medium text-muted-foreground mb-2"
-                  >
-                    Content *
-                  </label>
-                  <Textarea
-                    id="content"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    placeholder="Describe your question, solution, or challenge in detail..."
-                    className="w-full min-h-[120px]"
-                  />
-                </div>
-
-                {(postType === "solution" || postType === "challenge") && (
-                  <div>
-                    <label
-                      htmlFor="code"
-                      className="block text-sm font-medium text-muted-foreground mb-2"
-                    >
-                      Code Snippet
-                    </label>
-                    <Textarea
-                      id="code"
-                      value={codeSnippet}
-                      onChange={(e) => setCodeSnippet(e.target.value)}
-                      placeholder="Paste your code here..."
-                      className="w-full min-h-[120px] font-mono text-sm"
-                    />
-                  </div>
-                )}
-
-                <div>
-                  <label
-                    htmlFor="difficulty"
-                    className="block text-sm font-medium text-muted-foreground mb-2"
-                  >
-                    Difficulty Level
-                  </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {(["Easy", "Medium", "Hard"] as const).map((level) => (
+            <form onSubmit={handleSubmit}>
+              {/* Post Type */}
+              <Card className="mb-6 border border-border">
+                <CardHeader>
+                  <CardTitle>Post Type</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {postTypes.map((type) => (
                       <Button
-                        key={level}
+                        key={type.id}
                         type="button"
-                        variant={difficulty === level ? "default" : "outline"}
-                        onClick={() => setDifficulty(level)}
-                        size="sm"
+                        variant={postType === type.id ? "default" : "outline"}
+                        onClick={() => setPostType(type.id as typeof postType)}
+                        className="h-20 flex-col space-y-2"
                       >
-                        {level}
+                        <type.icon className="w-6 h-6" />
+                        <span>{type.label}</span>
                       </Button>
                     ))}
                   </div>
-                </div>
+                </CardContent>
+              </Card>
 
-                <div>
-                  <label
-                    htmlFor="tags"
-                    className="block text-sm font-medium text-muted-foreground mb-2"
-                  >
-                    Tags
-                  </label>
-                  <div className="flex space-x-2 mb-2">
+              {/* Post Details */}
+              <Card className="mb-6 border border-border">
+                <CardHeader>
+                  <CardTitle>Post Details</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label
+                      htmlFor="title"
+                      className="block text-sm font-medium text-muted-foreground mb-2"
+                    >
+                      Title *
+                    </label>
                     <Input
-                      id="tags"
-                      value={tagInput}
-                      onChange={(e) => setTagInput(e.target.value)}
-                      placeholder="Add a tag..."
-                      onKeyDown={(e) =>
-                        e.key === "Enter" &&
-                        (e.preventDefault(), handleAddTag())
-                      }
+                      id="title"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder="Enter a descriptive title..."
                     />
-                    <Button type="button" onClick={handleAddTag} size="sm">
-                      <Plus className="w-4 h-4" />
-                    </Button>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {tags.map((tag, index) => (
-                      <Badge
-                        key={`${tag}-${index}`}
-                        variant="secondary"
-                        className="flex items-center space-x-1"
+
+                  <div>
+                    <label
+                      htmlFor="content"
+                      className="block text-sm font-medium text-muted-foreground mb-2"
+                    >
+                      Content *
+                    </label>
+                    <Textarea
+                      id="content"
+                      value={content}
+                      onChange={(e) => setContent(e.target.value)}
+                      placeholder="Describe your question, solution, or challenge in detail..."
+                      className="w-full min-h-[120px]"
+                    />
+                  </div>
+
+                  {(postType === "solution" || postType === "challenge") && (
+                    <div>
+                      <label
+                        htmlFor="code"
+                        className="block text-sm font-medium text-muted-foreground mb-2"
                       >
-                        <span>#{tag}</span>
+                        Code Snippet
+                      </label>
+                      <Textarea
+                        id="code"
+                        value={codeSnippet}
+                        onChange={(e) => setCodeSnippet(e.target.value)}
+                        placeholder="Paste your code here..."
+                        className="w-full min-h-[120px] font-mono text-sm"
+                      />
+                    </div>
+                  )}
+
+                  <div>
+                    <label
+                      htmlFor="difficulty"
+                      className="block text-sm font-medium text-muted-foreground mb-2"
+                    >
+                      Difficulty Level
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {(["Easy", "Medium", "Hard"] as const).map((level) => (
                         <Button
+                          key={level}
                           type="button"
-                          onClick={() => handleRemoveTag(tag)}
-                          className="ml-1 hover:text-destructive"
+                          variant={difficulty === level ? "default" : "outline"}
+                          onClick={() => setDifficulty(level)}
+                          size="sm"
                         >
-                          <X className="w-3 h-3" />
+                          {level}
                         </Button>
-                      </Badge>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
 
-            {/* Buttons */}
-            <div className="flex justify-end space-x-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.push("/feeds")}
-              >
-                Cancel
-              </Button>
+                  <div>
+                    <label
+                      htmlFor="tags"
+                      className="block text-sm font-medium text-muted-foreground mb-2"
+                    >
+                      Tags
+                    </label>
+                    <div className="flex space-x-2 mb-2">
+                      <Input
+                        id="tags"
+                        value={tagInput}
+                        onChange={(e) => setTagInput(e.target.value)}
+                        placeholder="Add a tag..."
+                        onKeyDown={(e) =>
+                          e.key === "Enter" &&
+                          (e.preventDefault(), handleAddTag())
+                        }
+                      />
+                      <Button type="button" onClick={handleAddTag} size="sm">
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {tags.map((tag, index) => (
+                        <Badge
+                          key={`${tag}-${index}`}
+                          variant="secondary"
+                          className="flex items-center space-x-1"
+                        >
+                          <span>#{tag}</span>
+                          <Button
+                            type="button"
+                            onClick={() => handleRemoveTag(tag)}
+                            className="ml-1 hover:text-destructive"
+                          >
+                            <X className="w-3 h-3" />
+                          </Button>
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-              <Button type="submit">Create Post</Button>
-            </div>
-          </form>
+              {/* Buttons */}
+              <div className="flex justify-end space-x-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => router.push("/feeds")}
+                >
+                  Cancel
+                </Button>
+
+                <Button type="submit">Create Post</Button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
     </div>
   );
 };
