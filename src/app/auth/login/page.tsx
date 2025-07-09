@@ -28,13 +28,13 @@ export default function LoginPage() {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
-  const [phone, setPhone] = useState<string>("");
+  const [phone] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [isEmailLoginLoading, setIsEmailLoginLoading] =
-    useState<boolean>(false);
-  const [isGoogleLoginLoading, setIsGoogleLoginLoading] =
-    useState<boolean>(false);
+  // const [isEmailLoginLoading, setIsEmailLoginLoading] =
+  //   useState<boolean>(false);
+  // const [isGoogleLoginLoading, setIsGoogleLoginLoading] =
+  //   useState<boolean>(false);
 
   const handleLogin = async (): Promise<void> => {
     setIsLoading(true);

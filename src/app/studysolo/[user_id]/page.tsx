@@ -43,7 +43,6 @@ interface studysoloProps {
 }
 
 export default function SoloStudy({ params }: { params: { user_id: string } }) {
-  
   // 💡 STEP 2: params ऑब्जेक्ट से user_id को निकालें
   const { user_id } = params;
   const [time, setTime] = useState(50 * 60);
@@ -431,7 +430,7 @@ export default function SoloStudy({ params }: { params: { user_id: string } }) {
                       src={`https://www.youtube.com/embed/${new URL(
                         youtubeLink,
                       ).searchParams.get("v")}`}
-                        title={`YouTube video player – ${new URL(youtubeLink).searchParams.get("v")}`}
+                      title={`YouTube video player – ${new URL(youtubeLink).searchParams.get("v")}`}
                       frameBorder="0"
                       allowFullScreen
                     ></iframe>
@@ -472,19 +471,18 @@ export default function SoloStudy({ params }: { params: { user_id: string } }) {
             </ul>
           </div>
           {quote.trim() && (
-  <div
-    className="absolute z-10 text-white italic text-2xl font-bold text-center w-full px-4"
-    style={{
-      top: "40%",
-      left: "80%",
-      transform: "translate(-50%, -50%)",
-      textShadow: "2px 2px 4px rgba(0, 0, 0, 0.8)",
-    }}
-  >
-    &ldquo;{quote}&rdquo;
-  </div>
-)}
-
+            <div
+              className="absolute z-10 text-white italic text-2xl font-bold text-center w-full px-4"
+              style={{
+                top: "40%",
+                left: "80%",
+                transform: "translate(-50%, -50%)",
+                textShadow: "2px 2px 4px rgba(0, 0, 0, 0.8)",
+              }}
+            >
+              &ldquo;{quote}&rdquo;
+            </div>
+          )}
         </div>
       </div>
     </div>
