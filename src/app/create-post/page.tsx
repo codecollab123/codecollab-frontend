@@ -67,7 +67,7 @@ const CreatePostPage = () => {
       difficultyLevel: difficulty.toLowerCase(), // convert to 'easy' | 'medium' | 'hard'
       tags,
       image: "https://example.com/image.png",
- //socket/livefeed/riya
+      //socket/livefeed/riya
       author: {
         id: user?.uid ?? "",
         // name:user.name,
