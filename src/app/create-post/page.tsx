@@ -63,16 +63,20 @@ const CreatePostPage = () => {
     const payload = {
       title,
       content,
-      type: postType,
-      difficulty,
-      codeSnippet,
+      postType, // must be one of 3 allowed enums
+      difficultyLevel: difficulty.toLowerCase(), // convert to 'easy' | 'medium' | 'hard'
       tags,
       image: "https://example.com/image.png",
-      timestamp: new Date().toISOString(),
-      author: userId, // 👈 string expected by backend
-      likes: 0,
-      comments: 0,
-      shares: 0,
+ socket/livefeed/riya
+      author: {
+        id: user?.uid ?? "",
+        // name:user.name,
+        avatar: user?.avatar ?? "/default-avatar.png",
+        level: user?.level ?? "Beginner",
+      },
+
+      likes: [],
+      comments: [],
     };
 
     try {
