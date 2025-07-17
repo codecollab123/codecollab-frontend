@@ -233,8 +233,10 @@ const FeedPage = () => {
                         post={{
                           postId: post._id,
                           author: {
-
-                              id: typeof post.author === "string" ? post.author : post.author?.id,
+                            id:
+                              typeof post.author === "string"
+                                ? post.author
+                                : post.author?.id,
                             // name: post.author?.name || "Anonymous",
                             name: "Anonymous",
 

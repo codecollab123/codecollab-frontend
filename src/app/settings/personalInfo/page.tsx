@@ -17,7 +17,7 @@ import { RootState } from "@/lib/store";
 import { axiosInstance } from "@/lib/axiosinstance";
 import CreatePost from "@/components/CreatePost/page";
 
-const personalInfoPage = () => {
+const PersonalInfoPage = () => {
   const userStats = {
     totalSolved: 847,
     ranking: 12847,
@@ -327,4 +327,4 @@ const personalInfoPage = () => {
   );
 };
 
-export default personalInfoPage;
+export default PersonalInfoPage;

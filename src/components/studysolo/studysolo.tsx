@@ -42,9 +42,10 @@ interface studysoloProps {
   video: string;
 }
 
-export default function SoloStudy({ params }: { params: { user_id: string } }) {
+export default function SoloStudy({ userId }: { userId: string }) {
   // 💡 STEP 2: params ऑब्जेक्ट से user_id को निकालें
-  const { user_id } = params;
+  const user_id = userId;
+
   const [time, setTime] = useState(50 * 60);
   const [user, setUser] = useState<studysoloProps>({
     _id: "",
@@ -92,35 +93,59 @@ export default function SoloStudy({ params }: { params: { user_id: string } }) {
   const toggleBackgroundOptions = () => {
     setIsBackgroundOptionsVisible(!isBackgroundOptionsVisible);
   };
-  // const handleAddQuote = () => {
-  //   if (quote.trim()) {
-  //     setSavedQuotes((prevQuotes) => [...prevQuotes, quote]);
-  //     setQuote("");
-  //     setIsQuoteDialogOpen(false);
-  //   }
-  // };
+
   useEffect(() => {
     const fetchData = async () => {
-      if (!user_id) return; // Agar user_id nahi hai to aage mat badho
+      if (!user_id) return;
 
       try {
-        console.log("Fetching Study Solo for user_id:", user_id);
-        const res = await axiosInstance.get(`/studysolo/${user_id}`);
-        const data: studysoloProps = res.data;
+        // Step 1: Try to fetch
+        const res = await axiosInstance.get(`/studysolo/getbyuserid`, {
+          params: { userId: user_id },
+        });
 
-        setUser(data);
-        // Fallback values de diye taaki null error na aaye
-        setSelectedBackground(data.background || "/studyroom5.mp4");
-        setSelectedMusic(data.music || "/relaxmusic.mp3");
-        setQuote(data.quote || "");
-        setTasks(data.todolist ? data.todolist.split(",") : []);
+        const data: studysoloProps[] = res.data.data;
+
+        if (!data || data.length === 0) {
+          // Step 2: Create if not found
+          const defaultData: studysoloProps = {
+            userId: user_id,
+            background: "/studyroom5.mp4",
+            music: "/relaxmusic.mp3",
+            quote: "",
+            todolist: "",
+            video: "",
+            _id: "", // will be replaced
+          };
+
+          const createRes = await axiosInstance.post(
+            `/studysolo/${user_id}`,
+            defaultData,
+          );
+          const createdData: studysoloProps = createRes.data.data;
+
+          setUser(createdData);
+          setSelectedBackground(createdData.background);
+          setSelectedMusic(createdData.music);
+          setQuote(createdData.quote);
+          setTasks(createdData.todolist ? createdData.todolist.split(",") : []);
+        } else {
+          const record = data[0];
+          setUser(record);
+          setSelectedBackground(record.background || "/studyroom5.mp4");
+          setSelectedMusic(record.music || "/relaxmusic.mp3");
+          setQuote(record.quote || "");
+          setTasks(record.todolist ? record.todolist.split(",") : []);
+        }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching or creating study solo:", error);
       }
     };
 
     fetchData();
-  }, [user_id]); // ✅ Dependency ke andar `user_id` hi h jo prop se aa rha h
+  }, [user_id]);
+
+  // ✅ Dependency ke andar `user_id` hi h jo prop se aa rha h
 
   const updateStudyData = async () => {
     try {
@@ -140,33 +165,6 @@ export default function SoloStudy({ params }: { params: { user_id: string } }) {
       console.error("Error updating study data:", error);
     }
   };
-  // const resetStudyData = async () => {
-  //   try {
-  //     if (!user_id) return; // 🔹 ID check, bina ID ke API call mat kro
-
-  //     const defaultData = {
-  //       _id: user._id,
-  //       userId: user.userId,
-  //       background: "/studyroom5.mp4",
-  //       music: "/relaxmusic.mp3",
-  //       quote: "",
-  //       todolist: "",
-  //       video: ""
-  //     };
-
-  //     await axiosInstance.put(`/studysolo/${user_id}`, defaultData);
-  //     setUser(defaultData);
-  //     setSelectedBackground(defaultData.background);
-  //     setSelectedMusic(defaultData.music);
-  //     setQuote(defaultData.quote);
-  //     setTasks([]);
-  //     setYoutubeLink("");
-
-  //     alert("Study Solo settings reset to default!");
-  //   } catch (error) {
-  //     console.error("Error resetting study data:", error);
-  //   }
-  // };
 
   // Function to handle background selection
   const handleBackgroundSelection = (url: string) => {
@@ -200,24 +198,6 @@ export default function SoloStudy({ params }: { params: { user_id: string } }) {
       .toString()
       .padStart(2, "0")}`;
   };
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axiosInstance.get(`/studysolo/${user_id}`);
-  //       const data: studysoloProps = response.data;
-  //       setUser(data);
-  //       setSelectedBackground(data.background);
-  //       setSelectedMusic(data.music);
-  //       setQuote(data.quote);
-  //       setTasks(data.todolist.split(","));
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [user_id]);
 
   return (
     <div ref={fullscreenRef} className="flex min-h-screen w-full bg-muted/40">
