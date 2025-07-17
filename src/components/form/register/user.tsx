@@ -18,7 +18,6 @@ import {
   Shield,
   User,
 } from "lucide-react";
-// import Link from "next/link";
 
 import countries from "../../../country-codes.json";
 

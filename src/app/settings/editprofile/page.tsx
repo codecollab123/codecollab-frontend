@@ -38,7 +38,7 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 export default function EditProfile() {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user);
-
+  const userId = user?.uid;
   const [loading, setLoading] = useState(false);
 
   const form = useForm<ProfileFormValues>({
@@ -54,28 +54,19 @@ export default function EditProfile() {
     },
     mode: "onChange",
   });
-
-  useEffect(() => {
-    form.reset({
-      firstName: user.firstName || "",
-      lastName: user.lastName || "",
-      bio: user.bio || "",
-      location: user.location || "",
-      photoURL: user.photoURL || "",
-      github: user.github || "",
-      linkedin: user.linkedin || "",
-    });
-  }, [user, form]);
+  // Only run when user is first loaded
 
   const onSubmit = async (data: ProfileFormValues) => {
     console.log("Form Data:", data);
 
     setLoading(true);
     try {
-      const res = await axiosInstance.put(`/user/update/${user._id}`, data);
+      const res = await axiosInstance.put(`/user/${userId}`, data);
+      console.log("User object:", user);
+      console.log("userId:", userId);
 
       const updatedUser = res.data.data;
-
+      form.reset(updatedUser);
       dispatch(setUser(updatedUser)); // update redux with new profile
       toast({ title: "Profile updated successfully" });
     } catch (err) {
@@ -89,11 +80,22 @@ export default function EditProfile() {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    if (user?.firstName) {
+      form.reset({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        bio: user.bio,
+        location: user.location,
+        photoURL: user.photoURL,
+        github: user.github,
+        linkedin: user.linkedin,
+      });
+    }
+  }, [user.uid]);
 
   return (
     <Card className="max-w-3xl mx-auto p-8 mt-10">
-      <h2 className="text-2xl font-bold mb-6">Edit Profile</h2>
-
       {/* ✅ Profile Picture Avatar */}
       <div className="flex justify-center mb-6">
         <Avatar className="w-32 h-32 border-4 border-green-400 neon-glow">

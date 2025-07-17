@@ -40,16 +40,16 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const res = await axiosInstance.get(`/public/user_email?user=${email}`);
-      const phoneVerify = res.data?.phoneVerify;
+      // const phoneVerify = res.data?.phoneVerify;
 
-      if (!phoneVerify) {
-        toast({
-          variant: "destructive",
-          title: "Phone Verification Required",
-          description: "Please verify your phone number to proceed.",
-        });
-        return;
-      }
+      // if (!phoneVerify) {
+      //   toast({
+      //     variant: "destructive",
+      //     title: "Phone Verification Required",
+      //     description: "Please verify your phone number to proceed.",
+      //   });
+      //   return;
+      // }
 
       const cred: UserCredential = await loginUser(email, password);
       const { user, claims } = await getUserData(cred);
