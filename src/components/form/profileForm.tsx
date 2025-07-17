@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function ProfileForm() {
   const user = useSelector((state: RootState) => state.user);
+
   const [formData, setFormData] = useState({
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
@@ -38,90 +40,105 @@ export default function ProfileForm() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-black text-white">
-      <div className="w-full max-w-6xl p-8 shadow-lg rounded-lg">
-        {/* Header */}
-        {/* Profile Picture */}
-        <div className="flex justify-center mb-6">
-          <label htmlFor="profilePic" className="cursor-pointer relative">
-            <Avatar className="w-28 h-28 border-2 border-gray-500">
-              <AvatarImage src={formData.profilePic} alt="Profile Picture" />
-              <AvatarFallback>+</AvatarFallback>
-            </Avatar>
-            <input
-              type="file"
-              id="profilePic"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-          </label>
-        </div>
+    <div className="min-h-screen bg-background text-foreground py-10 px-4 flex justify-center items-start">
+      <div className="w-full max-w-4xl space-y-10">
+        {/* Profile Card */}
+        <Card className="w-full border-0 shadow-lg">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+              {/* Avatar Upload */}
+              <label htmlFor="profilePic" className="cursor-pointer relative">
+                <Avatar className="w-24 h-24 border-4 border-orange-200">
+                  <AvatarImage
+                    src={formData.profilePic}
+                    alt="Profile Picture"
+                  />
+                  <AvatarFallback>+</AvatarFallback>
+                </Avatar>
+                <input
+                  type="file"
+                  id="profilePic"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+              </label>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {/* Name */}
-            <div>
-              <Label>First Name</Label>
-              <Input
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                placeholder="Enter your first name"
-                required
-                className="w-full bg-gray-800 border-gray-700"
-              />
+              {/* Name Info */}
+              <div className="space-y-1">
+                <h1 className="text-3xl font-bold">
+                  {formData.firstName} {formData.lastName}
+                </h1>
+                <p className="text-muted-foreground">Personal Information</p>
+              </div>
             </div>
-            <div>
-              <Label>Last Name</Label>
-              <Input
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                placeholder="Enter your last name"
-                required
-                className="w-full bg-gray-800 border-gray-700"
-              />
-            </div>
+          </CardContent>
+        </Card>
 
-            {/* Email & Phone */}
-            <div>
-              <Label>Email</Label>
-              <Input
-                type="email"
-                name="email"
-                value={formData.email}
-                placeholder="Enter your email"
-                readOnly
-                className="w-full bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed"
-              />
-              <span className="text-sm text-gray-400">Non-editable field</span>
-            </div>
-            <div>
-              <Label>Phone</Label>
-              <Input
-                type="tel"
-                name="phone"
-                value={formData.phone || ""}
-                placeholder="Enter your phone number"
-                readOnly
-                className="w-full bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed"
-              />
-              <span className="text-sm text-gray-400">Non-editable field</span>
-            </div>
+        {/* Form Card */}
+        <Card className="w-full border-0 shadow-md">
+          <CardContent className="p-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <Label>First Name</Label>
+                  <Input
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    placeholder="Enter your first name"
+                    required
+                    className="w-full bg-background border-muted"
+                  />
+                </div>
+                <div>
+                  <Label>Last Name</Label>
+                  <Input
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    placeholder="Enter your last name"
+                    required
+                    className="w-full bg-background border-muted"
+                  />
+                </div>
+                <div>
+                  <Label>Email</Label>
+                  <Input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    readOnly
+                    className="w-full bg-background border-muted opacity-60 cursor-not-allowed"
+                  />
+                  <span className="text-sm text-muted-foreground">
+                    Non-editable field
+                  </span>
+                </div>
+                <div>
+                  <Label>Phone</Label>
+                  <Input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone || ""}
+                    readOnly
+                    className="w-full bg-background border-muted opacity-60 cursor-not-allowed"
+                  />
+                  <span className="text-sm text-muted-foreground">
+                    Non-editable field
+                  </span>
+                </div>
+              </div>
 
-            {/* Company Details */}
-          </div>
-
-          {/* Submit Button */}
-          <Button
-            type="submit"
-            className="w-full bg-white text-black hover:bg-gray-300 py-3 text-lg font-semibold"
-          >
-            Save changes
-          </Button>
-        </form>
+              <Button
+                type="submit"
+                className="w-full bg-white text-black hover:bg-gray-300 py-3 text-lg font-semibold"
+              >
+                Save Changes
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

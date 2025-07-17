@@ -172,14 +172,14 @@ const CreatePost = ({ post, currentUserId, onDelete }: CreatePostProps) => {
         </p>
 
         {post.codeSnippet && (
-          <div className="bg-muted rounded-lg p-4 mb-4 border border-border">
+          <div className="bg-[#f9f9f9] dark:bg-zinc-900 rounded-lg p-4 mb-4 border border-border font-mono text-sm leading-relaxed overflow-x-auto whitespace-pre-wrap">
             <div className="flex items-center space-x-2 mb-2">
               <Code className="w-4 h-4 text-muted-foreground" />
               <span className="text-sm font-medium text-muted-foreground">
                 Code Snippet
               </span>
             </div>
-            <pre className="text-sm overflow-x-auto text-foreground">
+            <pre className="whitespace-pre-wrap break-words">
               <code>{post.codeSnippet}</code>
             </pre>
           </div>

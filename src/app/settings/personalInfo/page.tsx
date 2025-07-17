@@ -1,7 +1,9 @@
 "use client";
-import { CalendarDays, Trophy, Target, Zap, Award } from "lucide-react";
+import { CalendarDays, Zap, Award } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+
+import EditProfile from "../editprofile/page";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -35,8 +37,14 @@ const PersonalInfoPage = () => {
   };
 
   const user = useSelector((state: RootState) => state.user);
-  const userId = user?.uid;
   const [recentSubmissions, setRecentSubmissions] = useState<RecentPost[]>([]);
+  const [contributionCount, setContributionCount] = useState(0);
+  const userId = user?.uid;
+
+  const [userProfile, setUserProfile] = useState<{
+    firstName: string;
+    lastName: string;
+  } | null>(null);
 
   useEffect(() => {
     const fetchUserPosts = async () => {
@@ -74,6 +82,39 @@ const PersonalInfoPage = () => {
     };
 
     fetchUserPosts();
+  }, [userId]);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        if (!userId) return;
+
+        const res = await axiosInstance.get(`/user/${userId}/profile-info`);
+        setUserProfile({
+          firstName: res.data.firstName,
+          lastName: res.data.lastName,
+        });
+      } catch (error) {
+        console.error("Error fetching user profile info:", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, [userId]);
+  useEffect(() => {
+    const fetchContributionCount = async () => {
+      try {
+        if (!userId) return;
+        const res = await axiosInstance.get(`/post/${userId}/contributions`);
+        const count = res.data?.data?.contributionCount ?? 0;
+        setContributionCount(count);
+      } catch (err) {
+        console.error("Error fetching contribution count:", err);
+        setContributionCount(0);
+      }
+    };
+
+    fetchContributionCount();
   }, [userId]);
 
   const handleDeletePost = (deletedId: string) => {
@@ -124,7 +165,12 @@ const PersonalInfoPage = () => {
 
                 <div className="flex-1 space-y-4">
                   <div>
-                    <h1 className="text-3xl font-bold ">john_developer</h1>
+                    <h1 className="text-3xl font-bold ">
+                      {user?.firstName && user?.lastName
+                        ? `${user.firstName} ${user.lastName}`
+                        : user?.displayName || "Guest"}
+                    </h1>
+
                     <p className="text-gray-600 mt-1">
                       Software Engineer at Tech Corp
                     </p>
@@ -134,16 +180,6 @@ const PersonalInfoPage = () => {
                   </div>
 
                   <div className="flex flex-wrap gap-4 text-sm">
-                    <div className="flex items-center gap-2 text-orange-600">
-                      <Target className="w-4 h-4" />
-                      <span>
-                        Ranking: #{userStats.ranking.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-blue-600">
-                      <Trophy className="w-4 h-4" />
-                      <span>Contest Rating: {userStats.contestRating}</span>
-                    </div>
                     <div className="flex items-center gap-2 text-green-600">
                       <Zap className="w-4 h-4" />
                       <span>{userStats.streakDays} day streak</span>
@@ -160,12 +196,11 @@ const PersonalInfoPage = () => {
               <CardContent className="p-6">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-orange-600">
-                    {userStats.totalSolved}
+                    {contributionCount}
                   </div>
                   <div className="text-sm text-gray-600 mt-1">
-                    Problems Solved
+                    Contributions
                   </div>
-                  {/* <Progress value={(userStats.totalSolved / userStats.totalProblems) * 100} className="mt-3 h-2" /> */}
                 </div>
               </CardContent>
             </Card>
@@ -197,10 +232,11 @@ const PersonalInfoPage = () => {
 
           {/* Main Content Tabs */}
           <Tabs defaultValue="submissions" className="w-full space-y-5">
-            <TabsList className="grid w-full grid-cols-3 lg:w-[500px]">
+            <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
               <TabsTrigger value="submissions">Recent Posts</TabsTrigger>
               <TabsTrigger value="badges">Badges</TabsTrigger>
               <TabsTrigger value="calendar">Activity</TabsTrigger>
+              <TabsTrigger value="edit">Edit</TabsTrigger>
             </TabsList>
 
             <TabsContent
@@ -319,6 +355,26 @@ const PersonalInfoPage = () => {
                   <SubmissionCalendar />
                 </CardContent>
               </Card>
+            </TabsContent>
+            <TabsContent
+              value="edit"
+              className="space-y-4 w-full min-h-[400px]"
+            >
+              {user ? (
+                <Card className="w-full border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <CalendarDays className="w-5 h-5 text-orange-600" />
+                      Edit Profile
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="w-full">
+                    <EditProfile />
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="text-center py-10">Loading...</div>
+              )}
             </TabsContent>
           </Tabs>
         </div>
