@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Bell,
   Check,
@@ -10,24 +10,24 @@ import {
   Ticket,
   User,
   UsersRound,
-} from 'lucide-react';
-import { DocumentData } from 'firebase/firestore';
-import { useSelector } from 'react-redux';
-import { useRouter } from 'next/navigation';
-import { formatDistanceToNow } from 'date-fns';
+} from "lucide-react";
+import { DocumentData } from "firebase/firestore";
+import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+import { formatDistanceToNow } from "date-fns";
 
-import { Avatar } from '@/components/ui/avatar';
+import { Avatar } from "@/components/ui/avatar";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
-import { RootState } from '@/lib/store';
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { RootState } from "@/lib/store";
 import {
   markAllNotificationsAsRead,
   subscribeToUserNotifications,
-} from '@/utils/common/firestoreUtils';
+} from "@/utils/common/firestoreUtils";
 
 export const NotificationButton = () => {
   const router = useRouter();
@@ -54,23 +54,23 @@ export const NotificationButton = () => {
 
   function iconGetter(entity: string): JSX.Element {
     switch (entity) {
-      case 'Account':
+      case "Account":
         return <User />;
-      case 'Settings':
+      case "Settings":
         return <Settings />;
-      case 'Document':
+      case "Document":
         return <FileText />;
-      case 'Bid':
+      case "Bid":
         return <Gavel />;
-      case 'Interview':
+      case "Interview":
         return <LaptopMinimal />;
-      case 'Hire':
+      case "Hire":
         return <UsersRound />;
-      case 'Transaction':
+      case "Transaction":
         return <DollarSign />;
-      case 'Verification':
+      case "Verification":
         return <Check />;
-      case 'Ticket':
+      case "Ticket":
         return <Ticket />;
       default:
         return <Bell />;

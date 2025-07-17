@@ -49,7 +49,10 @@ export default function ProfileForm() {
               {/* Avatar Upload */}
               <label htmlFor="profilePic" className="cursor-pointer relative">
                 <Avatar className="w-24 h-24 border-4 border-orange-200">
-                  <AvatarImage src={formData.profilePic} alt="Profile Picture" />
+                  <AvatarImage
+                    src={formData.profilePic}
+                    alt="Profile Picture"
+                  />
                   <AvatarFallback>+</AvatarFallback>
                 </Avatar>
                 <input

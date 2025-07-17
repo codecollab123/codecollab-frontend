@@ -3,6 +3,8 @@ import { CalendarDays, Zap, Award } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 
+import EditProfile from "../editprofile/page";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -16,7 +18,6 @@ import Header from "@/components/header/header";
 import { RootState } from "@/lib/store";
 import { axiosInstance } from "@/lib/axiosinstance";
 import CreatePost from "@/components/CreatePost/page";
-import EditProfile from "../editprofile/page";
 
 const PersonalInfoPage = () => {
   const userStats = {
@@ -118,7 +119,7 @@ const PersonalInfoPage = () => {
 
   const handleDeletePost = (deletedId: string) => {
     setRecentSubmissions((prev) =>
-      prev.filter((post) => post._id !== deletedId)
+      prev.filter((post) => post._id !== deletedId),
     );
   };
 
@@ -355,24 +356,26 @@ const PersonalInfoPage = () => {
                 </CardContent>
               </Card>
             </TabsContent>
-            <TabsContent value="edit" className="space-y-4 w-full min-h-[400px]">
-  {user ? (
-    <Card className="w-full border-0 shadow-lg">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <CalendarDays className="w-5 h-5 text-orange-600" />
-          Edit Profile
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="w-full">
-        <EditProfile />
-      </CardContent>
-    </Card>
-  ) : (
-    <div className="text-center py-10">Loading...</div>
-  )}
-</TabsContent>
-
+            <TabsContent
+              value="edit"
+              className="space-y-4 w-full min-h-[400px]"
+            >
+              {user ? (
+                <Card className="w-full border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <CalendarDays className="w-5 h-5 text-orange-600" />
+                      Edit Profile
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="w-full">
+                    <EditProfile />
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="text-center py-10">Loading...</div>
+              )}
+            </TabsContent>
           </Tabs>
         </div>
       </div>

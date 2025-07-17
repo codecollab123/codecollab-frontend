@@ -30,7 +30,7 @@ const CreatePostPage = () => {
   >("question");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
- 
+
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [difficulty, setDifficulty] = useState<"Easy" | "Medium" | "Hard">(

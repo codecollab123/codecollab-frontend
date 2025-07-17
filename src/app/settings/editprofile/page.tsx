@@ -54,7 +54,7 @@ export default function EditProfile() {
     },
     mode: "onChange",
   });
-// Only run when user is first loaded
+  // Only run when user is first loaded
 
   const onSubmit = async (data: ProfileFormValues) => {
     console.log("Form Data:", data);
@@ -66,7 +66,7 @@ export default function EditProfile() {
       console.log("userId:", userId);
 
       const updatedUser = res.data.data;
- form.reset(updatedUser); 
+      form.reset(updatedUser);
       dispatch(setUser(updatedUser)); // update redux with new profile
       toast({ title: "Profile updated successfully" });
     } catch (err) {
@@ -80,19 +80,19 @@ export default function EditProfile() {
       setLoading(false);
     }
   };
-useEffect(() => {
-  if (user?.firstName) {
-    form.reset({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      bio: user.bio,
-      location: user.location,
-      photoURL: user.photoURL,
-      github: user.github,
-      linkedin: user.linkedin,
-    });
-  }
-}, [user.uid]); 
+  useEffect(() => {
+    if (user?.firstName) {
+      form.reset({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        bio: user.bio,
+        location: user.location,
+        photoURL: user.photoURL,
+        github: user.github,
+        linkedin: user.linkedin,
+      });
+    }
+  }, [user.uid]);
 
   return (
     <Card className="max-w-3xl mx-auto p-8 mt-10">
