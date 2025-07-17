@@ -62,7 +62,7 @@ const CreatePost = ({ post, currentUserId, onDelete }: CreatePostProps) => {
     toast({
       description: "Link copied to clipboard!",
     });
-  };
+  };//
 
   const handleDelete = async () => {
     try {
