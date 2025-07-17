@@ -4,6 +4,7 @@ import CollapsibleSidebarMenu from "../menu/collapsibleSidebar";
 import { MenuItem } from "../menu/sidebarmenu";
 import Breadcrumb from "../shared/breadcrumbList";
 import DropdownProfile from "../shared/DropdownProfile";
+import { NotificationButton } from "../shared/Notification";
 
 interface HeaderProps {
   menuItemsTop: MenuItem[];
@@ -25,7 +26,7 @@ const Header: React.FC<HeaderProps> = ({
   breadcrumbItems,
 }) => {
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center  py-6 gap-4 border-b bg-background px-4 sm:border-0 sm:px-10 ml-14">
+    <header className="sticky top-0 z-30 flex h-14 items-center py-6 gap-4 border-b bg-background px-4 sm:border-0 sm:px-10 ml-14">
       {/* Sidebar Menu */}
       <CollapsibleSidebarMenu
         menuItemsTop={menuItemsTop}
@@ -36,9 +37,12 @@ const Header: React.FC<HeaderProps> = ({
       {/* Breadcrumb Navigation */}
       <Breadcrumb items={breadcrumbItems} />
 
-      {/* Profile Dropdown */}
-      <div className="ml-auto">
-        {" "}
+      {/* Notification + Profile */}
+      <div className="ml-auto flex items-center gap-4">
+        {/* ✅ Notification Button */}
+        <NotificationButton />
+
+        {/* Profile Dropdown */}
         <DropdownProfile />
       </div>
     </header>

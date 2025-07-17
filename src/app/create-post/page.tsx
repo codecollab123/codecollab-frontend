@@ -30,7 +30,7 @@ const CreatePostPage = () => {
   >("question");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [codeSnippet, setCodeSnippet] = useState("");
+ 
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [difficulty, setDifficulty] = useState<"Easy" | "Medium" | "Hard">(
@@ -67,7 +67,6 @@ const CreatePostPage = () => {
       difficultyLevel: difficulty.toLowerCase(), // convert to 'easy' | 'medium' | 'hard'
       tags,
       image: "https://example.com/image.png",
- socket/livefeed/riya
       author: {
         id: user?.uid ?? "",
         // name:user.name,
@@ -186,23 +185,11 @@ const CreatePostPage = () => {
                     />
                   </div>
 
-                  {(postType === "solution" || postType === "challenge") && (
+                  {/* {(postType === "solution" || postType === "challenge") && (
                     <div>
-                      <label
-                        htmlFor="code"
-                        className="block text-sm font-medium text-muted-foreground mb-2"
-                      >
-                        Code Snippet
-                      </label>
-                      <Textarea
-                        id="code"
-                        value={codeSnippet}
-                        onChange={(e) => setCodeSnippet(e.target.value)}
-                        placeholder="Paste your code here..."
-                        className="w-full min-h-[120px] font-mono text-sm"
-                      />
+                    
                     </div>
-                  )}
+                  )} */}
 
                   <div>
                     <label
