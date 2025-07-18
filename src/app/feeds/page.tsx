@@ -18,6 +18,7 @@ import {
 } from "@/config/menuItems/dashboardMenuItem";
 import { RootState } from "@/lib/store";
 import { getFeedSocket } from "@/service/liveFeedSocket";
+import PofdComponent from "@/components/pofd";
 
 type Post = {
   _id: string;
@@ -38,6 +39,13 @@ type Post = {
   difficulty: "Easy" | "Medium" | "Hard";
   contributionCount?: number;
 };
+type Pofd = {
+  title: string;
+  description: string;
+  difficulty: "easy" | "medium" | "hard";
+  source: string;
+  date: string;
+};
 
 const FeedPage = () => {
   const [activeFilter, setActiveFilter] = useState("all");
@@ -49,6 +57,7 @@ const FeedPage = () => {
   const userId = user?.uid;
   const [contributionCount, setContributionCount] = useState<number>(0);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [pofd, setPofd] = useState<Pofd | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const getPosts = async () => {
@@ -72,7 +81,7 @@ const FeedPage = () => {
     } catch (error) {
       console.error(
         `❌ Error fetching contribution count for ${userId}:,
-        error`,
+        error`
       );
       setContributionCount(0); // fallback to 0 if API fails
     }
@@ -80,10 +89,17 @@ const FeedPage = () => {
   const handleDeletePost = (deletedId: string) => {
     console.log("Deleted post ID:", deletedId);
     setPosts(
-      (prev) => prev.filter((post) => post._id !== deletedId), // make sure it's 'id' not '_id'
+      (prev) => prev.filter((post) => post._id !== deletedId) // make sure it's 'id' not '_id'
     );
   };
-
+  // const fetchPofd = async () => {
+  //   try {
+  //     const res = await axiosInstance.get("/pofd/today");
+  //     setPofd(res.data?.data || null);
+  //   } catch (err) {
+  //     console.error("Error fetching PoFD:", err);
+  //   }
+  // };
   const filters = [
     { id: "all", label: "All Posts", count: posts.length },
     {
@@ -110,6 +126,7 @@ const FeedPage = () => {
 
   useEffect(() => {
     getPosts(); // initial fetch
+    // fetchPofd();
     if (userId) {
       getContributionCount(userId);
     }
@@ -214,8 +231,30 @@ const FeedPage = () => {
                   </p>
                 </div>
                 <Link href="/create-post">
-                  <Button className="text-sm">+ Create Post</Button>
+                  <Button className="text-sm mb-2">+ Create Post</Button>
                 </Link>
+                {/* {pofd && (
+                  <div className="bg-yellow-50 dark:bg-green-900/20 border border-green-500 dark:border-yellow-700 p-4 rounded-lg mb-6">
+                    <h3 className="text-lg font-bold text-green-800 dark:text-green-400">
+                      📌 Problem of the Day ({pofd.date})
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      <span className="font-medium">Title:</span> {pofd.title}
+                    </p>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      <span className="font-medium">Difficulty:</span>{" "}
+                      {pofd.difficulty}
+                    </p>
+                    <p className="text-sm text-foreground mb-2">
+                      <span className="font-medium">Description:</span>{" "}
+                      {pofd.description}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      <span className="font-medium">Source:</span> {pofd.source}
+                    </p>
+                  </div>
+                )} */}
+                <PofdComponent/>
 
                 {isLoading ? (
                   <p className="text-muted-foreground py-10 text-center">
