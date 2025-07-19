@@ -247,7 +247,7 @@ export default function SoloStudy({ userId }: { userId: string }) {
           <div className="absolute top-4 right-4 flex gap-4 z-20">
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     onClick={toggleMusicOptions}
@@ -278,7 +278,7 @@ export default function SoloStudy({ userId }: { userId: string }) {
             )}
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     onClick={toggleBackgroundOptions}
@@ -308,7 +308,7 @@ export default function SoloStudy({ userId }: { userId: string }) {
             )}
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     onClick={() => setIsDialogOpen(true)}
@@ -323,7 +323,7 @@ export default function SoloStudy({ userId }: { userId: string }) {
 
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     onClick={() => {
@@ -370,7 +370,7 @@ export default function SoloStudy({ userId }: { userId: string }) {
 
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     onClick={() => {

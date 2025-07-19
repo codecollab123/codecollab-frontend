@@ -81,7 +81,7 @@ const FeedPage = () => {
     } catch (error) {
       console.error(
         `❌ Error fetching contribution count for ${userId}:,
-        error`
+        error`,
       );
       setContributionCount(0); // fallback to 0 if API fails
     }
@@ -89,7 +89,7 @@ const FeedPage = () => {
   const handleDeletePost = (deletedId: string) => {
     console.log("Deleted post ID:", deletedId);
     setPosts(
-      (prev) => prev.filter((post) => post._id !== deletedId) // make sure it's 'id' not '_id'
+      (prev) => prev.filter((post) => post._id !== deletedId), // make sure it's 'id' not '_id'
     );
   };
   // const fetchPofd = async () => {
@@ -254,7 +254,7 @@ const FeedPage = () => {
                     </p>
                   </div>
                 )} */}
-                <PofdComponent/>
+                <PofdComponent />
 
                 {isLoading ? (
                   <p className="text-muted-foreground py-10 text-center">
