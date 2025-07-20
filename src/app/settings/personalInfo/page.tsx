@@ -201,7 +201,6 @@ const PersonalInfoPage = () => {
 
           {/* Tabs */}
           <Tabs defaultValue="submissions" className="w-full space-y-5">
-            {/* <TabsList className="grid w-full grid-cols-4 lg:w-[600px]"> */}
             <div className="max-w-6xl mx-auto px-4">
               <TabsList className="grid w-full grid-cols-4 max-w-4xl mx-auto">
                 <TabsTrigger value="submissions">Recent Posts</TabsTrigger>
