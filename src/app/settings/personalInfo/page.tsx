@@ -10,52 +10,50 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SubmissionCalendar from "@/components/SubmissionCalender";
 import SidebarMenu from "@/components/menu/sidebarmenu";
+import Header from "@/components/header/header";
+import CreatePost from "@/components/CreatePost/page";
 import {
   menuItemsBottom,
   menuItemsTop,
 } from "@/config/menuItems/dashboardMenuItem";
-import Header from "@/components/header/header";
 import { RootState } from "@/lib/store";
 import { axiosInstance } from "@/lib/axiosinstance";
-import CreatePost from "@/components/CreatePost/page";
 
 const PersonalInfoPage = () => {
-  const userStats = {
-    totalSolved: 847,
-    ranking: 12847,
-    contestRating: 1847,
-    streakDays: 45,
-  };
-
-  type RecentPost = {
-    _id: string;
-    problem: string;
-    difficulty: "Easy" | "Medium" | "Hard";
-    status: string;
-    time: string;
-    language: string;
-  };
-
   const user = useSelector((state: RootState) => state.user);
-  const [recentSubmissions, setRecentSubmissions] = useState<RecentPost[]>([]);
-  const [contributionCount, setContributionCount] = useState(0);
   const userId = user?.uid;
 
   const [userProfile, setUserProfile] = useState<{
     firstName: string;
     lastName: string;
   } | null>(null);
+  const [recentSubmissions, setRecentSubmissions] = useState<any[]>([]);
+  const [contributionCount, setContributionCount] = useState(0);
+
+  const userStats = {
+    streakDays: 45,
+  };
 
   useEffect(() => {
-    const fetchUserPosts = async () => {
+    const fetchUserProfile = async () => {
+      if (!userId) return;
       try {
-        if (!userId) return;
+        const res = await axiosInstance.get(`/user/${userId}/profile-info`);
+        setUserProfile({
+          firstName: res.data.firstName,
+          lastName: res.data.lastName,
+        });
+      } catch (err) {
+        console.error("Profile fetch error:", err);
+      }
+    };
 
+    const fetchPosts = async () => {
+      if (!userId) return;
+      try {
         const res = await axiosInstance.get(`/post/${userId}/userpost`);
-
-        const userPosts = Array.isArray(res.data?.data) ? res.data.data : [];
-
-        const mappedPosts = userPosts.map((post: any) => ({
+        const posts = res.data?.data || [];
+        const mapped = posts.map((post: any) => ({
           _id: post._id,
           content: post.content,
           postType: post.postType,
@@ -74,48 +72,26 @@ const PersonalInfoPage = () => {
           },
           contributionCount: post.contributionCount,
         }));
-
-        setRecentSubmissions(mappedPosts);
-      } catch (error) {
-        console.error("Error fetching user posts:", error);
+        setRecentSubmissions(mapped);
+      } catch (err) {
+        console.error("Post fetch error:", err);
       }
     };
 
-    fetchUserPosts();
-  }, [userId]);
-
-  useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchContributionCount = async () => {
+      if (!userId) return;
       try {
-        if (!userId) return;
-
-        const res = await axiosInstance.get(`/user/${userId}/profile-info`);
-        setUserProfile({
-          firstName: res.data.firstName,
-          lastName: res.data.lastName,
-        });
-      } catch (error) {
-        console.error("Error fetching user profile info:", error);
+        const res = await axiosInstance.get(`/post/${userId}/contributions`);
+        setContributionCount(res.data?.data?.contributionCount ?? 0);
+      } catch (err) {
+        console.error("Contribution count fetch error:", err);
       }
     };
 
     fetchUserProfile();
-  }, [userId]);
-  useEffect(() => {
-    const fetchContributionCount = async () => {
-      try {
-        if (!userId) return;
-        const res = await axiosInstance.get(`/post/${userId}/contributions`);
-        const count = res.data?.data?.contributionCount ?? 0;
-        setContributionCount(count);
-      } catch (err) {
-        console.error("Error fetching contribution count:", err);
-        setContributionCount(0);
-      }
-    };
-
+    fetchPosts();
     fetchContributionCount();
-  }, [userId]);
+  }, [userId, user?.avatar, user?.name, user?.level]);
 
   const handleDeletePost = (deletedId: string) => {
     setRecentSubmissions((prev) =>
@@ -137,13 +113,16 @@ const PersonalInfoPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="flex h-screen overflow-hidden bg-background text-foreground">
+      {/* Sidebar */}
       <SidebarMenu
         menuItemsTop={menuItemsTop}
         menuItemsBottom={menuItemsBottom}
         active="Chats"
       />
-      <div className="flex flex-col flex-1 min-h-screen w-full">
+
+      {/* Main Content */}
+      <div className="flex flex-col flex-1 overflow-auto w-full">
         <Header
           menuItemsTop={menuItemsTop}
           menuItemsBottom={menuItemsBottom}
@@ -151,10 +130,10 @@ const PersonalInfoPage = () => {
           breadcrumbItems={[{ label: "community feeds", link: "/feeds" }]}
         />
 
-        <div className="max-w-6xl mx-auto px-4 space-y-8">
-          {/* Header Section */}
+        <main className="max-w-7xl mx-auto px-4 py-6 space-y-8 w-full">
+          {/* Profile Card */}
           <Card className="w-full border-0 shadow-lg">
-            <CardContent className="w-full p-6">
+            <CardContent className="p-6">
               <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
                 <Avatar className="w-24 h-24 border-4 border-orange-200">
                   <AvatarImage src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=150&h=150&fit=crop&crop=faces" />
@@ -165,12 +144,11 @@ const PersonalInfoPage = () => {
 
                 <div className="flex-1 space-y-4">
                   <div>
-                    <h1 className="text-3xl font-bold ">
-                      {user?.firstName && user?.lastName
-                        ? `${user.firstName} ${user.lastName}`
+                    <h1 className="text-3xl font-bold">
+                      {userProfile?.firstName && userProfile?.lastName
+                        ? `${userProfile.firstName} ${userProfile.lastName}`
                         : user?.displayName || "Guest"}
                     </h1>
-
                     <p className="text-gray-600 mt-1">
                       Software Engineer at Tech Corp
                     </p>
@@ -178,7 +156,6 @@ const PersonalInfoPage = () => {
                       Member since January 2022 • San Francisco, CA
                     </p>
                   </div>
-
                   <div className="flex flex-wrap gap-4 text-sm">
                     <div className="flex items-center gap-2 text-green-600">
                       <Zap className="w-4 h-4" />
@@ -190,54 +167,49 @@ const PersonalInfoPage = () => {
             </CardContent>
           </Card>
 
-          {/* Stats Overview */}
+          {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-orange-600">
-                    {contributionCount}
-                  </div>
-                  <div className="text-sm text-gray-600 mt-1">
-                    Contributions
-                  </div>
+            <Card className="shadow-md hover:shadow-lg">
+              <CardContent className="p-6 text-center">
+                <div className="text-3xl font-bold text-orange-600">
+                  {contributionCount}
                 </div>
+                <div className="text-sm text-gray-600 mt-1">Contributions</div>
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-yellow-600">
-                    {/* {userStats.mediumSolved} */}
-                  </div>
-                  <div className="text-sm text-gray-600 mt-1">Medium</div>
-                  {/* <Progress value={65} className="mt-3 h-2" /> */}
-                </div>
+            <Card className="shadow-md hover:shadow-lg">
+              <CardContent className="p-6 text-center">
+                <div className="text-3xl font-bold text-yellow-600">–</div>
+                <div className="text-sm text-gray-600 mt-1">Easy</div>
+              </CardContent>
+            </Card>
+            <Card className="shadow-md hover:shadow-lg">
+              <CardContent className="p-6 text-center">
+                <div className="text-3xl font-bold text-yellow-600">–</div>
+                <div className="text-sm text-gray-600 mt-1">Medium</div>
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-red-600">
-                    {/* {userStats.hardSolved} */}
-                  </div>
-                  <div className="text-sm text-gray-600 mt-1">Hard</div>
-                  {/* <Progress value={25} className="mt-3 h-2" /> */}
-                </div>
+            <Card className="shadow-md hover:shadow-lg">
+              <CardContent className="p-6 text-center">
+                <div className="text-3xl font-bold text-red-600">–</div>
+                <div className="text-sm text-gray-600 mt-1">Hard</div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Main Content Tabs */}
+          {/* Tabs */}
           <Tabs defaultValue="submissions" className="w-full space-y-5">
-            <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
-              <TabsTrigger value="submissions">Recent Posts</TabsTrigger>
-              <TabsTrigger value="badges">Badges</TabsTrigger>
-              <TabsTrigger value="calendar">Activity</TabsTrigger>
-              <TabsTrigger value="edit">Edit</TabsTrigger>
-            </TabsList>
+            {/* <TabsList className="grid w-full grid-cols-4 lg:w-[600px]"> */}
+            <div className="max-w-6xl mx-auto px-4">
+              <TabsList className="grid w-full grid-cols-4 max-w-4xl mx-auto">
+                <TabsTrigger value="submissions">Recent Posts</TabsTrigger>
+                <TabsTrigger value="badges">Badges</TabsTrigger>
+                <TabsTrigger value="calendar">Activity</TabsTrigger>
+                <TabsTrigger value="edit">Edit</TabsTrigger>
+              </TabsList>
+            </div>
 
             <TabsContent
               value="submissions"
@@ -245,29 +217,21 @@ const PersonalInfoPage = () => {
             >
               <div className="space-y-6 mt-6">
                 {recentSubmissions.length > 0 ? (
-                  recentSubmissions.map((post: any) => (
+                  recentSubmissions.map((post) => (
                     <CreatePost
                       key={post._id}
                       post={{
                         postId: post._id,
-                        author: {
-                          id:
-                            typeof post.author === "string"
-                              ? post.author
-                              : post.author?._id,
-                          name: post.author?.name || "Anonymous",
-                          avatar: post.author?.avatar || "/default-avatar.png",
-                          level: post.author?.level || "Beginner",
-                        },
+                        author: post.author,
                         content: post.content,
-                        type: post.postType ?? "question",
-                        tags: post.tags ?? [],
-                        likes: post.likes?.length ?? 0,
-                        comments: post.comments?.length ?? 0,
-                        shares: post.shares ?? 0,
-                        timestamp: post.createdAt ?? new Date().toISOString(),
+                        type: post.postType,
+                        tags: post.tags,
+                        likes: post.likes.length,
+                        comments: post.comments.length,
+                        shares: post.shares,
+                        timestamp: post.createdAt,
                         codeSnippet: post.codeSnippet,
-                        difficulty: post.difficultyLevel ?? "Easy",
+                        difficulty: post.difficultyLevel,
                         contributionCount: post.contributionCount,
                       }}
                       currentUserId={userId}
@@ -282,93 +246,78 @@ const PersonalInfoPage = () => {
               </div>
             </TabsContent>
 
-            <TabsContent
-              value="badges"
-              className="space-y-4 w-full min-h-[400px]"
-            >
-              <Card className="w-full border-0 shadow-lg">
+            <TabsContent value="badges" className="w-full min-h-[400px]">
+              <Card className="shadow-lg">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Award className="w-5 h-5 text-orange-600" />
                     Badges & Achievements
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="w-full">
-                  <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {badges.map((badge, index) => (
-                      <div
-                        key={index}
-                        className={`p-4 border rounded-lg ${
-                          badge.earned
-                            ? "border-orange-200 bg-orange-50"
-                            : "border-gray-200 bg-gray-50"
-                        }`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <div
-                            className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                              badge.earned ? "bg-orange-600" : "bg-gray-400"
-                            }`}
+                <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
+                  {badges.map((badge, index) => (
+                    <div
+                      key={index}
+                      className={`p-4 rounded-lg border ${
+                        badge.earned
+                          ? "bg-orange-50 border-orange-200"
+                          : "bg-gray-50 border-gray-200"
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div
+                          className={`w-8 h-8 flex items-center justify-center rounded-full ${
+                            badge.earned ? "bg-orange-600" : "bg-gray-400"
+                          }`}
+                        >
+                          <Award className="w-4 h-4 text-white" />
+                        </div>
+                        <div>
+                          <h3
+                            className={`font-medium ${badge.earned ? "text-orange-900" : "text-gray-600"}`}
                           >
-                            <Award className="w-4 h-4 text-white" />
-                          </div>
-                          <div className="flex-1">
-                            <h3
-                              className={`font-medium ${
-                                badge.earned
-                                  ? "text-orange-900"
-                                  : "text-gray-600"
-                              }`}
-                            >
-                              {badge.name}
-                            </h3>
-                            <p
-                              className={`text-sm mt-1 ${
-                                badge.earned
-                                  ? "text-orange-700"
-                                  : "text-gray-500"
-                              }`}
-                            >
-                              {badge.description}
-                            </p>
-                          </div>
+                            {badge.name}
+                          </h3>
+                          <p
+                            className={`text-sm mt-1 ${badge.earned ? "text-orange-700" : "text-gray-500"}`}
+                          >
+                            {badge.description}
+                          </p>
                         </div>
                       </div>
-                    ))}
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="calendar" className="w-full min-h-[400px]">
+              <Card className="shadow-lg overflow-hidden">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <CalendarDays className="w-5 h-5 text-orange-600" />
+                    Study Streak
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="overflow-x-auto">
+                  <div className="max-w-full overflow-x-auto">
+                    <div className="w-max mx-auto px-2">
+                      <SubmissionCalendar />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             </TabsContent>
 
-            <TabsContent
-              value="calendar"
-              className="space-y-4 w-full min-h-[400px]"
-            >
-              <Card className="w-full border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <CalendarDays className="w-5 h-5 text-orange-600" />
-                    Study Streak
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="w-full">
-                  <SubmissionCalendar />
-                </CardContent>
-              </Card>
-            </TabsContent>
-            <TabsContent
-              value="edit"
-              className="space-y-4 w-full min-h-[400px]"
-            >
+            <TabsContent value="edit" className="w-full min-h-[400px]">
               {user ? (
-                <Card className="w-full border-0 shadow-lg">
+                <Card className="shadow-lg">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <CalendarDays className="w-5 h-5 text-orange-600" />
                       Edit Profile
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="w-full">
+                  <CardContent>
                     <EditProfile />
                   </CardContent>
                 </Card>
@@ -377,7 +326,7 @@ const PersonalInfoPage = () => {
               )}
             </TabsContent>
           </Tabs>
-        </div>
+        </main>
       </div>
     </div>
   );
