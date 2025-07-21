@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+
 import { axiosInstance } from "@/lib/axiosinstance";
 
 type PofdData = {
@@ -20,7 +21,7 @@ export default function PofdComponent() {
   const [submitted, setSubmitted] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const getOptionKey = (option: string) => option.split(".")[0]; // A, B, C, D
-  
+
   useEffect(() => {
     const fetchPofd = async () => {
       try {
@@ -54,7 +55,7 @@ export default function PofdComponent() {
       <p className="font-semibold">Title:</p>
       <p className="mb-4">{data.title}</p>
 
-      <p className="font-semibold mb-1">Difficulty: { data.difficulty}</p>
+      <p className="font-semibold mb-1">Difficulty: {data.difficulty}</p>
 
       <div className="space-y-2">
         {data.options.map((option, idx) => (
@@ -93,11 +94,12 @@ export default function PofdComponent() {
         </div>
       )}
       {status && (
-  <p className={`mt-2 ${status === "correct" ? "text-green-600" : "text-red-600"}`}>
-    {status === "correct" ? "Correct!" : "Incorrect. Try again!"}
-  </p>
-)}
-
+        <p
+          className={`mt-2 ${status === "correct" ? "text-green-600" : "text-red-600"}`}
+        >
+          {status === "correct" ? "Correct!" : "Incorrect. Try again!"}
+        </p>
+      )}
 
       <p className="text-sm text-gray-500 mt-4">Source: {data.source}</p>
     </div>
