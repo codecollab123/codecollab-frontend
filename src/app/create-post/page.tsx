@@ -63,13 +63,13 @@ const CreatePostPage = () => {
     const payload = {
       title,
       content,
-      postType, 
+      postType,
       difficultyLevel: difficulty.toLowerCase(), // convert to 'easy' | 'medium' | 'hard'
       tags,
       image: "https://example.com/image.png",
       author: {
         id: user?.uid ?? "",
-        name:user.userName,
+        name: user.userName,
         avatar: user?.avatar ?? "/default-avatar.png",
         level: user?.level ?? "Beginner",
       },

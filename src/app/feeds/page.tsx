@@ -226,7 +226,7 @@ const FeedPage = () => {
                 <Link href="/create-post">
                   <Button className="text-sm mb-2">+ Create Post</Button>
                 </Link>
-            
+
                 <PofdComponent />
 
                 {isLoading ? (
