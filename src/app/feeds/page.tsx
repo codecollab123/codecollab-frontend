@@ -80,7 +80,9 @@ const FeedPage = () => {
       setContributionCount(count); // <-- SETTING THE STATE
     } catch (error) {
       console.error(
+
         `Error fetching contribution count for ${userId}:,
+
         error`,
       );
       setContributionCount(0); // fallback to 0 if API fails
