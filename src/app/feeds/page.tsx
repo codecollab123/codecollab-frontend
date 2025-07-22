@@ -80,7 +80,6 @@ const FeedPage = () => {
       setContributionCount(count); // <-- SETTING THE STATE
     } catch (error) {
       console.error(
-
         `Error fetching contribution count for ${userId}:,
 
         error`,
