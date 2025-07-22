@@ -68,7 +68,7 @@ const PersonalInfoPage = () => {
           difficultyLevel: post.difficultyLevel,
           author: {
             id: post.author,
-            name: user?.name || "You",
+            name: user?.userName || "You",
             avatar: user?.avatar || "/default-avatar.png",
             level: user?.level || "Beginner",
           },
@@ -255,7 +255,7 @@ const PersonalInfoPage = () => {
                             typeof post.author === "string"
                               ? post.author
                               : post.author?._id,
-                          name: post.author?.name || "Anonymous",
+                          name: post.author?.userName || "Anonymous",
                           avatar: post.author?.avatar || "/default-avatar.png",
                           level: post.author?.level || "Beginner",
                         },
