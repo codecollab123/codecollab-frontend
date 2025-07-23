@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { UserCredential } from "firebase/auth";
 import { useDispatch } from "react-redux";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";

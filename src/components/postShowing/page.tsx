@@ -22,7 +22,7 @@ import { axiosInstance } from "@/lib/axiosinstance";
 interface Post {
   postId: string;
   author: {
-    id?: string; // added this so we can match current user
+    id?: string;
     name?: string;
     avatar: string;
     level: string;
@@ -45,7 +45,7 @@ interface CreatePostProps {
   onDelete?: (postId: string) => void;
 }
 
-const CreatePost = ({ post, currentUserId, onDelete }: CreatePostProps) => {
+const PostShowing = ({ post, currentUserId, onDelete }: CreatePostProps) => {
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes);
   const [showComments, setShowComments] = useState(false);
@@ -128,13 +128,13 @@ const CreatePost = ({ post, currentUserId, onDelete }: CreatePostProps) => {
             </div>
             <div>
               {/* <span>{post.author?.userName || "Anonymous"}</span> */}
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-3">
                 <Badge variant="secondary" className="text-xs">
                   {post.author.level}
                 </Badge>
-                <span className="text-xs text-muted-foreground">
+                {/* <span className="text-xs text-muted-foreground">
                   {post.timestamp}
-                </span>
+                </span> */}
               </div>
             </div>
           </div>
@@ -160,6 +160,18 @@ const CreatePost = ({ post, currentUserId, onDelete }: CreatePostProps) => {
                 className="text-red-500 hover:text-red-700"
               >
                 <Trash2 className="w-4 h-4" />
+              </Button>
+            )}
+            {currentUserId === post.author?.id && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() =>
+                  router.push(`/create-post?edit=true&id=${post.postId}`)
+                }
+                className="text-green-500 hover:text-green-700"
+              >
+                Edit
               </Button>
             )}
           </div>
@@ -245,4 +257,4 @@ const CreatePost = ({ post, currentUserId, onDelete }: CreatePostProps) => {
   );
 };
 
-export default CreatePost;
+export default PostShowing;

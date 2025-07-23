@@ -8,7 +8,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { axiosInstance } from "@/lib/axiosinstance";
 import SubmissionCalendar from "@/components/SubmissionCalender";
-import CreatePost from "@/components/CreatePost/page";
+// import CreatePost from "@/components/postShowing/page";
+import PostShowing from "@/components/postShowing/page";
 import SidebarMenu from "@/components/menu/sidebarmenu";
 import {
   menuItemsBottom,
@@ -134,7 +135,7 @@ const UserProfilePage = () => {
             <h3 className="text-xl font-semibold text-white-800">Posts</h3>
             {userPosts.length > 0 ? (
               userPosts.map((post: any) => (
-                <CreatePost
+                <PostShowing
                   key={post._id}
                   post={{
                     postId: post._id,
