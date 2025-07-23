@@ -17,7 +17,8 @@ import {
 import Header from "@/components/header/header";
 import { RootState } from "@/lib/store";
 import { axiosInstance } from "@/lib/axiosinstance";
-import CreatePost from "@/components/CreatePost/page";
+// import CreatePost from "@/components/postShowing/page";
+import PostShowing from "@/components/postShowing/page";
 
 const PersonalInfoPage = () => {
   const userStats = {
@@ -246,7 +247,7 @@ const PersonalInfoPage = () => {
               <div className="space-y-6 mt-6">
                 {recentSubmissions.length > 0 ? (
                   recentSubmissions.map((post: any) => (
-                    <CreatePost
+                    <PostShowing
                       key={post._id}
                       post={{
                         postId: post._id,

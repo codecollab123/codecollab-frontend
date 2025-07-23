@@ -6,7 +6,8 @@ import Link from "next/link";
 import { useSelector } from "react-redux";
 
 import { axiosInstance } from "@/lib/axiosinstance";
-import CreatePost from "@/components/CreatePost/page";
+// import CreatePost from "@/components/postShowing/page";
+import PostShowing from "@/components/postShowing/page";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -57,7 +58,7 @@ const FeedPage = () => {
   const userId = user?.uid;
   const [contributionCount, setContributionCount] = useState<number>(0);
   const [posts, setPosts] = useState<Post[]>([]);
-  const [pofd, setPofd] = useState<Pofd | null>(null);
+  // const [pofd, setPofd] = useState<Pofd | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const getPosts = async () => {
@@ -241,7 +242,7 @@ const FeedPage = () => {
                 ) : (
                   <div className="space-y-6 mt-6">
                     {filteredPosts.map((post) => (
-                      <CreatePost
+                      <PostShowing
                         key={post._id}
                         post={{
                           postId: post._id,
