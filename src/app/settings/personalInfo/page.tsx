@@ -145,7 +145,7 @@ const PersonalInfoPage = () => {
         active="Chats"
       />
       {/* <div className="flex flex-col flex-1 min-h-screen w-full"> */}
-          <div className="w-full ml-[30px] px-4 flex-1 md:px-8 lg:px-10 py-4 space-y-8">
+      <div className="w-full ml-[30px] px-4 flex-1 md:px-8 lg:px-10 py-4 space-y-8">
         <Header
           menuItemsTop={menuItemsTop}
           menuItemsBottom={menuItemsBottom}
@@ -247,7 +247,7 @@ const PersonalInfoPage = () => {
           {/* Main Content Tabs */}
           <Tabs defaultValue="submissions" className="w-full space-y-5">
             {/* <TabsList className="grid w-full grid-cols-4 lg:w-[600px]"> */}
-             <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="submissions">Recent Posts</TabsTrigger>
               <TabsTrigger value="badges">Badges</TabsTrigger>
               <TabsTrigger value="calendar">Activity</TabsTrigger>
