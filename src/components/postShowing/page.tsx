@@ -10,6 +10,7 @@ import {
   HelpCircle,
   Trash2,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,7 @@ import { axiosInstance } from "@/lib/axiosinstance";
 interface Post {
   postId: string;
   author: {
-    id?: string; // added this so we can match current user
+    id?: string;
     name?: string;
     avatar: string;
     level: string;
@@ -44,11 +45,11 @@ interface CreatePostProps {
   onDelete?: (postId: string) => void;
 }
 
-const CreatePost = ({ post, currentUserId, onDelete }: CreatePostProps) => {
+const PostShowing = ({ post, currentUserId, onDelete }: CreatePostProps) => {
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes);
   const [showComments, setShowComments] = useState(false);
-
+  const router = useRouter();
   const handleLike = () => {
     setLiked(!liked);
     setLikesCount(liked ? likesCount - 1 : likesCount + 1);
@@ -68,7 +69,7 @@ const CreatePost = ({ post, currentUserId, onDelete }: CreatePostProps) => {
     try {
       await axiosInstance.delete(`/post/${post.postId}`);
       toast({ description: "Post deleted successfully" });
-      console.log("Post Author:", post.author);
+      console.log("Post Author name:", post.author.name);
       console.log("Current User:", currentUserId);
 
       if (onDelete) onDelete(post.postId);
@@ -78,6 +79,11 @@ const CreatePost = ({ post, currentUserId, onDelete }: CreatePostProps) => {
         variant: "destructive",
       });
     }
+  };
+  const handleProfileClick = () => {
+    const id = typeof post.author === "string" ? post.author : post.author?.id;
+
+    router.push(`/userProfile/${id}`);
   };
 
   const getTypeColor = () => {
@@ -109,21 +115,26 @@ const CreatePost = ({ post, currentUserId, onDelete }: CreatePostProps) => {
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-3">
-            <Avatar>
-              <AvatarImage src={post.author.avatar} />
-              <AvatarFallback>
-                {/* {post.author.name.slice(0, 2).toUpperCase()} */}
-              </AvatarFallback>
-            </Avatar>
+            <div
+              onClick={handleProfileClick}
+              className="cursor-pointer flex gap-2"
+            >
+              <Avatar>
+                <AvatarImage
+                  src={post.author?.avatar || "/default-avatar.png"}
+                />
+              </Avatar>
+              <span>{post.author?.name || "Anonymous"}</span>
+            </div>
             <div>
-              <h3 className="font-semibold">{post.author.name}</h3>
-              <div className="flex items-center space-x-2">
+              {/* <span>{post.author?.userName || "Anonymous"}</span> */}
+              <div className="flex items-center space-x-3">
                 <Badge variant="secondary" className="text-xs">
                   {post.author.level}
                 </Badge>
-                <span className="text-xs text-muted-foreground">
+                {/* <span className="text-xs text-muted-foreground">
                   {post.timestamp}
-                </span>
+                </span> */}
               </div>
             </div>
           </div>
@@ -140,18 +151,7 @@ const CreatePost = ({ post, currentUserId, onDelete }: CreatePostProps) => {
                 {post.difficulty}
               </Badge>
             )}
-            {/* {
-  (post.author?.id === currentUserId ) && ( // 👈 FOR TESTING ONLY
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={handleDelete}
-      className="text-red-500 hover:text-red-700"
-    >
-      <Trash2 className="w-4 h-4" />
-    </Button>
-  )
-} */}
+
             {currentUserId === post.author?.id && (
               <Button
                 variant="ghost"
@@ -160,6 +160,18 @@ const CreatePost = ({ post, currentUserId, onDelete }: CreatePostProps) => {
                 className="text-red-500 hover:text-red-700"
               >
                 <Trash2 className="w-4 h-4" />
+              </Button>
+            )}
+            {currentUserId === post.author?.id && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() =>
+                  router.push(`/create-post?edit=true&id=${post.postId}`)
+                }
+                className="text-green-500 hover:text-green-700"
+              >
+                Edit
               </Button>
             )}
           </div>
@@ -245,4 +257,4 @@ const CreatePost = ({ post, currentUserId, onDelete }: CreatePostProps) => {
   );
 };
 
-export default CreatePost;
+export default PostShowing;

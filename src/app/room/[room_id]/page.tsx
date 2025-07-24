@@ -63,7 +63,7 @@ export default function CodingRoom() {
     string | undefined
   >(undefined); // Queue for code changes
   const [outputText, setOutputText] = useState("");
-  const [inputText, setInputText] = useState("");
+  // const [inputText, setInputText] = useState("");
   const languages = ["c", "cpp", "java", "python", "javascript", "go", "rust"];
   const socketRef = useRef<Socket | null>(null);
   const [users, setUsers] = useState<{ socketId: string; userName: string }[]>(

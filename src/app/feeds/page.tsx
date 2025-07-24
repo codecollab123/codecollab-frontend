@@ -6,7 +6,8 @@ import Link from "next/link";
 import { useSelector } from "react-redux";
 
 import { axiosInstance } from "@/lib/axiosinstance";
-import CreatePost from "@/components/CreatePost/page";
+// import CreatePost from "@/components/postShowing/page";
+import PostShowing from "@/components/postShowing/page";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +27,7 @@ type Post = {
   content: string;
   author: {
     id: string;
-    // name: string;
+    name: string;
     avatar: string;
     level: string;
   };
@@ -57,7 +58,7 @@ const FeedPage = () => {
   const userId = user?.uid;
   const [contributionCount, setContributionCount] = useState<number>(0);
   const [posts, setPosts] = useState<Post[]>([]);
-  const [pofd, setPofd] = useState<Pofd | null>(null);
+  // const [pofd, setPofd] = useState<Pofd | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const getPosts = async () => {
@@ -80,7 +81,8 @@ const FeedPage = () => {
       setContributionCount(count); // <-- SETTING THE STATE
     } catch (error) {
       console.error(
-        `❌ Error fetching contribution count for ${userId}:,
+        `Error fetching contribution count for ${userId}:,
+
         error`,
       );
       setContributionCount(0); // fallback to 0 if API fails
@@ -92,14 +94,7 @@ const FeedPage = () => {
       (prev) => prev.filter((post) => post._id !== deletedId), // make sure it's 'id' not '_id'
     );
   };
-  // const fetchPofd = async () => {
-  //   try {
-  //     const res = await axiosInstance.get("/pofd/today");
-  //     setPofd(res.data?.data || null);
-  //   } catch (err) {
-  //     console.error("Error fetching PoFD:", err);
-  //   }
-  // };
+
   const filters = [
     { id: "all", label: "All Posts", count: posts.length },
     {
@@ -233,27 +228,7 @@ const FeedPage = () => {
                 <Link href="/create-post">
                   <Button className="text-sm mb-2">+ Create Post</Button>
                 </Link>
-                {/* {pofd && (
-                  <div className="bg-yellow-50 dark:bg-green-900/20 border border-green-500 dark:border-yellow-700 p-4 rounded-lg mb-6">
-                    <h3 className="text-lg font-bold text-green-800 dark:text-green-400">
-                      📌 Problem of the Day ({pofd.date})
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-2">
-                      <span className="font-medium">Title:</span> {pofd.title}
-                    </p>
-                    <p className="text-sm text-muted-foreground mb-2">
-                      <span className="font-medium">Difficulty:</span>{" "}
-                      {pofd.difficulty}
-                    </p>
-                    <p className="text-sm text-foreground mb-2">
-                      <span className="font-medium">Description:</span>{" "}
-                      {pofd.description}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      <span className="font-medium">Source:</span> {pofd.source}
-                    </p>
-                  </div>
-                )} */}
+
                 <PofdComponent />
 
                 {isLoading ? (
@@ -267,7 +242,7 @@ const FeedPage = () => {
                 ) : (
                   <div className="space-y-6 mt-6">
                     {filteredPosts.map((post) => (
-                      <CreatePost
+                      <PostShowing
                         key={post._id}
                         post={{
                           postId: post._id,
@@ -276,8 +251,7 @@ const FeedPage = () => {
                               typeof post.author === "string"
                                 ? post.author
                                 : post.author?.id,
-                            // name: post.author?.name || "Anonymous",
-                            name: "Anonymous",
+                            name: post.author?.name || "Anonymous",
 
                             avatar:
                               post.author?.avatar || "/default-avatar.png",

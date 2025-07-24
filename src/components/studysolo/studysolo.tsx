@@ -1,5 +1,4 @@
 "use client";
-
 import {
   ImagePlay,
   MessageSquareQuote,
@@ -72,7 +71,7 @@ export default function SoloStudy({ userId }: { userId: string }) {
   const [youtubeLink, setYoutubeLink] = useState("");
 
   const [quote, setQuote] = useState("");
-  const [savedQuotes, setSavedQuotes] = useState<string[]>([]);
+  // const [savedQuotes, setSavedQuotes] = useState<string[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isQuoteDialogOpen, setIsQuoteDialogOpen] = useState(false);
   const backgroundOptions = [
