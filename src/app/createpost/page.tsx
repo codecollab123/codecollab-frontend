@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { Code, Trophy, HelpCircle, Plus, X } from "lucide-react";
 
@@ -31,6 +31,9 @@ const CreatePostPage = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
+  const searchParams = useSearchParams();
+  const isEdit = searchParams.get("edit") === "true";
+  const postId = searchParams.get("id");
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [difficulty, setDifficulty] = useState<"Easy" | "Medium" | "Hard">(
@@ -61,38 +64,71 @@ const CreatePostPage = () => {
     }
 
     const payload = {
+      postId, // required for PUT
       title,
       content,
-      postType, // must be one of 3 allowed enums
-      difficultyLevel: difficulty.toLowerCase(), // convert to 'easy' | 'medium' | 'hard'
+      postType,
+      difficultyLevel: difficulty.toLowerCase(), // easy, medium, hard
       tags,
       image: "https://example.com/image.png",
       author: {
         id: user?.uid ?? "",
-        // name:user.name,
+        name: user.name,
         avatar: user?.avatar ?? "/default-avatar.png",
         level: user?.level ?? "Beginner",
       },
-
       likes: [],
       comments: [],
     };
 
     try {
-      const res = await axiosInstance.post(`/post/${userId}`, payload);
-
-      if (res.status === 200 || res.status === 201) {
-        toast({ description: "Post created successfully! 🎉" });
-        router.push("/feeds"); // ya homepage, wherever you want
+      if (isEdit && postId) {
+        const res = await axiosInstance.put(`/post/${postId}`, payload);
+        if (res.status === 200) {
+          toast({ description: "Post updated successfully!" });
+          router.push("/feeds");
+        }
+      } else {
+        const res = await axiosInstance.post(`/post/${userId}`, payload);
+        if (res.status === 200 || res.status === 201) {
+          toast({ description: "Post created successfully! 🎉" });
+          router.push("/feeds");
+        }
       }
     } catch (error) {
       console.error(error);
       toast({
-        description: "Something went wrong while creating the post",
+        description: "Something went wrong",
         variant: "destructive",
       });
     }
   };
+
+  useEffect(() => {
+    if (isEdit && postId) {
+      axiosInstance
+        .get(`/post/${postId}`)
+        .then((res) => {
+          const post = res.data.data;
+
+          setTitle(post.title);
+          setContent(post.content);
+          setPostType(post.postType);
+          setDifficulty(
+            post.difficultyLevel.charAt(0).toUpperCase() +
+              post.difficultyLevel.slice(1),
+          );
+          setTags(post.tags);
+        })
+        .catch((err) => {
+          console.error("Failed to load post for editing", err);
+          toast({
+            description: "Failed to load post for editing.",
+            variant: "destructive",
+          });
+        });
+    }
+  }, [isEdit, postId]);
 
   const postTypes = [
     { id: "question", label: "Question", icon: HelpCircle },
@@ -117,7 +153,10 @@ const CreatePostPage = () => {
         <div className="pt-16 pb-8">
           <div className="max-w-4xl mx-auto px-4">
             <div className="mb-8">
-              <h1 className="text-3xl font-bold">Create New Post</h1>
+              <h1 className="text-3xl font-bold">
+                {isEdit ? "Edit Post" : "Create New Post"}
+              </h1>
+
               <p className="text-muted-foreground">
                 Share your knowledge, ask questions, or create challenges for
                 the community

@@ -6,7 +6,8 @@ import Link from "next/link";
 import { useSelector } from "react-redux";
 
 import { axiosInstance } from "@/lib/axiosinstance";
-import CreatePost from "@/components/CreatePost/page";
+// import CreatePost from "@/components/postShowing/page";
+import PostShowing from "@/components/postShowing/page";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +19,7 @@ import {
 } from "@/config/menuItems/dashboardMenuItem";
 import { RootState } from "@/lib/store";
 import { getFeedSocket } from "@/service/liveFeedSocket";
+import PofdComponent from "@/components/pofd";
 
 type Post = {
   _id: string;
@@ -25,7 +27,7 @@ type Post = {
   content: string;
   author: {
     id: string;
-    // name: string;
+    name: string;
     avatar: string;
     level: string;
   };
@@ -38,6 +40,13 @@ type Post = {
   difficulty: "Easy" | "Medium" | "Hard";
   contributionCount?: number;
 };
+type Pofd = {
+  title: string;
+  description: string;
+  difficulty: "easy" | "medium" | "hard";
+  source: string;
+  date: string;
+};
 
 const FeedPage = () => {
   const [activeFilter, setActiveFilter] = useState("all");
@@ -49,6 +58,7 @@ const FeedPage = () => {
   const userId = user?.uid;
   const [contributionCount, setContributionCount] = useState<number>(0);
   const [posts, setPosts] = useState<Post[]>([]);
+  // const [pofd, setPofd] = useState<Pofd | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const getPosts = async () => {
@@ -71,7 +81,8 @@ const FeedPage = () => {
       setContributionCount(count); // <-- SETTING THE STATE
     } catch (error) {
       console.error(
-        `❌ Error fetching contribution count for ${userId}:,
+        `Error fetching contribution count for ${userId}:,
+
         error`,
       );
       setContributionCount(0); // fallback to 0 if API fails
@@ -110,6 +121,7 @@ const FeedPage = () => {
 
   useEffect(() => {
     getPosts(); // initial fetch
+    // fetchPofd();
     if (userId) {
       getContributionCount(userId);
     }
@@ -214,8 +226,10 @@ const FeedPage = () => {
                   </p>
                 </div>
                 <Link href="/create-post">
-                  <Button className="text-sm">+ Create Post</Button>
+                  <Button className="text-sm mb-2">+ Create Post</Button>
                 </Link>
+
+                <PofdComponent />
 
                 {isLoading ? (
                   <p className="text-muted-foreground py-10 text-center">
@@ -228,7 +242,7 @@ const FeedPage = () => {
                 ) : (
                   <div className="space-y-6 mt-6">
                     {filteredPosts.map((post) => (
-                      <CreatePost
+                      <PostShowing
                         key={post._id}
                         post={{
                           postId: post._id,
@@ -237,8 +251,7 @@ const FeedPage = () => {
                               typeof post.author === "string"
                                 ? post.author
                                 : post.author?.id,
-                            // name: post.author?.name || "Anonymous",
-                            name: "Anonymous",
+                            name: post.author?.name || "Anonymous",
 
                             avatar:
                               post.author?.avatar || "/default-avatar.png",

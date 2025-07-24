@@ -1,5 +1,4 @@
 "use client";
-
 import {
   ImagePlay,
   MessageSquareQuote,
@@ -33,13 +32,14 @@ import { TooltipContent } from "@/components/ui/tooltip";
 import { axiosInstance } from "@/lib/axiosinstance";
 
 interface studysoloProps {
-  _id: string;
+  _id?: string; // ✅ make optional
   userId: string;
   background: string;
   music: string;
   quote: string;
   todolist: string;
   video: string;
+  duration: number;
 }
 
 export default function SoloStudy({ userId }: { userId: string }) {
@@ -55,6 +55,7 @@ export default function SoloStudy({ userId }: { userId: string }) {
     quote: "",
     todolist: "",
     video: "",
+    duration: 0, // ✅ required field
   });
   const [isRunning, setIsRunning] = useState(false);
   const [tasks, setTasks] = useState<string[]>([]);
@@ -72,7 +73,7 @@ export default function SoloStudy({ userId }: { userId: string }) {
   const [youtubeLink, setYoutubeLink] = useState("");
 
   const [quote, setQuote] = useState("");
-  const [savedQuotes, setSavedQuotes] = useState<string[]>([]);
+  // const [savedQuotes, setSavedQuotes] = useState<string[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isQuoteDialogOpen, setIsQuoteDialogOpen] = useState(false);
   const backgroundOptions = [
@@ -99,7 +100,6 @@ export default function SoloStudy({ userId }: { userId: string }) {
       if (!user_id) return;
 
       try {
-        // Step 1: Try to fetch
         const res = await axiosInstance.get(`/studysolo/getbyuserid`, {
           params: { userId: user_id },
         });
@@ -107,7 +107,7 @@ export default function SoloStudy({ userId }: { userId: string }) {
         const data: studysoloProps[] = res.data.data;
 
         if (!data || data.length === 0) {
-          // Step 2: Create if not found
+          // Create default if not found
           const defaultData: studysoloProps = {
             userId: user_id,
             background: "/studyroom5.mp4",
@@ -115,13 +115,14 @@ export default function SoloStudy({ userId }: { userId: string }) {
             quote: "",
             todolist: "",
             video: "",
-            _id: "", // will be replaced
+            duration: 0, // ✅ required field
           };
 
           const createRes = await axiosInstance.post(
             `/studysolo/${user_id}`,
             defaultData,
           );
+
           const createdData: studysoloProps = createRes.data.data;
 
           setUser(createdData);
@@ -131,6 +132,8 @@ export default function SoloStudy({ userId }: { userId: string }) {
           setTasks(createdData.todolist ? createdData.todolist.split(",") : []);
         } else {
           const record = data[0];
+          if (!record) return;
+
           setUser(record);
           setSelectedBackground(record.background || "/studyroom5.mp4");
           setSelectedMusic(record.music || "/relaxmusic.mp3");
@@ -247,7 +250,7 @@ export default function SoloStudy({ userId }: { userId: string }) {
           <div className="absolute top-4 right-4 flex gap-4 z-20">
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     onClick={toggleMusicOptions}
@@ -278,7 +281,7 @@ export default function SoloStudy({ userId }: { userId: string }) {
             )}
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     onClick={toggleBackgroundOptions}
@@ -308,7 +311,7 @@ export default function SoloStudy({ userId }: { userId: string }) {
             )}
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     onClick={() => setIsDialogOpen(true)}
@@ -323,7 +326,7 @@ export default function SoloStudy({ userId }: { userId: string }) {
 
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     onClick={() => {
@@ -370,7 +373,7 @@ export default function SoloStudy({ userId }: { userId: string }) {
 
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     onClick={() => {

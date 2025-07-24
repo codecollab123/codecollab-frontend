@@ -17,7 +17,8 @@ import {
 import Header from "@/components/header/header";
 import { RootState } from "@/lib/store";
 import { axiosInstance } from "@/lib/axiosinstance";
-import CreatePost from "@/components/CreatePost/page";
+// import CreatePost from "@/components/postShowing/page";
+import PostShowing from "@/components/postShowing/page";
 
 const PersonalInfoPage = () => {
   const userStats = {
@@ -68,7 +69,7 @@ const PersonalInfoPage = () => {
           difficultyLevel: post.difficultyLevel,
           author: {
             id: post.author,
-            name: user?.name || "You",
+            name: user?.userName || "You",
             avatar: user?.avatar || "/default-avatar.png",
             level: user?.level || "Beginner",
           },
@@ -259,7 +260,7 @@ const PersonalInfoPage = () => {
               <div className="space-y-6 mt-6">
                 {recentSubmissions.length > 0 ? (
                   recentSubmissions.map((post: any) => (
-                    <CreatePost
+                    <PostShowing
                       key={post._id}
                       post={{
                         postId: post._id,
@@ -268,7 +269,7 @@ const PersonalInfoPage = () => {
                             typeof post.author === "string"
                               ? post.author
                               : post.author?._id,
-                          name: post.author?.name || "Anonymous",
+                          name: post.author?.userName || "Anonymous",
                           avatar: post.author?.avatar || "/default-avatar.png",
                           level: post.author?.level || "Beginner",
                         },

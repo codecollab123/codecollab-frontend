@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Trophy, Flame, Target, Star, Award, Zap } from "lucide-react";
+import { Trophy, Flame, Target, Award, Zap } from "lucide-react";
 type Achievement = {
   id: number;
   name: string;
