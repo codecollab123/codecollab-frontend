@@ -144,7 +144,8 @@ const PersonalInfoPage = () => {
         menuItemsBottom={menuItemsBottom}
         active="Chats"
       />
-      <div className="flex flex-col flex-1 min-h-screen w-full">
+      {/* <div className="flex flex-col flex-1 min-h-screen w-full"> */}
+          <div className="w-full ml-[30px] px-4 flex-1 md:px-8 lg:px-10 py-4 space-y-8">
         <Header
           menuItemsTop={menuItemsTop}
           menuItemsBottom={menuItemsBottom}
@@ -210,6 +211,18 @@ const PersonalInfoPage = () => {
               <CardContent className="p-6">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-yellow-600">
+                    {/* {userStats.easySolved} */}
+                  </div>
+                  <div className="text-sm text-gray-600 mt-1">Easy</div>
+                  {/* <Progress value={65} className="mt-3 h-2" /> */}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-yellow-600">
                     {/* {userStats.mediumSolved} */}
                   </div>
                   <div className="text-sm text-gray-600 mt-1">Medium</div>
@@ -233,7 +246,8 @@ const PersonalInfoPage = () => {
 
           {/* Main Content Tabs */}
           <Tabs defaultValue="submissions" className="w-full space-y-5">
-            <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
+            {/* <TabsList className="grid w-full grid-cols-4 lg:w-[600px]"> */}
+             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="submissions">Recent Posts</TabsTrigger>
               <TabsTrigger value="badges">Badges</TabsTrigger>
               <TabsTrigger value="calendar">Activity</TabsTrigger>
@@ -295,7 +309,7 @@ const PersonalInfoPage = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="w-full">
-                  <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4">
                     {badges.map((badge, index) => (
                       <div
                         key={index}
@@ -352,8 +366,15 @@ const PersonalInfoPage = () => {
                     Study Streak
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="w-full">
+                {/* <CardContent className="w-full">
                   <SubmissionCalendar />
+                </CardContent> */}
+                <CardContent className="overflow-x-auto">
+                  <div className="max-w-full overflow-x-auto">
+                    <div className="w-max mx-auto px-2">
+                      <SubmissionCalendar />
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
