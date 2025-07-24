@@ -32,14 +32,16 @@ import { TooltipContent } from "@/components/ui/tooltip";
 import { axiosInstance } from "@/lib/axiosinstance";
 
 interface studysoloProps {
-  _id: string;
+  _id?: string; // ✅ make optional
   userId: string;
   background: string;
   music: string;
   quote: string;
   todolist: string;
   video: string;
+  duration: number;
 }
+
 
 export default function SoloStudy({ userId }: { userId: string }) {
   // 💡 STEP 2: params ऑब्जेक्ट से user_id को निकालें
@@ -54,6 +56,7 @@ export default function SoloStudy({ userId }: { userId: string }) {
     quote: "",
     todolist: "",
     video: "",
+    duration: 0, // ✅ required field
   });
   const [isRunning, setIsRunning] = useState(false);
   const [tasks, setTasks] = useState<string[]>([]);
@@ -94,55 +97,58 @@ export default function SoloStudy({ userId }: { userId: string }) {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!user_id) return;
+  const fetchData = async () => {
+    if (!user_id) return;
 
-      try {
-        // Step 1: Try to fetch
-        const res = await axiosInstance.get(`/studysolo/getbyuserid`, {
-          params: { userId: user_id },
-        });
+    try {
+      const res = await axiosInstance.get(`/studysolo/getbyuserid`, {
+        params: { userId: user_id },
+      });
 
-        const data: studysoloProps[] = res.data.data;
+      const data: studysoloProps[] = res.data.data;
 
-        if (!data || data.length === 0) {
-          // Step 2: Create if not found
-          const defaultData: studysoloProps = {
-            userId: user_id,
-            background: "/studyroom5.mp4",
-            music: "/relaxmusic.mp3",
-            quote: "",
-            todolist: "",
-            video: "",
-            _id: "", // will be replaced
-          };
+      if (!data || data.length === 0) {
+        // Create default if not found
+        const defaultData: studysoloProps = {
+          userId: user_id,
+          background: "/studyroom5.mp4",
+          music: "/relaxmusic.mp3",
+          quote: "",
+          todolist: "",
+          video: "",
+          duration: 0, // ✅ required field
+        };
 
-          const createRes = await axiosInstance.post(
-            `/studysolo/${user_id}`,
-            defaultData,
-          );
-          const createdData: studysoloProps = createRes.data.data;
+        const createRes = await axiosInstance.post(
+          `/studysolo/${user_id}`,
+          defaultData
+        );
 
-          setUser(createdData);
-          setSelectedBackground(createdData.background);
-          setSelectedMusic(createdData.music);
-          setQuote(createdData.quote);
-          setTasks(createdData.todolist ? createdData.todolist.split(",") : []);
-        } else {
-          const record = data[0];
-          setUser(record);
-          setSelectedBackground(record.background || "/studyroom5.mp4");
-          setSelectedMusic(record.music || "/relaxmusic.mp3");
-          setQuote(record.quote || "");
-          setTasks(record.todolist ? record.todolist.split(",") : []);
-        }
-      } catch (error) {
-        console.error("Error fetching or creating study solo:", error);
+        const createdData: studysoloProps = createRes.data.data;
+
+        setUser(createdData);
+        setSelectedBackground(createdData.background);
+        setSelectedMusic(createdData.music);
+        setQuote(createdData.quote);
+        setTasks(createdData.todolist ? createdData.todolist.split(",") : []);
+      } else {
+        const record = data[0];
+        if (!record) return;
+
+        setUser(record);
+        setSelectedBackground(record.background || "/studyroom5.mp4");
+        setSelectedMusic(record.music || "/relaxmusic.mp3");
+        setQuote(record.quote || "");
+        setTasks(record.todolist ? record.todolist.split(",") : []);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching or creating study solo:", error);
+    }
+  };
 
-    fetchData();
-  }, [user_id]);
+  fetchData();
+}, [user_id]);
+
 
   // ✅ Dependency ke andar `user_id` hi h jo prop se aa rha h
 
