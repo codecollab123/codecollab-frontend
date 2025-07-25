@@ -33,6 +33,10 @@ const profileFormSchema = z.object({
   linkedin: z.string().optional(),
 });
 
+// interface EditProfileProps {
+//   onProfileUpdate?: () => void;
+// }
+
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 export default function EditProfile() {
@@ -67,7 +71,7 @@ export default function EditProfile() {
 
       const updatedUser = res.data.data;
       form.reset(updatedUser);
-      dispatch(setUser(updatedUser)); // update redux with new profile
+      dispatch(setUser(updatedUser));
       toast({ title: "Profile updated successfully" });
     } catch (err) {
       console.error(err);

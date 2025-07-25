@@ -17,7 +17,6 @@ import {
 import Header from "@/components/header/header";
 import { RootState } from "@/lib/store";
 import { axiosInstance } from "@/lib/axiosinstance";
-// import CreatePost from "@/components/postShowing/page";
 import PostShowing from "@/components/postShowing/page";
 
 const PersonalInfoPage = () => {
@@ -167,8 +166,8 @@ const PersonalInfoPage = () => {
                 <div className="flex-1 space-y-4">
                   <div>
                     <h1 className="text-3xl font-bold ">
-                      {user?.firstName && user?.lastName
-                        ? `${user.firstName} ${user.lastName}`
+                      {userProfile?.firstName && userProfile?.lastName
+                        ? `${userProfile.firstName} ${userProfile.lastName}`
                         : user?.displayName || "Guest"}
                     </h1>
 
@@ -374,7 +373,7 @@ const PersonalInfoPage = () => {
                   </CardContent>
                 </Card>
               ) : (
-                <div className="text-center py-10">Loading...</div>
+                <div className="text-center py-10">Loading....</div>
               )}
             </TabsContent>
           </Tabs>

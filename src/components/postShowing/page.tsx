@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Heart,
   MessageCircle,
@@ -10,11 +10,11 @@ import {
   HelpCircle,
   Trash2,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { axiosInstance } from "@/lib/axiosinstance";
@@ -48,6 +48,7 @@ interface CreatePostProps {
 const PostShowing = ({ post, currentUserId, onDelete }: CreatePostProps) => {
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes);
+  const [userProfile, setUserProfile] = useState<any>(null);
   const [showComments, setShowComments] = useState(false);
   const router = useRouter();
   const handleLike = () => {
@@ -64,6 +65,23 @@ const PostShowing = ({ post, currentUserId, onDelete }: CreatePostProps) => {
       description: "Link copied to clipboard!",
     });
   };
+
+  useEffect(() => {
+    const fetchAuthorProfile = async () => {
+      try {
+        const res = await axiosInstance.get(
+          `/user/${post.author.id}/profile-info`,
+        );
+        setUserProfile(res.data);
+      } catch (err) {
+        console.error("Error fetching author profile:", err);
+      }
+    };
+
+    if (post?.author?.id) {
+      fetchAuthorProfile();
+    }
+  }, [post?.author?.id]);
 
   const handleDelete = async () => {
     try {
@@ -124,10 +142,13 @@ const PostShowing = ({ post, currentUserId, onDelete }: CreatePostProps) => {
                   src={post.author?.avatar || "/default-avatar.png"}
                 />
               </Avatar>
-              <span>{post.author?.name || "Anonymous"}</span>
+              <span className="font-semibold text-sm">
+                {userProfile
+                  ? `${userProfile.firstName} ${userProfile.lastName}`
+                  : "Loading..."}
+              </span>
             </div>
             <div>
-              {/* <span>{post.author?.userName || "Anonymous"}</span> */}
               <div className="flex items-center space-x-3">
                 <Badge variant="secondary" className="text-xs">
                   {post.author.level}
@@ -167,7 +188,7 @@ const PostShowing = ({ post, currentUserId, onDelete }: CreatePostProps) => {
                 variant="ghost"
                 size="icon"
                 onClick={() =>
-                  router.push(`/create-post?edit=true&id=${post.postId}`)
+                  router.push(`/createpost/?edit=true&id=${post.postId}`)
                 }
                 className="text-green-500 hover:text-green-700"
               >

@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useSelector } from "react-redux";
 
 import { axiosInstance } from "@/lib/axiosinstance";
-// import CreatePost from "@/components/postShowing/page";
 import PostShowing from "@/components/postShowing/page";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,13 +39,6 @@ type Post = {
   difficulty: "Easy" | "Medium" | "Hard";
   contributionCount?: number;
 };
-type Pofd = {
-  title: string;
-  description: string;
-  difficulty: "easy" | "medium" | "hard";
-  source: string;
-  date: string;
-};
 
 const FeedPage = () => {
   const [activeFilter, setActiveFilter] = useState("all");
@@ -66,6 +58,7 @@ const FeedPage = () => {
     try {
       const response = await axiosInstance.get("/post/all");
       const postData = response.data?.data;
+      console.log("Fetched Posts:", response.data.data);
       setPosts(postData || []);
     } catch (error: any) {
       console.error("Error fetching posts:", error.message);
@@ -225,7 +218,7 @@ const FeedPage = () => {
                     Discover, learn, and share DSA knowledge with the community
                   </p>
                 </div>
-                <Link href="/create-post">
+                <Link href="/createpost">
                   <Button className="text-sm mb-2">+ Create Post</Button>
                 </Link>
 
@@ -247,16 +240,12 @@ const FeedPage = () => {
                         post={{
                           postId: post._id,
                           author: {
-                            id:
-                              typeof post.author === "string"
-                                ? post.author
-                                : post.author?.id,
-                            name: post.author?.name || "Anonymous",
-
-                            avatar:
-                              post.author?.avatar || "/default-avatar.png",
-                            level: post.author?.level || "Beginner",
+                            id: post.author?.id,
+                            name: post.author?.name,
+                            avatar: post.author?.avatar,
+                            level: post.author?.level,
                           },
+
                           content: post.content,
                           type: post.postType ?? "question", // 👈 use post.postType instead of post.type
                           tags: post.tags ?? [],

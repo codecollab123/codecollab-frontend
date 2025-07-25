@@ -12,7 +12,7 @@ import {
   Link as Linking,
   ChevronDown,
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Editor } from "@monaco-editor/react";
 import { editor } from "monaco-editor";
 import { useParams } from "next/navigation";
@@ -22,7 +22,7 @@ import { useSelector } from "react-redux";
 import Header from "@/components/header/header";
 import SidebarMenu from "@/components/menu/sidebarmenu";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import {
   menuItemsBottom,

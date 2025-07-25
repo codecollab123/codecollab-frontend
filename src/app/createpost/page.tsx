@@ -23,14 +23,13 @@ import Header from "@/components/header/header";
 const CreatePostPage = () => {
   const router = useRouter();
   const user = useSelector((state: RootState) => state.user);
-  const userId = user.uid;
+  // const userId = user.uid;
 
   const [postType, setPostType] = useState<
     "question" | "solution" | "challenge"
   >("question");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-
   const searchParams = useSearchParams();
   const isEdit = searchParams.get("edit") === "true";
   const postId = searchParams.get("id");
@@ -64,7 +63,7 @@ const CreatePostPage = () => {
     }
 
     const payload = {
-      postId, // required for PUT
+      postId,
       title,
       content,
       postType,
@@ -89,7 +88,7 @@ const CreatePostPage = () => {
           router.push("/feeds");
         }
       } else {
-        const res = await axiosInstance.post(`/post/${userId}`, payload);
+        const res = await axiosInstance.post(`/post/${postId}`, payload);
         if (res.status === 200 || res.status === 201) {
           toast({ description: "Post created successfully! 🎉" });
           router.push("/feeds");
