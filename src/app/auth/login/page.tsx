@@ -55,7 +55,13 @@ export default function LoginPage() {
       const { user, claims } = await getUserData(cred);
 
       dispatch(setUser({ ...user, type: claims.type }));
-
+      dispatch(
+        setUser({
+          ...user,
+          type: claims.type || "user",
+          phoneVerify: false,
+        }),
+      );
       /* ✅ direct redirect — hook ki जरूरत नहीं */
       router.replace("/dashboard");
 
@@ -120,8 +126,13 @@ export default function LoginPage() {
         const user = await axiosInstance.get(
           `/public/user_email?user=${firebaseUser.email}`,
         );
-
-        dispatch(setUser({ ...firebaseUser, type: claims.type }));
+        dispatch(
+          setUser({
+            ...firebaseUser,
+            type: claims.type || "user",
+            phoneVerify: false,
+          }),
+        );
         router.replace(`/dashboard`);
         toast({
           title: "Login Successful",
@@ -149,7 +160,6 @@ export default function LoginPage() {
               phoneVerify: false,
             }),
           );
-
           router.replace(`/dashboard`);
           toast({
             title: "Account Created",
@@ -206,19 +216,17 @@ export default function LoginPage() {
                   Or continue with
                 </span>
               </div>
-              {/* Test Login Information */}
-<div className="mt-2 p-3 rounded-md border bg-muted/40 text-center">
-  <p className="text-sm font-medium text-gray-700">
-    For testing purpose:
-  </p>
-  <p className="text-xs text-gray-600 mt-1">
-    Email: <span className="font-medium">abc@123.gmail.com</span>
-  </p>
-  <p className="text-xs text-gray-600">
-    Password: <span className="font-medium">testabc</span>
-  </p>
-</div>
-
+              <div className="mt-2 p-3 rounded-md border bg-muted/40 text-center">
+                <p className="text-sm font-medium text-gray-700">
+                  For testing purpose:
+                </p>
+                <p className="text-xs text-gray-600 mt-1">
+                  Email: <span className="font-medium">abc@123.gmail.com</span>
+                </p>
+                <p className="text-xs text-gray-600">
+                  Password: <span className="font-medium">testabc</span>
+                </p>
+              </div>
               <div className="grid gap-6">
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
