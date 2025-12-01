@@ -60,7 +60,7 @@ export default function LoginPage() {
           ...user,
           type: claims.type || "user",
           phoneVerify: false,
-        })
+        }),
       );
       /* ✅ direct redirect — hook ki जरूरत नहीं */
       router.replace("/dashboard");
@@ -85,7 +85,7 @@ export default function LoginPage() {
 
   const generateUniqueUsername = async (
     firstName: string,
-    lastName: string
+    lastName: string,
   ): Promise<string> => {
     const baseUsername =
       `${firstName.toLowerCase()}${lastName.toLowerCase()}`.replace(/\s+/g, ""); // Remove spaces
@@ -124,14 +124,14 @@ export default function LoginPage() {
       // Check if user exists in our database
       try {
         const user = await axiosInstance.get(
-          `/public/user_email?user=${firebaseUser.email}`
+          `/public/user_email?user=${firebaseUser.email}`,
         );
         dispatch(
           setUser({
             ...firebaseUser,
             type: claims.type || "user",
             phoneVerify: false,
-          })
+          }),
         );
         router.replace(`/dashboard`);
         toast({
@@ -158,7 +158,7 @@ export default function LoginPage() {
               ...firebaseUser,
               type: claims.type || "user",
               phoneVerify: false,
-            })
+            }),
           );
           router.replace(`/dashboard`);
           toast({
@@ -211,11 +211,13 @@ export default function LoginPage() {
                 </svg>
                 Login with Google
               </Button>
+
               <div className="relative text-center text-sm">
-                <span className="relative z-10  px-2 text-muted-foreground">
+                <span className="relative z-10 px-2 text-muted-foreground">
                   Or continue with
                 </span>
               </div>
+
               <div className="mt-2 p-3 rounded-md border bg-muted/40 text-center">
                 <p className="text-sm font-medium text-gray-700">
                   For testing purpose:
@@ -227,6 +229,7 @@ export default function LoginPage() {
                   Password: <span className="font-medium">testabc</span>
                 </p>
               </div>
+
               <div className="grid gap-6">
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
