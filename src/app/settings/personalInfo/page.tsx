@@ -20,6 +20,7 @@ import { axiosInstance } from "@/lib/axiosinstance";
 // import CreatePost from "@/components/postShowing/page";
 import PostShowing from "@/components/postShowing/page";
 
+
 const PersonalInfoPage = () => {
   const userStats = {
     totalSolved: 847,
@@ -37,16 +38,67 @@ const PersonalInfoPage = () => {
     language: string;
   };
 
+  interface StreakDay {
+  date: string;
+  blocks: number;
+}
+
+
   const user = useSelector((state: RootState) => state.user);
   const [recentSubmissions, setRecentSubmissions] = useState<RecentPost[]>([]);
   const [contributionCount, setContributionCount] = useState(0);
   const userId = user?.uid;
+const [streakData, setStreakData] = useState<StreakDay[]>([]);
+const [streakCount, setStreakCount] = useState(0);
 
   const [userProfile, setUserProfile] = useState<{
     firstName: string;
     lastName: string;
   } | null>(null);
 
+  function getConsecutiveStreak(data:any) {
+  let streak = 0;
+  let prevDate: Date | null = null;
+
+  const sorted = [...data].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  for (const day of sorted) {
+    if (day.blocks === 0) break;
+
+    const currDate = new Date(day.date);
+
+    if (!prevDate) {
+      streak++;
+    } else {
+      const diff = (prevDate.getTime() - currDate.getTime()) / (1000 * 60 * 60 * 24);
+      if (diff === 1) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+
+    prevDate = currDate;
+  }
+
+  return streak;
+}
+
+  useEffect(() => {
+  const fetchStreakData = async () => {
+    try {
+      const res = await axiosInstance.get(`/studysolo/streak/${userId}`);
+      const data = res.data.data;
+
+      setStreakData(data);
+      setStreakCount(getConsecutiveStreak(data));
+    } catch (err) {
+      console.error("Error fetching streak data", err);
+    }
+  };
+
+  fetchStreakData();
+}, [userId]);
   useEffect(() => {
     const fetchUserPosts = async () => {
       try {
@@ -341,22 +393,24 @@ const PersonalInfoPage = () => {
               </Card>
             </TabsContent>
 
-            <TabsContent
-              value="calendar"
-              className="space-y-4 w-full min-h-[400px]"
-            >
-              <Card className="w-full border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <CalendarDays className="w-5 h-5 text-orange-600" />
-                    Study Streak
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="w-full">
-                  <SubmissionCalendar />
-                </CardContent>
-              </Card>
-            </TabsContent>
+            
+<TabsContent value="calendar" className="space-y-4 w-full min-h-[400px]">
+  <div className="mb-4">
+    <h2 className="text-lg font-semibold">🔥 Streak: {streakCount} day(s)</h2>
+  </div>
+
+  <div className="grid grid-cols-7 gap-1">
+    {streakData.map((day) => (
+      <div
+        key={day.date}
+        title={`${day.date} - ${day.blocks} block(s)`}
+        className={`w-4 h-4 rounded-sm ${
+          day.blocks > 0 ? "bg-green-500" : "bg-gray-300"
+        }`}
+      />
+    ))}
+  </div>
+</TabsContent>
             <TabsContent
               value="edit"
               className="space-y-4 w-full min-h-[400px]"
