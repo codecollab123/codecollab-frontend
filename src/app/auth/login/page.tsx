@@ -60,7 +60,7 @@ export default function LoginPage() {
           ...user,
           type: claims.type || "user",
           phoneVerify: false,
-        }),
+        })
       );
       /* ✅ direct redirect — hook ki जरूरत नहीं */
       router.replace("/dashboard");
@@ -85,7 +85,7 @@ export default function LoginPage() {
 
   const generateUniqueUsername = async (
     firstName: string,
-    lastName: string,
+    lastName: string
   ): Promise<string> => {
     const baseUsername =
       `${firstName.toLowerCase()}${lastName.toLowerCase()}`.replace(/\s+/g, ""); // Remove spaces
@@ -124,14 +124,14 @@ export default function LoginPage() {
       // Check if user exists in our database
       try {
         const user = await axiosInstance.get(
-          `/public/user_email?user=${firebaseUser.email}`,
+          `/public/user_email?user=${firebaseUser.email}`
         );
         dispatch(
           setUser({
             ...firebaseUser,
             type: claims.type || "user",
             phoneVerify: false,
-          }),
+          })
         );
         router.replace(`/dashboard`);
         toast({
@@ -158,7 +158,7 @@ export default function LoginPage() {
               ...firebaseUser,
               type: claims.type || "user",
               phoneVerify: false,
-            }),
+            })
           );
           router.replace(`/dashboard`);
           toast({
