@@ -298,17 +298,23 @@ export default function CodingRoom() {
   };
 
   // Run code
-  const runCode = () => {
-    // This is a placeholder for actual code execution
-    // In a real implementation, you would send the code to a backend service
-    setOutputText(
-      `Running ${selectedLanguage} code...\n\n// Execution results would appear here`,
-    );
+  const runCode = async () => {
+    if (!editorRef.current) return;
 
-    toast({
-      title: "Code Execution",
-      description: `Running ${selectedLanguage} code...`,
-    });
+    const code = editorRef.current.getValue();
+
+    setOutputText("⏳ Running code...");
+
+    try {
+      const res = await axiosInstance.post("/code/run", {
+        code,
+        language: selectedLanguage,
+      });
+
+      setOutputText(res.data.result.output);
+    } catch (err) {
+      setOutputText("❌ Failed to execute code");
+    }
   };
 
   // Add this helper function to determine who initiates the connection
