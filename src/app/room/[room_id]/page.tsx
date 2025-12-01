@@ -299,23 +299,23 @@ export default function CodingRoom() {
 
   // Run code
   const runCode = async () => {
-  if (!editorRef.current) return;
+    if (!editorRef.current) return;
 
-  const code = editorRef.current.getValue();
+    const code = editorRef.current.getValue();
 
-  setOutputText("⏳ Running code...");
+    setOutputText("⏳ Running code...");
 
-  try {
-    const res = await axiosInstance.post("/code/run", {
-      code,
-      language: selectedLanguage,
-    });
+    try {
+      const res = await axiosInstance.post("/code/run", {
+        code,
+        language: selectedLanguage,
+      });
 
-    setOutputText(res.data.result.output);
-  } catch (err) {
-    setOutputText("❌ Failed to execute code");
-  }
-};
+      setOutputText(res.data.result.output);
+    } catch (err) {
+      setOutputText("❌ Failed to execute code");
+    }
+  };
 
   // Add this helper function to determine who initiates the connection
   const shouldInitiateConnection = (remoteSocketId: string): boolean => {
