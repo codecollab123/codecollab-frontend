@@ -217,7 +217,7 @@ export default function LoginPage() {
                   Or continue with
                 </span>
               </div>
-{/* 
+              {/* 
               <div className="mt-2 p-3 rounded-md border bg-muted/40 text-center">
                 <p className="text-sm font-medium text-gray-700">
                   For testing purpose:
@@ -226,8 +226,8 @@ export default function LoginPage() {
                   Email: <span className="font-medium">abc@123.gmail.com</span>
                 </p>
                 <p className="text-xs text-gray-600"> */}
-                  {/* Password//: <span className="font-medium">testabc</span> */}
-                {/* </p> */}
+              {/* Password//: <span className="font-medium">testabc</span> */}
+              {/* </p> */}
               {/* </div> */}
 
               <div className="grid gap-6">
