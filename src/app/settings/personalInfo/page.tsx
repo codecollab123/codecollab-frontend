@@ -251,8 +251,9 @@ const PersonalInfoPage = () => {
                       <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-2">
                         <span className="inline-flex items-center gap-1 rounded-full border border-border/70 bg-muted/60 px-3 py-1">
                           <Zap className="w-3 h-3 text-primary" />
-                          <span>{streakCount || userStats.streakDays}-day
-                            coding streak
+                          <span>
+                            {streakCount || userStats.streakDays}-day coding
+                            streak
                           </span>
                         </span>
                         <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-muted/60 px-3 py-1">
