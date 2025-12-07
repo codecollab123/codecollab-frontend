@@ -229,6 +229,13 @@ export default function LoginPage() {
               {/* Password//: <span className="font-medium">testabc</span> */}
               {/* </p> */}
               {/* </div> */}
+                 <div className="relative text-center text-sm">
+                <span className="relative px-2 text-muted-foreground">
+                 <div>Use: dummy@gmail.com
+                 </div>
+                 <div>Pass: test123pass</div>
+                </span>
+              </div>
 
               <div className="grid gap-6">
                 <div className="grid gap-2">

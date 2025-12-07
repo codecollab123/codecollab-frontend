@@ -259,22 +259,7 @@ export default function Dashboard() {
               <p className="text-gray-400 text-sm">Profile Views: 12</p>
               <p className="text-gray-400 text-sm">Last Refresh: Today</p>
             </Card>
-
-            {/* Leaderboard */}
-            <Card className="bg-[#161616] border border-white/10 p-6 rounded-2xl">
-              <div className="flex items-center space-x-3 mb-3">
-                <Trophy className="text-orange-500" />
-                <h3 className="text-lg font-semibold">Leaderboard</h3>
-              </div>
-
-              <p className="text-orange-400 text-xl font-bold">#644</p>
-
-              <div className="mt-3 text-sm text-gray-400">
-                <p>643 — Aryan S — 783.65</p>
-                <p>644 — You — 783.60</p>
-                <p>645 — Shivangi M — 783.46</p>
-              </div>
-            </Card>
+      
           </div>
         </div>
       </div>
