@@ -38,6 +38,7 @@ export default function LoginPage() {
 
   const handleLogin = async (): Promise<void> => {
     setIsLoading(true);
+
     try {
       const res = await axiosInstance.get(`/public/user_email?user=${email}`);
       // const phoneVerify = res.data?.phoneVerify;
@@ -60,9 +61,14 @@ export default function LoginPage() {
           ...user,
           type: claims.type || "user",
           phoneVerify: false,
-        }),
+        })
       );
-      /* ✅ direct redirect — hook ki जरूरत नहीं */
+
+      const token = await cred.user.getIdToken();
+
+      localStorage.setItem("userId", cred.user.uid);
+      localStorage.setItem("token", token);
+
       router.replace("/dashboard");
 
       toast({
@@ -85,7 +91,7 @@ export default function LoginPage() {
 
   const generateUniqueUsername = async (
     firstName: string,
-    lastName: string,
+    lastName: string
   ): Promise<string> => {
     const baseUsername =
       `${firstName.toLowerCase()}${lastName.toLowerCase()}`.replace(/\s+/g, ""); // Remove spaces
@@ -124,15 +130,18 @@ export default function LoginPage() {
       // Check if user exists in our database
       try {
         const user = await axiosInstance.get(
-          `/public/user_email?user=${firebaseUser.email}`,
+          `/public/user_email?user=${firebaseUser.email}`
         );
         dispatch(
           setUser({
             ...firebaseUser,
             type: claims.type || "user",
             phoneVerify: false,
-          }),
+          })
         );
+        const token = await userCredential.user.getIdToken();
+        localStorage.setItem("userId", userCredential.user.uid);
+        localStorage.setItem("token", token);
         router.replace(`/dashboard`);
         toast({
           title: "Login Successful",
@@ -158,8 +167,9 @@ export default function LoginPage() {
               ...firebaseUser,
               type: claims.type || "user",
               phoneVerify: false,
-            }),
+            })
           );
+
           router.replace(`/dashboard`);
           toast({
             title: "Account Created",
@@ -229,11 +239,10 @@ export default function LoginPage() {
               {/* Password//: <span className="font-medium">testabc</span> */}
               {/* </p> */}
               {/* </div> */}
-                 <div className="relative text-center text-sm">
+              <div className="relative text-center text-sm">
                 <span className="relative px-2 text-muted-foreground">
-                 <div>Use: dummy@gmail.com
-                 </div>
-                 <div>Pass: test123pass</div>
+                  <div>Use: dummy@gmail.com</div>
+                  <div>Pass: test123pass</div>
                 </span>
               </div>
 
