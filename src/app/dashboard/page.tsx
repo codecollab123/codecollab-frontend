@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
 import { axiosInstance } from "@/lib/axiosinstance";
 import SidebarMenu from "@/components/menu/sidebarmenu";
 import Header from "@/components/header/header";
@@ -20,7 +22,6 @@ import {
 } from "@/config/menuItems/dashboardMenuItem";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 import DashboardCalendar from "@/components/calender";
 
 const formatTimeAgo = (dateString: string) => {
@@ -53,7 +54,7 @@ const format24HourTime = (dateString: string) => {
 export default function Dashboard() {
   const [recentActivities, setRecentActivities] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const router=useRouter();
+  const router = useRouter();
   useEffect(() => {
     const userId = localStorage.getItem("userId");
     console.log("USER ID FROM STORAGE:", userId);
@@ -66,7 +67,7 @@ export default function Dashboard() {
     const fetchActivity = async () => {
       try {
         setLoading(true);
-      
+
         const res = await axiosInstance.get(`/activity/${userId}/recent`);
 
         console.log("✅ ACTIVITY RESPONSE:", res.data);
@@ -163,9 +164,10 @@ export default function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <Card 
-             onClick={() => router.push("/createpost")} 
-             className="bg-[#161616] border border-white/10 rounded-2xl shadow-xl">
+            <Card
+              onClick={() => router.push("/createpost")}
+              className="bg-[#161616] border border-white/10 rounded-2xl shadow-xl"
+            >
               <CardContent className="p-6 flex items-center space-x-4">
                 <Plus className="w-12 h-12 " />
                 <div>
@@ -184,9 +186,10 @@ export default function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <Card 
-            onClick={() => router.push("/feeds")} 
-            className="bg-[#161616] border border-white/10 rounded-2xl shadow-xl">
+            <Card
+              onClick={() => router.push("/feeds")}
+              className="bg-[#161616] border border-white/10 rounded-2xl shadow-xl"
+            >
               <CardContent className="p-6 flex items-center space-x-4">
                 <Plus className="w-12 h-12 " />
                 <div>
@@ -205,9 +208,10 @@ export default function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Card 
-            onClick={() => router.push("/createroom")} 
-            className="bg-[#161616] border border-white/10 rounded-2xl shadow-xl">
+            <Card
+              onClick={() => router.push("/createroom")}
+              className="bg-[#161616] border border-white/10 rounded-2xl shadow-xl"
+            >
               <CardContent className="p-6 flex items-center space-x-4">
                 <Code className="w-12 h-12" />
                 <div>
@@ -226,9 +230,10 @@ export default function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <Card 
-            onClick={() => router.push("/notes")} 
-            className="bg-[#161616] border border-white/10 rounded-2xl shadow-xl">
+            <Card
+              onClick={() => router.push("/notes")}
+              className="bg-[#161616] border border-white/10 rounded-2xl shadow-xl"
+            >
               <CardContent className="p-6 flex items-center space-x-4">
                 <FileText className="w-12 h-12 " />
                 <div>
@@ -295,9 +300,7 @@ export default function Dashboard() {
 
           {/* Right Widgets */}
           <div className="space-y-6">
-            
-              <DashboardCalendar/>
-
+            <DashboardCalendar />
 
             {/* Portfolio */}
             <Card className="bg-[#161616] border border-white/10 p-6 rounded-2xl">

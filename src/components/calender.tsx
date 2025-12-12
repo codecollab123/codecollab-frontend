@@ -1,10 +1,12 @@
 "use client";
 
-import { Calendar as CalendarIcon } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { DayPicker } from "react-day-picker";
-import "react-day-picker/dist/style.css";
 import { useState } from "react";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { DayPicker } from "react-day-picker";
+
+import { Card } from "@/components/ui/card";
+
+import "react-day-picker/dist/style.css";
 
 export default function DashboardCalendar() {
   const [selected, setSelected] = useState<Date>();

@@ -81,6 +81,14 @@ export default function CodingRoom() {
   const [activeSpeakers, setActiveSpeakers] = useState<string[]>([]);
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const [showAI, setShowAI] = useState(false);
+  const [localVideoStream, setLocalVideoStream] = useState<MediaStream | null>(
+    null,
+  );
+  const localVideoRef = useRef<HTMLVideoElement | null>(null);
+  const remoteVideoElementsRef = useRef<Map<string, HTMLVideoElement>>(
+    new Map(),
+  );
+
   // Setup voice activity detection
   const setupVoiceActivityDetection = (stream: MediaStream) => {
     if (!stream) return;
@@ -148,6 +156,31 @@ export default function CodingRoom() {
         clearTimeout(speakingTimer);
       }
     };
+  };
+
+  const startVideoCall = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+
+      setLocalVideoStream(stream);
+      if (localVideoRef.current) localVideoRef.current.srcObject = stream;
+
+      // Add tracks to all peer connections WITHOUT forcing renegotiation
+      peerConnectionsRef.current.forEach((pc) => {
+        stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+      });
+
+      socketRef.current?.emit("audio_capabilities", {
+        room_id,
+        hasVideo: true,
+        hasAudio: audioStreamRef.current ? true : false,
+      });
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   // Handle microphone toggle
@@ -231,25 +264,38 @@ export default function CodingRoom() {
         peerConnection.addTrack(track, audioStreamRef.current!);
       });
     }
+    if (localVideoStream) {
+      localVideoStream.getTracks().forEach((track) => {
+        peerConnection.addTrack(track, localVideoStream);
+      });
+    }
 
     // Handle incoming remote stream
     peerConnection.ontrack = (event) => {
+      const remoteStream = event.streams[0];
+
+      // If video stream, create video element
+      if (!remoteVideoElementsRef.current.has(socketId)) {
+        const video = document.createElement("video");
+        video.autoplay = true;
+        video.playsInline = true;
+        video.className = "rounded-md w-full h-auto";
+        video.srcObject = remoteStream;
+
+        remoteVideoElementsRef.current.set(socketId, video);
+
+        // Append to DOM
+        const container = document.getElementById("video-grid");
+        if (container) container.appendChild(video);
+      }
+
+      // If audio stream only:
       if (!audioElementsRef.current.has(socketId)) {
         const audioEl = new Audio();
         audioEl.autoplay = true;
         audioEl.muted = !isListening;
-        audioEl.srcObject = event.streams[0];
+        audioEl.srcObject = remoteStream;
         audioElementsRef.current.set(socketId, audioEl);
-
-        // Update active speakers
-        setActiveSpeakers((prev) => {
-          const userName =
-            users.find((u) => u.socketId === socketId)?.userName || "Unknown";
-          if (!prev.includes(userName)) {
-            return [...prev, userName];
-          }
-          return prev;
-        });
       }
     };
 
@@ -265,6 +311,12 @@ export default function CodingRoom() {
     };
 
     return peerConnection;
+  };
+
+  const toggleVideo = () => {
+    if (!localVideoStream) return;
+    const videoTrack = localVideoStream.getVideoTracks()[0];
+    videoTrack.enabled = !videoTrack.enabled;
   };
 
   // Send chat message
@@ -396,6 +448,7 @@ export default function CodingRoom() {
         userName: user?.displayName || "Guest",
         userId: user?.uid || "unknown",
         hasAudio: audioStreamRef.current !== null,
+        hasVideo: localVideoStream !== null,
       });
 
       // Listen for new user joining
@@ -428,20 +481,8 @@ export default function CodingRoom() {
       // Listen for audio capability announcement
       socketRef.current.on(
         "audio_capabilities",
-        ({ socketId, userName, hasAudio }) => {
-          if (hasAudio && audioStreamRef.current) {
-            // Create peer connection if remote user is audio capable and we are too
-            initiateWebRTCConnection(socketId);
-          }
-        },
-      );
-
-      // Listen for audio capability announcement
-      socketRef.current.on(
-        "audio_capabilities",
-        ({ socketId, userName, hasAudio }) => {
-          if (hasAudio && audioStreamRef.current) {
-            // Create peer connection if remote user is audio capable and we are too
+        ({ socketId, userName, hasAudio, hasVideo }) => {
+          if (hasAudio || hasVideo) {
             initiateWebRTCConnection(socketId);
           }
         },
@@ -555,13 +596,21 @@ export default function CodingRoom() {
         // Remove from active speakers
         setActiveSpeakers((prev) => prev.filter((name) => name !== userName));
 
-        // Clean up audio connections
+        // Clean up audio elements
         const audioEl = audioElementsRef.current.get(socketId);
         if (audioEl) {
           audioEl.pause();
           audioEl.srcObject = null;
           audioElementsRef.current.delete(socketId);
         }
+
+        // 💥 PART 6 — REMOVE REMOTE VIDEO ELEMENT HERE
+        const video = remoteVideoElementsRef.current.get(socketId);
+        if (video) {
+          video.remove();
+          remoteVideoElementsRef.current.delete(socketId);
+        }
+        // ----------------------------------------------
 
         const peerConnection = peerConnectionsRef.current.get(socketId);
         if (peerConnection) {
@@ -732,7 +781,39 @@ export default function CodingRoom() {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
+
                   <div className="flex items-center gap-2">
+                    <div className="p-2">
+                      <h3 className="text-white mb-2">Video Call</h3>
+
+                      {/* Local Video */}
+                      <video
+                        ref={localVideoRef}
+                        autoPlay
+                        muted
+                        className="rounded-md w-full h-auto border border-gray-700"
+                      ></video>
+
+                      {/* Remote Videos */}
+                      <div
+                        id="video-grid"
+                        className="grid grid-cols-2 gap-2 mt-2"
+                      ></div>
+
+                      <button
+                        onClick={startVideoCall}
+                        className="w-full bg-green-600 hover:bg-green-700 mt-3 py-2 rounded-md"
+                      >
+                        Start Video Call
+                      </button>
+                      <button
+                        className="bg-blue-600 w-full text-white py-2 rounded-md mt-2"
+                        onClick={toggleVideo}
+                      >
+                        Toggle Camera
+                      </button>
+                    </div>
+
                     <Button
                       variant="ghost"
                       className="text-gray-400 h-9 w-9 p-0"
@@ -771,6 +852,7 @@ export default function CodingRoom() {
                     >
                       <UserPlus className="h-5 w-5" />
                     </Button>
+
                     <Button
                       variant="ghost"
                       className="text-gray-400 h-9 w-9 p-0"
