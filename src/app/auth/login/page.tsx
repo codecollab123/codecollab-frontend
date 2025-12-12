@@ -61,7 +61,7 @@ export default function LoginPage() {
           ...user,
           type: claims.type || "user",
           phoneVerify: false,
-        })
+        }),
       );
 
       const token = await cred.user.getIdToken();
@@ -91,7 +91,7 @@ export default function LoginPage() {
 
   const generateUniqueUsername = async (
     firstName: string,
-    lastName: string
+    lastName: string,
   ): Promise<string> => {
     const baseUsername =
       `${firstName.toLowerCase()}${lastName.toLowerCase()}`.replace(/\s+/g, ""); // Remove spaces
@@ -130,14 +130,14 @@ export default function LoginPage() {
       // Check if user exists in our database
       try {
         const user = await axiosInstance.get(
-          `/public/user_email?user=${firebaseUser.email}`
+          `/public/user_email?user=${firebaseUser.email}`,
         );
         dispatch(
           setUser({
             ...firebaseUser,
             type: claims.type || "user",
             phoneVerify: false,
-          })
+          }),
         );
         const token = await userCredential.user.getIdToken();
         localStorage.setItem("userId", userCredential.user.uid);
@@ -167,7 +167,7 @@ export default function LoginPage() {
               ...firebaseUser,
               type: claims.type || "user",
               phoneVerify: false,
-            })
+            }),
           );
 
           router.replace(`/dashboard`);
