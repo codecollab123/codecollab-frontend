@@ -83,26 +83,54 @@ export function ChatList({
                         <div className="flex items-center space-x-4">
                           <Avatar>
                             <AvatarImage
-                              src={`https://api.adorable.io/avatars/285/${conversation.participants[0]}.png`}
-                              alt={conversation.participants[0]}
+                              src={
+                                conversation.isCommunity
+                                  ? conversation.avatarUrl ||
+                                    `https://api.dicebear.com/7.x/identicon/svg?seed=${conversation.id}`
+                                  : `https://api.adorable.io/avatars/285/${conversation.participants && conversation.participants.length > 0 ? conversation.participants[0] : "user"}.png`
+                              }
+                              alt={conversation.name || "Chat avatar"}
                             />
                             <AvatarFallback>
-                              {conversation.participants[0]
-                                ?.charAt(0)
-                                .toUpperCase()}
+                              {conversation.isCommunity
+                                ? (conversation.name || "C")
+                                    .charAt(0)
+                                    .toUpperCase()
+                                : (conversation.participants &&
+                                  conversation.participants.length > 0
+                                    ? conversation.participants[0]
+                                    : "U"
+                                  )
+                                    .charAt(0)
+                                    .toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex flex-col">
                             <p className="font-medium">
-                              {conversation.name || "Unnamed Project"}
+                              {conversation.name || (conversation.isCommunity ? "Unnamed Community" : "Unnamed Project")}
                             </p>
-                            <p className="text-sm text-muted-foreground">
-                              {conversation.lastMessage?.content?.length > 50
-                                ? conversation.lastMessage.content.substring(
-                                    0,
-                                    50,
-                                  ) + "..."
-                                : conversation.lastMessage?.content}
+                            <p className="text-sm text-muted-foreground line-clamp-1">
+                              {conversation.lastMessage ? (
+                                <>
+                                  {conversation.isCommunity &&
+                                    conversation.lastMessage.senderId !== "system" &&
+                                    conversation.lastMessage.senderName && (
+                                      <span className="font-semibold text-xs text-primary mr-1">
+                                        {conversation.lastMessage.senderName}:
+                                      </span>
+                                    )}
+                                  <span>
+                                    {conversation.lastMessage.content?.length > 40
+                                      ? conversation.lastMessage.content.substring(
+                                          0,
+                                          40,
+                                        ) + "..."
+                                      : conversation.lastMessage.content}
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="italic text-xs">No messages yet</span>
+                              )}
                             </p>
                           </div>
                         </div>

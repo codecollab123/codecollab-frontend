@@ -15,6 +15,8 @@ import {
   writeBatch,
   updateDoc,
   runTransaction,
+  arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 
 import { db } from "../../config/firebaseConfig";
@@ -288,5 +290,59 @@ export const markAllNotificationsAsRead = async (userId: string) => {
   } catch (error) {
     console.error("Error marking notifications as read:", error);
     throw new Error("Failed to mark notifications as read");
+  }
+};
+
+/**
+ * Joins a community by adding the userId to its participants list.
+ */
+export const joinCommunity = async (communityId: string, userId: string): Promise<void> => {
+  try {
+    const docRef = doc(db, "conversations", communityId);
+    await updateDoc(docRef, {
+      participants: arrayUnion(userId)
+    });
+    console.log(`User ${userId} joined community ${communityId}`);
+  } catch (error) {
+    console.error("Error joining community:", error);
+    throw error;
+  }
+};
+
+/**
+ * Leaves a community by removing the userId from its participants list.
+ */
+export const leaveCommunity = async (communityId: string, userId: string): Promise<void> => {
+  try {
+    const docRef = doc(db, "conversations", communityId);
+    await updateDoc(docRef, {
+      participants: arrayRemove(userId)
+    });
+    console.log(`User ${userId} left community ${communityId}`);
+  } catch (error) {
+    console.error("Error leaving community:", error);
+    throw error;
+  }
+};
+
+/**
+ * Fetches all available community rooms from Firestore.
+ */
+export const getAllCommunities = async (): Promise<DocumentData[]> => {
+  try {
+    const collectionRef = collection(db, "conversations");
+    const q = query(collectionRef, where("isCommunity", "==", true));
+    const querySnapshot = await getDocs(q);
+    const communities: DocumentData[] = [];
+    querySnapshot.forEach((doc) => {
+      communities.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+    return communities;
+  } catch (error) {
+    console.error("Error fetching communities:", error);
+    throw error;
   }
 };

@@ -12,6 +12,7 @@ import {
   Italic,
   Underline,
   CheckCheck,
+  ArrowLeft,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { DocumentData } from "firebase/firestore";
@@ -95,12 +96,12 @@ interface CardsChatProps {
   conversation: Conversation;
   conversations?: any;
   setActiveConversation?: any;
+  onBack?: () => void;
 }
 
 export function CardsChat({
   conversation,
-  // conversations,
-  // setActiveConversation,
+  onBack,
 }: CardsChatProps) {
   const [primaryUser, setPrimaryUser] = useState<User>({
     userName: "",
@@ -139,14 +140,16 @@ export function CardsChat({
 
   useEffect(() => {
     const fetchPrimaryUser = async () => {
-      const primaryUid = conversation.participants.find(
+      if (conversation.isCommunity) return;
+
+      const primaryUid = conversation.participants?.find(
         (participant: string) => participant !== user.uid,
       );
 
       if (primaryUid) {
         try {
-          const response = await axiosInstance.get(`/freelancer/${primaryUid}`);
-          setPrimaryUser(response.data.data);
+          const response = await axiosInstance.get(`/user/${primaryUid}/profile-info`);
+          setPrimaryUser(response.data);
         } catch (error) {
           console.error("Error fetching primary user:", error);
           toast({
@@ -196,12 +199,16 @@ export function CardsChat({
     try {
       setIsSending(true);
       const datentime = new Date().toISOString();
+      const senderName = user.displayName || user.userName || "Anonymous";
+      const senderPic = user.photoURL || `https://api.adorable.io/avatars/285/${user.uid}.png`;
 
       const messageId = await updateConversationWithMessageTransaction(
         "conversations",
         conversation?.id,
         {
           ...message,
+          senderName,
+          senderPic,
           timestamp: datentime,
           replyTo: replyToMessageId || null,
         },
@@ -397,16 +404,41 @@ export function CardsChat({
         <Card className="col-span-3 w-[92vw] mt-0 min-h-[70vh] border-gray-400  dark:border-white border-2 shadow-none">
           <CardHeader className="flex flex-row items-center  bg-[#ececec] dark:bg-[#333333] text-gray-800 dark:text-white p-2 rounded-t-lg">
             <div className="flex items-center space-x-3">
+              {onBack && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="lg:hidden h-8 w-8 text-gray-800 dark:text-white mr-1 p-0 hover:bg-transparent"
+                  onClick={onBack}
+                  type="button"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+              )}
               <Avatar>
-                <AvatarImage src={primaryUser.profilePic} alt="Image" />
-                <AvatarFallback>{primaryUser.userName}</AvatarFallback>
+                <AvatarImage
+                  src={
+                    conversation.isCommunity
+                      ? conversation.avatarUrl ||
+                        `https://api.dicebear.com/7.x/identicon/svg?seed=${conversation.id}`
+                      : primaryUser.profilePic
+                  }
+                  alt="Image"
+                />
+                <AvatarFallback>
+                  {conversation.isCommunity
+                    ? (conversation.name || "C").charAt(0).toUpperCase()
+                    : primaryUser.userName?.charAt(0).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <div>
                 <p className="text-sm font-medium leading-none text-gray-800 dark:text-white">
-                  {primaryUser.userName}
+                  {conversation.isCommunity ? conversation.name : primaryUser.userName}
                 </p>
                 <p className="text-xs text-gray-600 dark:text-gray-400">
-                  {primaryUser.email}
+                  {conversation.isCommunity
+                    ? `${conversation.participants?.length || 0} members • ${conversation.description || "Group Chat"}`
+                    : primaryUser.email}
                 </p>
               </div>
             </div>
@@ -432,11 +464,13 @@ export function CardsChat({
                     {message.senderId !== user.uid && (
                       <Avatar key={index} className="w-8 h-8 mr-1 my-auto">
                         <AvatarImage
-                          src={primaryUser.profilePic}
+                          src={conversation.isCommunity ? message.senderPic : primaryUser.profilePic}
                           alt={message.senderId}
                         />
                         <AvatarFallback>
-                          {message.senderId.charAt(0).toUpperCase()}
+                          {conversation.isCommunity
+                            ? (message.senderName || "U").charAt(0).toUpperCase()
+                            : message.senderId.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                     )}
@@ -492,6 +526,11 @@ export function CardsChat({
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <div className="break-words rounded-lg w-full">
+                              {conversation.isCommunity && message.senderId !== user.uid && message.senderName && (
+                                <span className="font-bold text-[11px] text-purple-600 dark:text-purple-300 mb-1 block">
+                                  {message.senderName}
+                                </span>
+                              )}
                               {message.replyTo && (
                                 <div className="flex items-center justify-between p-2 bg-gray-200 dark:bg-gray-600 rounded-lg border-l-4 border-gray-400 dark:border-gray-500 shadow-sm opacity-100 transition-opacity duration-300 max-w-2xl mb-1">
                                   <div className="text-sm italic text-gray-600 dark:text-gray-300 bg-gray-200 dark:bg-gray-600 overflow-hidden whitespace-pre-wrap text-ellipsis max-h-[3em] line-clamp-2 max-w-2xl">
